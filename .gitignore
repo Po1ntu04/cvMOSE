@@ -32,3 +32,6 @@ homework/analysis/target_zooms*/
 runs/
 logs/
 tmp/
+
+# Local analysis artifacts
+artifacts/

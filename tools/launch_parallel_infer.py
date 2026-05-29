@@ -102,8 +102,9 @@ def main() -> None:
         return
 
     if args.make_submission_after:
+        build_python = args.python or ("python" if args.conda_env else sys.executable)
         build_cmd = [
-            args.python,
+            build_python,
             str(REPO_ROOT / "tools" / "build_submission.py"),
             "--workspace",
             str(ws),

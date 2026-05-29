@@ -5,10 +5,10 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SSH_KEY="${B101_SSH_KEY:-$HOME/.ssh/id_ed25519_b101}"
 REMOTE_HOST="${B101_HOST:-yuzhixiang@b101.guhk.cc}"
 REMOTE_CODE_ROOT="${CVMOSE_CODE_ROOT:-/data1/yuzhixiang/cv_mosev2/cvMOSE}"
-SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes)
+SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=2)
 ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "mkdir -p '$REMOTE_CODE_ROOT'"
 rsync -av --delete --delete-excluded \
-  -e "ssh -i '$SSH_KEY' -o IdentitiesOnly=yes -o BatchMode=yes" \
+  -e "ssh -i '$SSH_KEY' -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=2" \
   --exclude='__pycache__/' \
   --exclude='*.pyc' \
   --include='/README.md' \
