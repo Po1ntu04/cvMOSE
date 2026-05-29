@@ -286,7 +286,8 @@ def should_suppress(
     # gap, where identity uncertainty is the main failure mode.
     suppress = False
     hard = set(reasons)
-    if "implausibly_large_frame_fraction" in hard or "fragmented_mask" in hard:
+    corrupt_mask_signal = bool(hard.intersection({"implausibly_large_frame_fraction", "fragmented_mask"}))
+    if corrupt_mask_signal and (gap > 0 or len(hard) >= 2):
         suppress = True
     elif gap >= args.strict_gap and ("unconfirmed_far_reappearance" in hard or "motion_jump" in hard):
         suppress = True
