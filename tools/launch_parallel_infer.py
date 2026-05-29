@@ -76,6 +76,7 @@ def main() -> None:
         if args.conda_env:
             cmd = ["conda", "run", "-n", args.conda_env, *cmd]
         env = os.environ.copy()
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
         env["CUDA_DEVICE_ORDER"] = env.get("CUDA_DEVICE_ORDER", "PCI_BUS_ID")
         env["CUDA_VISIBLE_DEVICES"] = gpu
         log_path = log_dir / f"worker_{slot_idx:02d}_gpu{gpu}.log"

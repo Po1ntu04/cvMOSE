@@ -10,6 +10,7 @@ PRED_ROOT="${PRED_ROOT:-$MOSE_WORKSPACE/homework/pred_sam2_b101}"
 ZIP_PATH="${ZIP_PATH:-$MOSE_WORKSPACE/homework/submission_mosev2_sam2.zip}"
 ssh -i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$REMOTE_HOST" bash -s -- "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$GPU" "$PRED_ROOT" "$ZIP_PATH" <<'REMOTE'
 set -euo pipefail
+export PYTHONDONTWRITEBYTECODE=1
 CODE_ROOT="$1"; WORKSPACE="$2"; ENV_NAME="$3"; GPU="$4"; PRED_ROOT="$5"; ZIP_PATH="$6"
 cd "$CODE_ROOT"
 CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES="$GPU" conda run -n "$ENV_NAME" python tools/infer_mosev2_sam2.py \
