@@ -62,3 +62,21 @@ Per-video suppressions:
 M1 is intentionally identity-protective and likely helps the canonical `r13u5z4y` strawberry occlusion/same-class-switch case. However, visual review found likely false-empty regressions in `c8lutf29` and `pe0d85lk`, where the target appears semantically visible but M1 suppresses it due to large post-gap movement. `4f98052b` id2 is also a high-risk long suppression span.
 
 Decision: keep this zip as an ablation candidate only. Do not promote M1 as the default SAM2 replacement. The next useful step is M1.1: a narrower, visually gated identity-switch intervention before M2 pseudo-anchor re-prompting.
+
+
+## 2026-05-30 — M1.1 training-free tracklet + SAM2 cycle gate
+
+- Branch: `method/m1-1-tracklet-gate`
+- Code commits: `b8a5b5d`, `f31ed3d`
+- Method file: `tools/apply_tracklet_gate.py`
+- Launcher: `scripts/run_b101_m11_cycle_gate.sh`
+- Output masks: `/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/pred_sam2_m11_cycle`
+- Submission zip: `/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/submission_mosev2_m11_cycle.zip`
+- Audit JSON: `/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/logs/m11_cycle_gate_latest.json`
+- Visual review: `docs/m11_cycle_gate.md`
+
+Result: `15` videos, `1004` frames, `60` suppressed object-frames, runtime `289.475 s`, valid zip with `433` dirs and `66,526` PNGs.
+
+Compared with M1, M1.1 keeps the training-free identity-protection insight but avoids the broad frame-wise latch. It suppresses only `r13u5z4y`, selected `4f98052b` id2 spans, and selected `msinig6m` spans after frozen-SAM2 backward cycle checks. It no longer suppresses `c8lutf29` or `pe0d85lk`, the clearest M1 false-empty regressions.
+
+Decision: M1.1 supersedes M1 as the next ablation candidate, but still requires score evidence before replacing the SAM2 baseline.
