@@ -2,7 +2,7 @@
 
 Date: 2026-05-30
 Branch: `method/m2-reliable-memory`
-Commit: `ba8069f`
+Commit: branch `method/m2-reliable-memory` review-fix head
 
 ## Verdict
 
@@ -33,7 +33,7 @@ git diff --check main...HEAD
 git diff --check
 ```
 
-Remote smoke after fixes (`ba8069f` provenance verified in review-smoke audit):
+Remote smoke after fixes (provenance verified in review-smoke audit before final doc-only update):
 
 ```bash
 VIDEOS="r13u5z4y" ./scripts/run_b101_m2_memory_gate.sh

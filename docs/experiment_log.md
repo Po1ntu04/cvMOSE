@@ -3,7 +3,7 @@
 
 ## 2026-05-30 — M2 reliable memory gate
 
-- Commit: `ba8069f` on branch `method/m2-reliable-memory`.
+- Commit: branch `method/m2-reliable-memory` review-fix head; use `git log -1` for exact current SHA.
 - Method: original SAM2 + training-free reliability check before writing non-conditioning memory.
 - Hypothesis: bad predictions should not become future tracker memory; this targets autoregressive drift without suppressing current-frame output.
 - Videos: MOSEv2 15-video homework split; smoke target `r13u5z4y` because it contains severe occlusion and same-class strawberry distractors.
