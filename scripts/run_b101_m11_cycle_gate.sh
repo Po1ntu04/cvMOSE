@@ -27,7 +27,7 @@ ssh -i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$REMOTE_HOST" bash -s 
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
-export CUDA_VISIBLE_DEVICES="$12"
+export CUDA_VISIBLE_DEVICES="${12}"
 export TQDM_DISABLE=1
 CODE_ROOT="$1"; WORKSPACE="$2"; ENV_NAME="$3"; RAW_PRED_ROOT="$4"; OUT_PRED_ROOT="$5"; SUBMIT_ROOT="$6"; ZIP_PATH="$7"; AUDIT_JSON="$8"; DRY_RUN_FLAG="$9"; EXPECTED_VIDEOS="${10}"; EXPECTED_PNGS="${11}"; shift 12
 cd "$CODE_ROOT"
