@@ -63,8 +63,6 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--ann-root", type=Path, default=None)
     p.add_argument("--videos", nargs="*", default=None)
     p.add_argument("--audit-json", type=Path, default=None)
-    p.add_argument("--copy-raw-first", action="store_true", default=True)
-
     # Geometry/identity thresholds. Defaults are identity-protective but not
     # globally destructive: suppression generally requires post-gap uncertainty
     # or multiple independent anomaly signals.
@@ -94,6 +92,44 @@ def complete_args(args: argparse.Namespace) -> argparse.Namespace:
     stamp = time.strftime("%Y%m%d_%H%M%S")
     args.audit_json = (args.audit_json or ws / "homework" / "logs" / f"m1_visibility_gate_{stamp}.json").resolve()
     return args
+
+
+def is_same_or_nested(a: Path, b: Path) -> bool:
+    """Return True when either path is the same as or nested under the other."""
+    a = a.resolve()
+    b = b.resolve()
+    if a == b:
+        return True
+    try:
+        a.relative_to(b)
+        return True
+    except ValueError:
+        pass
+    try:
+        b.relative_to(a)
+        return True
+    except ValueError:
+        return False
+
+
+def validate_output_root(args: argparse.Namespace) -> None:
+    protected = {
+        "raw_pred_root": args.raw_pred_root,
+        "jpeg_root": args.jpeg_root,
+        "ann_root": args.ann_root,
+    }
+    for name, protected_path in protected.items():
+        if is_same_or_nested(args.out_pred_root, protected_path):
+            raise ValueError(
+                f"unsafe --out-pred-root {args.out_pred_root}: overlaps protected {name} {protected_path}"
+            )
+
+
+def validate_raw_labels(raw: np.ndarray, obj_ids: list[int], path: Path) -> None:
+    known = {0, *obj_ids}
+    unknown = sorted(int(x) for x in np.unique(raw) if int(x) not in known)
+    if unknown:
+        raise ValueError(f"{path}: unexpected raw label ids {unknown}; expected subset of {sorted(known)}")
 
 
 def list_frame_paths(video_dir: Path) -> list[Path]:
@@ -302,6 +338,7 @@ def apply_video(args: argparse.Namespace, video: str) -> dict[str, Any]:
         raw, raw_palette = load_label(raw_path)
         if raw.shape != ann.shape:
             raise ValueError(f"{video}/{raw_path.name}: shape {raw.shape} != annotation shape {ann.shape}")
+        validate_raw_labels(raw, obj_ids, raw_path)
         if frame_idx == 0:
             out = ann.copy()
             if not args.dry_run:
@@ -361,6 +398,7 @@ def apply_video(args: argparse.Namespace, video: str) -> dict[str, Any]:
 
 def main() -> None:
     args = complete_args(parse_args())
+    validate_output_root(args)
     for required in [args.raw_pred_root, args.jpeg_root, args.ann_root]:
         if not required.exists():
             raise FileNotFoundError(required)

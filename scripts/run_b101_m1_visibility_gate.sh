@@ -11,12 +11,9 @@ SUBMIT_ROOT="${SUBMIT_ROOT:-$MOSE_WORKSPACE/homework/submission_433_m1_visibilit
 ZIP_PATH="${ZIP_PATH:-$MOSE_WORKSPACE/homework/submission_mosev2_m1_visibility.zip}"
 AUDIT_JSON="${AUDIT_JSON:-$MOSE_WORKSPACE/homework/logs/m1_visibility_gate_latest.json}"
 DRY_RUN="${DRY_RUN:-0}"
+EXPECTED_VIDEOS="${EXPECTED_VIDEOS:-433}"
+EXPECTED_PNGS="${EXPECTED_PNGS:-66526}"
 GATE_EXTRA_ARGS="${GATE_EXTRA_ARGS:-}"
-
-REMOTE_DRY=()
-if [[ "$DRY_RUN" == "1" ]]; then
-  REMOTE_DRY=(--dry-run)
-fi
 
 GATE_ARGS=()
 if [[ -n "$GATE_EXTRA_ARGS" ]]; then
@@ -26,23 +23,44 @@ if [[ -n "$GATE_EXTRA_ARGS" ]]; then
 fi
 
 ssh -i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes "$REMOTE_HOST" bash -s -- \
-  "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$RAW_PRED_ROOT" "$OUT_PRED_ROOT" "$SUBMIT_ROOT" "$ZIP_PATH" "$AUDIT_JSON" "${REMOTE_DRY[@]}" "${GATE_ARGS[@]}" <<'REMOTE'
+  "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$RAW_PRED_ROOT" "$OUT_PRED_ROOT" "$SUBMIT_ROOT" "$ZIP_PATH" "$AUDIT_JSON" "$DRY_RUN" "$EXPECTED_VIDEOS" "$EXPECTED_PNGS" "${GATE_ARGS[@]}" <<'REMOTE'
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
-CODE_ROOT="$1"; WORKSPACE="$2"; ENV_NAME="$3"; RAW_PRED_ROOT="$4"; OUT_PRED_ROOT="$5"; SUBMIT_ROOT="$6"; ZIP_PATH="$7"; AUDIT_JSON="$8"; shift 8
+CODE_ROOT="$1"; WORKSPACE="$2"; ENV_NAME="$3"; RAW_PRED_ROOT="$4"; OUT_PRED_ROOT="$5"; SUBMIT_ROOT="$6"; ZIP_PATH="$7"; AUDIT_JSON="$8"; DRY_RUN_FLAG="$9"; EXPECTED_VIDEOS="${10}"; EXPECTED_PNGS="${11}"; shift 11
 cd "$CODE_ROOT"
+GATE_DRY=()
+if [[ "$DRY_RUN_FLAG" == "1" ]]; then
+  GATE_DRY=(--dry-run)
+fi
 conda run -n "$ENV_NAME" python tools/apply_visibility_gate.py \
   --workspace "$WORKSPACE" \
   --raw-pred-root "$RAW_PRED_ROOT" \
   --out-pred-root "$OUT_PRED_ROOT" \
   --audit-json "$AUDIT_JSON" \
+  "${GATE_DRY[@]}" \
   "$@"
-if [[ " $* " != *" --dry-run "* ]]; then
+if [[ "$DRY_RUN_FLAG" != "1" ]]; then
   conda run -n "$ENV_NAME" python tools/build_submission.py \
     --workspace "$WORKSPACE" \
     --pred-root "$OUT_PRED_ROOT" \
     --submit-root "$SUBMIT_ROOT" \
     --zip-path "$ZIP_PATH" \
     --overwrite
+  python3 - "$ZIP_PATH" "$EXPECTED_VIDEOS" "$EXPECTED_PNGS" <<'PY'
+import os
+import sys
+import zipfile
+zip_path, expected_videos, expected_pngs = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
+with zipfile.ZipFile(zip_path) as zf:
+    names = zf.namelist()
+    dirs = {n.split('/')[0] for n in names if '/' in n}
+    pngs = [n for n in names if n.endswith('.png')]
+    bad = zf.testzip()
+if len(dirs) != expected_videos or len(pngs) != expected_pngs or bad is not None:
+    raise SystemExit(
+        f"invalid submission zip: videos={len(dirs)} pngs={len(pngs)} testzip_bad={bad}"
+    )
+print(f"validated_zip={zip_path} videos={len(dirs)} pngs={len(pngs)} size={os.path.getsize(zip_path)}")
+PY
 fi
 REMOTE
