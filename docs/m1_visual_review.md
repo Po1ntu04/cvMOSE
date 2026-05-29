@@ -6,6 +6,24 @@ Implementation commits: `6420d39` initial M1, `47db029` safety hardening, `0532f
 Remote audit: `/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/logs/m1_visibility_gate_latest.json`  
 Remote zip: `/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/submission_mosev2_m1_visibility.zip`
 
+
+## Visual comparison sheets
+
+The rows in each image are: frame/status, RGB, SAM2 overlay, M1 overlay, SAM2 mask, M1 mask.
+
+- Positive candidate: [`r13u5z4y`](visuals/m1_compare/r13u5z4y_positive_candidate.jpg)
+- Negative candidate: [`c8lutf29`](visuals/m1_compare/c8lutf29_negative_candidate.jpg)
+- Negative candidate: [`pe0d85lk`](visuals/m1_compare/pe0d85lk_negative_candidate.jpg)
+- Uncertain/high-risk candidate: [`4f98052b`](visuals/m1_compare/4f98052b_uncertain_candidate.jpg)
+
+![r13u5z4y positive candidate](visuals/m1_compare/r13u5z4y_positive_candidate.jpg)
+
+![c8lutf29 negative candidate](visuals/m1_compare/c8lutf29_negative_candidate.jpg)
+
+![pe0d85lk negative candidate](visuals/m1_compare/pe0d85lk_negative_candidate.jpg)
+
+![4f98052b uncertain candidate](visuals/m1_compare/4f98052b_uncertain_candidate.jpg)
+
 ## Review method
 
 I compared original RGB frames, raw SAM2 masks, and M1 masks on the major suppressed spans. The temporary contact sheets used this row order per sampled frame:
