@@ -26,7 +26,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--workspace", type=Path, required=True)
     p.add_argument("--jpeg-root", type=Path, default=None)
     p.add_argument("--script", type=Path, default=REPO_ROOT / "tools" / "infer_mosev2_sam2.py")
-    p.add_argument("--python", default=sys.executable)
+    p.add_argument("--python", default=None, help="Worker Python executable. Defaults to `python` inside --conda-env, otherwise current interpreter.")
     p.add_argument("--conda-env", default=None, help="Wrap worker commands with `conda run -n ENV`.")
     p.add_argument("--gpus", default="4", help="Comma-separated visible GPU ids, e.g. 0,1 or 4.")
     p.add_argument("--jobs-per-gpu", type=int, default=1)
@@ -67,7 +67,8 @@ def main() -> None:
     for slot_idx, bucket in enumerate(buckets):
         gpu = gpu_ids[slot_idx % len(gpu_ids)]
         video_names = [v.name for v in bucket]
-        cmd = [args.python, str(args.script), "--workspace", str(ws), "--pred-root", str(pred_root), "--videos", *video_names]
+        worker_python = args.python or ("python" if args.conda_env else sys.executable)
+        cmd = [worker_python, str(args.script), "--workspace", str(ws), "--pred-root", str(pred_root), "--videos", *video_names]
         if args.skip_existing:
             cmd.append("--skip-existing")
         for extra in args.extra_arg:

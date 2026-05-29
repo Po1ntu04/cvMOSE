@@ -9,6 +9,8 @@ SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes)
 ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "mkdir -p '$REMOTE_CODE_ROOT'"
 rsync -av --delete \
   -e "ssh -i '$SSH_KEY' -o IdentitiesOnly=yes -o BatchMode=yes" \
+  --exclude='__pycache__/' \
+  --exclude='*.pyc' \
   --include='/README.md' \
   --include='/pyproject.toml' \
   --include='/configs/***' \
