@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.env
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data / model artifacts: never version MOSE frames, masks, checkpoints, logs, submissions
+5_19/
+homework/JPEGImages/
+homework/Annotations/
+homework/output/
+homework/Output/
+homework/pred*/
+homework/submission*/
+homework/logs/
+homework/analysis/contact_sheets/
+homework/analysis/target_zooms*/
+*.pt
+*.pth
+*.ckpt
+*.zip
+*.png
+*.jpg
+*.jpeg
+*.jsonl
+
+# Local run outputs
+runs/
+logs/
+tmp/

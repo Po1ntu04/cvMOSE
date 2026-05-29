@@ -1,0 +1,9 @@
+[project]
+name = "cvmose"
+version = "0.1.0"
+description = "Principled MOSEv2 VOS experiments around SAM2/SAM3."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
