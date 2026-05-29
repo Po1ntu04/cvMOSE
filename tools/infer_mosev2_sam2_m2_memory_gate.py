@@ -16,6 +16,7 @@ import contextlib
 import json
 import math
 import os
+import subprocess
 import sys
 import time
 import types
@@ -191,22 +192,28 @@ def _distance(a: tuple[float, float] | None, b: tuple[float, float] | None) -> f
     return math.hypot(a[0] - b[0], a[1] - b[1])
 
 
-def _obj_score_value(object_score_logits: Any | None) -> float | None:
+def _obj_score_value(object_score_logits: Any | None) -> tuple[float | None, str]:
+    """Return sigmoid object score and parse status.
+
+    Missing scores are allowed for compatibility with variants that do not expose
+    SAM2 presence logits.  Present-but-unparseable scores fail closed in the gate
+    and are recorded in audit as ``obj_score_parse_error``.
+    """
     if object_score_logits is None:
-        return None
+        return None, "missing"
     try:
         import torch
 
         if isinstance(object_score_logits, torch.Tensor):
             if object_score_logits.numel() == 0:
-                return None
-            return float(torch.sigmoid(object_score_logits.detach().float()).mean().item())
-    except Exception:
-        pass
+                return None, "empty"
+            return float(torch.sigmoid(object_score_logits.detach().float()).mean().item()), "ok"
+    except Exception as exc:
+        return None, f"parse_error:{type(exc).__name__}"
     try:
-        return float(object_score_logits)
-    except Exception:
-        return None
+        return float(object_score_logits), "ok_raw_float"
+    except Exception as exc:
+        return None, f"parse_error:{type(exc).__name__}"
 
 
 def _choose_reference(
@@ -266,10 +273,10 @@ def reliable_for_memory(
         displacement = _distance(_centroid(mask), ref_centroid)
 
     max_motion_px = max(cfg.max_motion_px_floor, cfg.motion_area_scale * math.sqrt(max(prev_area_pixels, 0.0)))
-    obj_score = _obj_score_value(object_score_logits)
+    obj_score, obj_score_status = _obj_score_value(object_score_logits)
 
     checks = {
-        "obj_ok": True if obj_score is None else obj_score > cfg.obj_thr,
+        "obj_ok": (obj_score_status == "missing") or (obj_score is not None and obj_score > cfg.obj_thr),
         "area_abs_ok": min_area_frac <= area_frac <= cfg.max_area_frac,
         "area_ratio_ok": cfg.min_ratio <= area_ratio <= cfg.max_ratio,
         "stable_ok": stability > cfg.stability_thr,
@@ -294,6 +301,7 @@ def reliable_for_memory(
         "displacement_px": displacement if math.isfinite(displacement) else "inf",
         "max_motion_px": max_motion_px,
         "obj_score": obj_score,
+        "obj_score_status": obj_score_status,
         "checks": checks,
     }
     return reliable, metrics, mask.detach()
@@ -483,6 +491,34 @@ def install_reliable_memory_gate(predictor, cfg: MemoryGateConfig, audit: dict[s
     predictor.propagate_in_video = types.MethodType(propagate_in_video_m2, predictor)
 
 
+
+def collect_provenance(args: argparse.Namespace) -> dict[str, Any]:
+    """Collect lightweight reproducibility metadata for audit JSON."""
+    repo_root = Path(__file__).resolve().parents[1]
+    def run_git(cmd: list[str]) -> str | None:
+        try:
+            return subprocess.check_output(cmd, cwd=repo_root, text=True, stderr=subprocess.DEVNULL).strip()
+        except Exception:
+            return None
+
+    checkpoint = Path(args.checkpoint)
+    return {
+        "repo_root": str(repo_root),
+        "git_sha": os.environ.get("CVMOSE_GIT_SHA") or run_git(["git", "rev-parse", "HEAD"]),
+        "git_branch": os.environ.get("CVMOSE_GIT_BRANCH") or run_git(["git", "rev-parse", "--abbrev-ref", "HEAD"]),
+        "script": str(Path(__file__).resolve()),
+        "workspace": str(args.workspace),
+        "sam2_root": str(args.sam2_root),
+        "model_cfg": args.model_cfg,
+        "checkpoint": str(checkpoint),
+        "checkpoint_size": checkpoint.stat().st_size if checkpoint.exists() else None,
+        "device": args.device,
+        "videos_arg": args.videos,
+        "pred_root": str(args.pred_root),
+        "submit_root": str(args.submit_root),
+        "zip_path": str(args.zip_path),
+    }
+
 def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as f:
@@ -649,6 +685,7 @@ def main() -> None:
     total_frames = sum(int(r["frames"]) for r in results if r["status"] in {"done", "skipped"})
     elapsed = time.time() - started
     aggregate = aggregate_audit(audit_by_video, cfg, results)
+    aggregate["provenance"] = collect_provenance(args)
     aggregate["runtime"] = {"seconds": elapsed, "frames": total_frames, "fps": (total_frames / elapsed) if elapsed > 0 else None}
     if torch.cuda.is_available() and str(args.device).startswith("cuda"):
         aggregate["runtime"].update(
