@@ -32,3 +32,10 @@ homework/analysis/target_zooms*/
 runs/
 logs/
 tmp/
+
+# Local experiment downloads kept in the workspace but not versioned
+artifacts/
+
+# Curated documentation visuals are intentionally versioned despite global image ignores
+!docs/visuals/
+!docs/visuals/**
