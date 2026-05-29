@@ -35,3 +35,6 @@ tmp/
 
 # Local analysis artifacts
 artifacts/
+# Versioned documentation figures
+!docs/assets/
+!docs/assets/**
