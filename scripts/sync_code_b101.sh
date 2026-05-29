@@ -7,7 +7,7 @@ REMOTE_HOST="${B101_HOST:-yuzhixiang@b101.guhk.cc}"
 REMOTE_CODE_ROOT="${CVMOSE_CODE_ROOT:-/data1/yuzhixiang/cv_mosev2/cvMOSE}"
 SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes)
 ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "mkdir -p '$REMOTE_CODE_ROOT'"
-rsync -av --delete \
+rsync -av --delete --delete-excluded \
   -e "ssh -i '$SSH_KEY' -o IdentitiesOnly=yes -o BatchMode=yes" \
   --exclude='__pycache__/' \
   --exclude='*.pyc' \
