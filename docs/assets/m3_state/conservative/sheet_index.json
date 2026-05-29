@@ -1,0 +1,268 @@
+{
+  "summary": {
+    "videos": 15,
+    "frames": 1004,
+    "objects": 20,
+    "changed_vs_baseline": 502,
+    "source_counts": {
+      "first_frame_gt": 20,
+      "m2_light": 165,
+      "baseline": 231,
+      "sam31": 192,
+      "empty": 837,
+      "m2": 110
+    },
+    "class_counts": {
+      "gt_anchor": 20,
+      "accept_anchor_candidate": 621,
+      "output_only": 3,
+      "empty": 37,
+      "reject": 800,
+      "accept_visible": 74
+    },
+    "state_counts": {
+      "CONFIRMED_VISIBLE": 715,
+      "UNCERTAIN": 23,
+      "LIKELY_OCCLUDED": 815,
+      "REAPPEARING_CANDIDATE": 2
+    },
+    "conflict_frames": 4,
+    "empty_outputs": {
+      "1": 479,
+      "2": 277,
+      "3": 81
+    },
+    "accepted_anchor_counts": {
+      "1": 472,
+      "2": 107,
+      "3": 42
+    }
+  },
+  "sheets": [
+    {
+      "video": "1qlssuz2",
+      "frames": [
+        0,
+        1,
+        6,
+        11,
+        14,
+        30,
+        33,
+        39
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/1qlssuz2_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/1qlssuz2_m3_zoom.jpg"
+    },
+    {
+      "video": "2smf7uq9",
+      "frames": [
+        0,
+        1,
+        6,
+        11,
+        16,
+        21,
+        26,
+        42
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/2smf7uq9_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/2smf7uq9_m3_zoom.jpg"
+    },
+    {
+      "video": "3epdtmyr",
+      "frames": [
+        0,
+        1,
+        33,
+        71,
+        107,
+        136,
+        162,
+        189
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/3epdtmyr_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/3epdtmyr_m3_zoom.jpg"
+    },
+    {
+      "video": "4f98052b",
+      "frames": [
+        0,
+        1,
+        30,
+        60,
+        91,
+        120,
+        149,
+        178
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/4f98052b_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/4f98052b_m3_zoom.jpg"
+    },
+    {
+      "video": "4vznweiu",
+      "frames": [
+        0,
+        1,
+        3,
+        5,
+        7,
+        9,
+        11,
+        34
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/4vznweiu_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/4vznweiu_m3_zoom.jpg"
+    },
+    {
+      "video": "8jsm23a7",
+      "frames": [
+        0,
+        1,
+        26,
+        31,
+        35,
+        39,
+        43,
+        48
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/8jsm23a7_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/8jsm23a7_m3_zoom.jpg"
+    },
+    {
+      "video": "amfdu83t",
+      "frames": [
+        0,
+        2,
+        5,
+        8,
+        11,
+        14,
+        17,
+        23
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/amfdu83t_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/amfdu83t_m3_zoom.jpg"
+    },
+    {
+      "video": "c8lutf29",
+      "frames": [
+        0,
+        1,
+        8,
+        15,
+        23,
+        31,
+        38,
+        46
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/c8lutf29_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/c8lutf29_m3_zoom.jpg"
+    },
+    {
+      "video": "jadgtmfl",
+      "frames": [
+        0,
+        1,
+        7,
+        14,
+        20,
+        29,
+        35,
+        40
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/jadgtmfl_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/jadgtmfl_m3_zoom.jpg"
+    },
+    {
+      "video": "lcgc29va",
+      "frames": [
+        0,
+        2,
+        6,
+        8,
+        10,
+        17,
+        21,
+        34
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/lcgc29va_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/lcgc29va_m3_zoom.jpg"
+    },
+    {
+      "video": "msinig6m",
+      "frames": [
+        0,
+        1,
+        24,
+        46,
+        68,
+        90,
+        112,
+        133
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/msinig6m_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/msinig6m_m3_zoom.jpg"
+    },
+    {
+      "video": "pe0d85lk",
+      "frames": [
+        0,
+        1,
+        11,
+        21,
+        31,
+        41,
+        51,
+        61
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/pe0d85lk_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/pe0d85lk_m3_zoom.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": [
+        0,
+        1,
+        7,
+        13,
+        19,
+        25,
+        31,
+        41
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/q0sizv6m_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/q0sizv6m_m3_zoom.jpg"
+    },
+    {
+      "video": "r13u5z4y",
+      "frames": [
+        0,
+        2,
+        6,
+        10,
+        14,
+        18,
+        37,
+        44
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/r13u5z4y_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/r13u5z4y_m3_zoom.jpg"
+    },
+    {
+      "video": "z6dx46qr",
+      "frames": [
+        0,
+        1,
+        8,
+        13,
+        18,
+        23,
+        28,
+        37
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/full/z6dx46qr_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/analysis/m3_state_conservative_sheets/zooms/z6dx46qr_m3_zoom.jpg"
+    }
+  ]
+}
