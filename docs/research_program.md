@@ -59,28 +59,35 @@ Do **not** apply everything at once. Each method must correspond to a failure at
 - Hypothesis: improves cases where wrong same-class masks hurt more than empties.
 - Main risk: over-suppression during true reappearance.
 
-### M2. Confirmed multi-anchor re-prompt
+### M2. Reliable tracker-memory gate
 
-- Input: first-frame GT + selected high-confidence pseudo masks.
+- Input: original SAM2 per-frame mask logits, object score, previous/last-reliable mask geometry.
+- Method: after each non-conditioning prediction, decide whether the current mask is reliable enough to enter SAM2's memory bank; unreliable masks are still output for the current frame but are not written as future non-conditioning memory.
+- Hypothesis: reduces autoregressive error accumulation from drift frames in occlusion/same-class distractor cases.
+- Main risk: over-strict gating makes memory too sparse, while stable wrong-instance tracks may still pass geometry-only reliability.
+
+### M3. Confirmed multi-anchor re-prompt
+
+- Input: first-frame GT + selected high-confidence pseudo masks, preferably only after M2-style reliability checks.
 - Method: rerun SAM2 with additional prompts on verified frames, then merge bidirectional predictions.
 - Hypothesis: reduces memory staleness after long occlusion.
 - Main risk: pseudo prompt identity switch poisons memory.
 
-### M3. Tiny-target crop tracking
+### M4. Tiny-target crop tracking
 
 - Input: full-frame SAM2 trajectory or search window.
 - Method: crop around expected target area, rerun at higher relative resolution, map mask back.
 - Hypothesis: recovers targets lost by feature downsampling.
 - Main risk: crop misses fast motion or locks onto distractor.
 
-### M4. Cross-id competition and duplicate suppression
+### M5. Cross-id competition and duplicate suppression
 
 - Input: multi-id predictions in the same video.
 - Method: resolve overlap, reject implausible id crossings, prefer history-consistent assignment.
 - Hypothesis: reduces id swap/merge in `msinig6m`, `q0sizv6m`, `pe0d85lk`.
 - Main risk: suppresses legitimate close contact.
 
-### M5. Selective SAM3.1-assisted candidate replacement
+### M6. Selective SAM3.1-assisted candidate replacement
 
 - Input: SAM2 and SAM3.1 adapter outputs.
 - Method: use SAM3.1 only on video segments where it is semantically verified better; never use public-simple.
