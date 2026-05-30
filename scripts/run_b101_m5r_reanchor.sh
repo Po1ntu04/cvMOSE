@@ -93,6 +93,8 @@ ALLOWED_EXTRA_FLAGS=(
   --sam2-auto-mask-candidates --auto-mask-max-frames-per-object --auto-mask-points-per-side
   --auto-mask-pred-iou-thr --auto-mask-stability-thr --auto-mask-min-area --auto-mask-max-count
   --dino-root --dino-weights --dino-variant --dino-max-side --dino-tiny-min-tokens --dino-tiny-crop-min-side --dino-tiny-crop-mult
+  --dino-part-topk --dino-part-matching --dino-part-weight --dino-part-min-tokens
+  --tracklet-aggregate --tracklet-window --tracklet-min-count --tracklet-weight
   --sameclass-margin --anchor-confirm-mode --anchor-confirm-window --anchor-confirm-min-count --strong-margin
   --rollback-max-change-frac --rollback-high-conf-margin
   --baseline-root --m11-root --m2-light-root --tiny-crop-root --sam31-root --rar-rcms-root --rar-state-root --rar-audit-json

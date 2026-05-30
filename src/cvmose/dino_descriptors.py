@@ -36,6 +36,7 @@ class DinoDescriptorResult:
     vector: np.ndarray
     tokens_inside: int
     source: str
+    part_tokens: np.ndarray | None = None
     fallback_reason: str | None = None
     grid_size: tuple[int, int] | None = None
     crop_box: tuple[int, int, int, int] | None = None
@@ -98,6 +99,7 @@ class DinoDescriptorExtractor:
         tiny_min_tokens: int = 3,
         tiny_crop_min_side: int = 96,
         tiny_crop_mult: float = 6.0,
+        part_topk: int = 8,
     ) -> None:
         if variant not in DINO_SPECS:
             raise ValueError(f"Unsupported DINO variant: {variant}")
@@ -110,6 +112,7 @@ class DinoDescriptorExtractor:
         self.tiny_min_tokens = int(tiny_min_tokens)
         self.tiny_crop_min_side = int(tiny_crop_min_side)
         self.tiny_crop_mult = float(tiny_crop_mult)
+        self.part_topk = int(part_topk)
         self.patch = 14
         self.model: Any | None = None
         self.cache: dict[int, tuple[Any, int, int, float]] = {}
@@ -179,6 +182,31 @@ class DinoDescriptorExtractor:
         pooled = F.max_pool2d(m, kernel_size=self.patch, stride=self.patch)[0, 0] > 0.5
         return pooled.reshape(gh, gw)
 
+    def _select_part_tokens(self, fg_tokens: np.ndarray) -> np.ndarray | None:
+        """Return a small diverse set of normalized foreground patch tokens.
+
+        Mean pooling is brittle for MOSEv2 tiny/occluded targets because the
+        identity signal may be a few visible parts.  A deterministic farthest
+        point subset preserves those local parts without changing the frozen
+        DINO model or training anything.
+        """
+        if fg_tokens.size == 0 or self.part_topk <= 0:
+            return None
+        parts = np.stack([l2_normalize(x) for x in fg_tokens.astype(np.float32)], axis=0)
+        if parts.shape[0] <= self.part_topk:
+            return parts
+        mean = l2_normalize(parts.mean(axis=0))
+        sims = parts @ mean
+        selected = [int(np.argmax(sims))]
+        min_dist = 1.0 - (parts @ parts[selected[0]])
+        while len(selected) < self.part_topk:
+            idx = int(np.argmax(min_dist))
+            if idx in selected:
+                break
+            selected.append(idx)
+            min_dist = np.minimum(min_dist, 1.0 - (parts @ parts[idx]))
+        return parts[selected]
+
     def _describe_tokens(self, tokens: Any, patch_mask: Any, grid: tuple[int, int], shape_vec: np.ndarray, source: str, fallback: str | None, crop_box: tuple[int, int, int, int] | None) -> DinoDescriptorResult | None:
         import torch
 
@@ -196,11 +224,13 @@ class DinoDescriptorExtractor:
             diff = obj
         obj_np = obj.detach().float().cpu().numpy()
         diff_np = diff.detach().float().cpu().numpy()
+        part_tokens = self._select_part_tokens(tokens[flat_mask].detach().float().cpu().numpy())
         vec = np.concatenate([l2_normalize(obj_np), l2_normalize(diff_np), l2_normalize(shape_vec.astype(np.float32))])
         return DinoDescriptorResult(
             vector=l2_normalize(vec),
             tokens_inside=tokens_inside,
             source=source,
+            part_tokens=part_tokens,
             fallback_reason=fallback,
             grid_size=grid,
             crop_box=crop_box,

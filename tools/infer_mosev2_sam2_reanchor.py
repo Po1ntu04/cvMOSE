@@ -69,6 +69,7 @@ class Descriptor:
     parts: dict[str, int] = field(default_factory=dict)
     source: str = "rgb"
     dino_tokens_inside: int | None = None
+    dino_part_tokens: np.ndarray | None = None
     fallback_reason: str | None = None
 
 
@@ -87,8 +88,15 @@ class Candidate:
     neg_sim: float = 0.0
     margin: float = 0.0
     score: float = 0.0
+    raw_margin: float = 0.0
+    dino_part_pos_sim: float | None = None
+    dino_part_neg_sim: float | None = None
+    tracklet_count: int = 1
+    tracklet_margin: float | None = None
+    tracklet_reason: str | None = None
     descriptor_source: str | None = None
     dino_tokens_inside: int | None = None
+    dino_part_count: int | None = None
     fallback_reason: str | None = None
     confirm_reason: str | None = None
     rejected: list[str] = field(default_factory=list)
@@ -104,9 +112,16 @@ class Candidate:
             "pos_sim": round(float(self.pos_sim), 4),
             "neg_sim": round(float(self.neg_sim), 4),
             "margin": round(float(self.margin), 4),
+            "raw_margin": round(float(self.raw_margin), 4),
             "score": round(float(self.score), 4),
+            "dino_part_pos_sim": None if self.dino_part_pos_sim is None else round(float(self.dino_part_pos_sim), 4),
+            "dino_part_neg_sim": None if self.dino_part_neg_sim is None else round(float(self.dino_part_neg_sim), 4),
+            "tracklet_count": self.tracklet_count,
+            "tracklet_margin": None if self.tracklet_margin is None else round(float(self.tracklet_margin), 4),
+            "tracklet_reason": self.tracklet_reason,
             "descriptor_source": self.descriptor_source,
             "dino_tokens_inside": self.dino_tokens_inside,
+            "dino_part_count": self.dino_part_count,
             "fallback_reason": self.fallback_reason,
             "confirm_reason": self.confirm_reason,
             "descriptor_parts": dict(self.descriptor.parts) if self.descriptor else {},
@@ -156,6 +171,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--dino-tiny-min-tokens", type=int, default=3)
     p.add_argument("--dino-tiny-crop-min-side", type=int, default=96)
     p.add_argument("--dino-tiny-crop-mult", type=float, default=6.0)
+    p.add_argument("--dino-part-topk", type=int, default=8)
+    p.add_argument("--dino-part-matching", action="store_true", help="Blend DINO patch/part matching into positive-negative identity scores")
+    p.add_argument("--dino-part-weight", type=float, default=0.45)
+    p.add_argument("--dino-part-min-tokens", type=int, default=2)
+    p.add_argument("--tracklet-aggregate", choices=["off", "future", "local"], default="off", help="Aggregate candidate margins over a short source/motion-consistent tracklet before anchor selection")
+    p.add_argument("--tracklet-window", type=int, default=3)
+    p.add_argument("--tracklet-min-count", type=int, default=2)
+    p.add_argument("--tracklet-weight", type=float, default=0.45)
     p.add_argument("--include-any-fg-components", action="store_true", default=True)
     p.add_argument("--no-any-fg-components", dest="include_any_fg_components", action="store_false")
     p.add_argument("--sam2-auto-mask-candidates", action="store_true", help="Add SAM2 automatic-mask proposals on recovery frames")
@@ -313,6 +336,38 @@ def cosine(a: np.ndarray | None, b: np.ndarray | None) -> float:
         a = l2_normalize(a[:n])
         b = l2_normalize(b[:n])
     return float(np.dot(a, b) / max(float(np.linalg.norm(a) * np.linalg.norm(b)), 1e-8))
+
+
+def part_similarity(a: np.ndarray | None, b: np.ndarray | None, min_tokens: int = 2) -> float | None:
+    """Symmetric local-part similarity between two DINO patch sets.
+
+    Unlike mean-pooled cosine, this preserves small visible parts under
+    occlusion/rotation.  The score is intentionally conservative: both
+    candidate-to-reference and reference-to-candidate coverage must be good.
+    """
+    if a is None or b is None:
+        return None
+    if a.ndim != 2 or b.ndim != 2 or a.shape[1] != b.shape[1]:
+        return None
+    if a.shape[0] < min_tokens or b.shape[0] < min_tokens:
+        return None
+    sim = a.astype(np.float32) @ b.astype(np.float32).T
+    cand_to_ref = float(np.mean(np.max(sim, axis=1)))
+    ref_to_cand = float(np.mean(np.max(sim, axis=0)))
+    return 0.5 * (cand_to_ref + ref_to_cand)
+
+
+def descriptor_similarity(a: Descriptor | None, b: Descriptor | None, args: argparse.Namespace) -> tuple[float, float | None]:
+    if a is None or b is None:
+        return 0.0, None
+    base = cosine(a.vector, b.vector)
+    part = None
+    if args.dino_part_matching:
+        part = part_similarity(a.dino_part_tokens, b.dino_part_tokens, args.dino_part_min_tokens)
+    if part is None:
+        return base, None
+    weight = min(max(float(args.dino_part_weight), 0.0), 1.0)
+    return (1.0 - weight) * base + weight * part, part
 
 
 def rgb_descriptor(rgb: np.ndarray, mask: np.ndarray, bins: int = 12) -> np.ndarray | None:
@@ -506,6 +561,7 @@ def make_descriptor(
             parts=parts,
             source=source,
             dino_tokens_inside=dino_desc.tokens_inside,
+            dino_part_tokens=dino_desc.part_tokens,
             fallback_reason=dino_desc.fallback_reason,
         )
     return Descriptor(vector=l2_normalize(np.concatenate(chunks)), parts=parts, source="rgb_sam2" if sam2_desc is not None else "rgb")
@@ -778,10 +834,10 @@ def build_positive_negative_banks(
     extractor: Sam2DescriptorExtractor,
     dino_extractor: DinoDescriptorExtractor | None,
     args: argparse.Namespace,
-) -> tuple[list[np.ndarray], list[np.ndarray], list[dict[str, Any]]]:
+) -> tuple[list[Descriptor], list[Descriptor], list[dict[str, Any]]]:
     audit: list[dict[str, Any]] = []
-    pos: list[np.ndarray] = []
-    neg: list[np.ndarray] = []
+    pos: list[Descriptor] = []
+    neg: list[Descriptor] = []
 
     def add_desc(kind: str, frame_idx: int, source: str, mask: np.ndarray) -> None:
         rgb = load_rgb(frames[frame_idx])
@@ -798,7 +854,7 @@ def build_positive_negative_banks(
         target = pos if kind == "positive" else neg
         limit = args.positive_max_frames + 1 if kind == "positive" else args.negative_max_items
         if len(target) < limit:
-            target.append(desc.vector)
+            target.append(desc)
             audit.append({
                 "kind": kind,
                 "frame_idx": frame_idx,
@@ -807,6 +863,7 @@ def build_positive_negative_banks(
                 "parts": desc.parts,
                 "descriptor_source": desc.source,
                 "dino_tokens_inside": desc.dino_tokens_inside,
+                "dino_part_count": None if desc.dino_part_tokens is None else int(desc.dino_part_tokens.shape[0]),
                 "fallback_reason": desc.fallback_reason,
             })
 
@@ -864,8 +921,8 @@ def build_positive_negative_banks(
 
 def score_candidates(
     cands: list[Candidate],
-    pos_bank: list[np.ndarray],
-    neg_bank: list[np.ndarray],
+    pos_bank: list[Descriptor],
+    neg_bank: list[Descriptor],
     init_area: int,
     extractor: Sam2DescriptorExtractor,
     dino_extractor: DinoDescriptorExtractor | None,
@@ -892,17 +949,96 @@ def score_candidates(
             continue
         cand.descriptor_source = cand.descriptor.source
         cand.dino_tokens_inside = cand.descriptor.dino_tokens_inside
+        cand.dino_part_count = None if cand.descriptor.dino_part_tokens is None else int(cand.descriptor.dino_part_tokens.shape[0])
         cand.fallback_reason = cand.descriptor.fallback_reason
-        cand.pos_sim = max((cosine(cand.descriptor.vector, p) for p in pos_bank), default=0.0)
-        cand.neg_sim = max((cosine(cand.descriptor.vector, n) for n in neg_bank), default=0.0)
+        pos_scores = [descriptor_similarity(cand.descriptor, p, args) for p in pos_bank]
+        neg_scores = [descriptor_similarity(cand.descriptor, n, args) for n in neg_bank]
+        if pos_scores:
+            cand.pos_sim, cand.dino_part_pos_sim = max(pos_scores, key=lambda x: x[0])
+        else:
+            cand.pos_sim, cand.dino_part_pos_sim = 0.0, None
+        if neg_scores:
+            cand.neg_sim, cand.dino_part_neg_sim = max(neg_scores, key=lambda x: x[0])
+        else:
+            cand.neg_sim, cand.dino_part_neg_sim = 0.0, None
         cand.margin = cand.pos_sim - cand.neg_sim
+        cand.raw_margin = cand.margin
+        cand.tracklet_margin = cand.margin
         cand.score = cand.margin + 0.05 * math.log1p(cand.area)
+    apply_tracklet_aggregation(cands, init_area, args)
+    for cand in cands:
+        if cand.descriptor is None:
+            continue
         if cand.pos_sim < args.positive_thr:
             cand.rejected.append("low_positive_similarity")
         if cand.neg_sim > args.negative_thr and cand.margin < args.identity_margin * 2:
             cand.rejected.append("too_close_to_negative")
         if cand.margin < args.identity_margin:
             cand.rejected.append("low_identity_margin")
+
+
+def source_prefix(source: str) -> str:
+    if source.startswith("sam2_auto"):
+        return "sam2_auto"
+    if ":anyfg:" in source:
+        return source.split(":anyfg:", 1)[0]
+    return source.split(":", 1)[0]
+
+
+def tracklet_neighbor_ok(a: Candidate, b: Candidate, init_area: int, args: argparse.Namespace) -> bool:
+    if a.descriptor is None or b.descriptor is None:
+        return False
+    if args.tracklet_aggregate == "future" and b.frame_idx <= a.frame_idx:
+        return False
+    if args.tracklet_aggregate == "local" and abs(b.frame_idx - a.frame_idx) == 0:
+        return False
+    if abs(b.frame_idx - a.frame_idx) > int(args.tracklet_window):
+        return False
+    if source_prefix(a.source) == source_prefix(b.source):
+        return True
+    if a.centroid is None or b.centroid is None:
+        return False
+    max_dist = max(36.0, 3.0 * math.sqrt(max(float(init_area), 1.0)))
+    dx = float(a.centroid[0] - b.centroid[0])
+    dy = float(a.centroid[1] - b.centroid[1])
+    return math.hypot(dx, dy) <= max_dist
+
+
+def apply_tracklet_aggregation(cands: list[Candidate], init_area: int, args: argparse.Namespace) -> None:
+    if args.tracklet_aggregate == "off":
+        return
+    weight = min(max(float(args.tracklet_weight), 0.0), 1.0)
+    for cand in cands:
+        if cand.descriptor is None or any(r in cand.rejected for r in ("area_too_large", "area_too_small", "no_descriptor")):
+            continue
+        neigh = [cand]
+        for other in cands:
+            if other is cand or other.descriptor is None:
+                continue
+            if any(r in other.rejected for r in ("area_too_large", "area_too_small", "no_descriptor")):
+                continue
+            if tracklet_neighbor_ok(cand, other, init_area, args):
+                neigh.append(other)
+        neigh.sort(key=lambda x: (abs(x.frame_idx - cand.frame_idx), -x.raw_margin))
+        if len(neigh) < int(args.tracklet_min_count):
+            cand.tracklet_count = len(neigh)
+            cand.tracklet_margin = cand.raw_margin
+            cand.tracklet_reason = f"insufficient:{len(neigh)}/{args.tracklet_min_count}"
+            continue
+        keep = neigh[: max(int(args.tracklet_min_count), min(len(neigh), int(args.tracklet_window) + 1))]
+        margins = [float(x.raw_margin) for x in keep]
+        # A single high-scoring wrong mask should not dominate.  Use a trimmed
+        # mean when possible, otherwise the ordinary mean.
+        if len(margins) >= 3:
+            ordered = sorted(margins)
+            agg = float(np.mean(ordered[1:]))
+        else:
+            agg = float(np.mean(margins))
+        cand.tracklet_count = len(keep)
+        cand.tracklet_margin = agg
+        cand.tracklet_reason = ",".join(f"{x.frame_idx}:{source_prefix(x.source)}:{x.raw_margin:.3f}" for x in keep[:5])
+        cand.margin = (1.0 - weight) * cand.raw_margin + weight * agg
+        cand.score = cand.margin + 0.05 * math.log1p(cand.area)
 
 
 def confirm_candidate(cand: Candidate, valid: list[Candidate], init_area: int, args: argparse.Namespace) -> tuple[bool, str]:
@@ -1084,6 +1220,7 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
             tiny_min_tokens=args.dino_tiny_min_tokens,
             tiny_crop_min_side=args.dino_tiny_crop_min_side,
             tiny_crop_mult=args.dino_tiny_crop_mult,
+            part_topk=args.dino_part_topk,
         )
     auto_generator = Sam2AutoMaskCandidateGenerator(args) if args.sam2_auto_mask_candidates else None
 

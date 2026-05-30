@@ -34,6 +34,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--dino-weights", type=Path, default=None)
     p.add_argument("--device", default="cuda")
     p.add_argument("--max-side", type=int, default=700)
+    p.add_argument("--part-topk", type=int, default=8)
     return p.parse_args()
 
 
@@ -55,7 +56,7 @@ def main() -> None:
     dino_root = (args.dino_root or ws / "external" / "dinov2").resolve()
     weights = (args.dino_weights or ws / "homework" / "external_checkpoints" / "dinov2" / DINO_SPECS[args.variant]["default_weight_name"]).resolve()
     videos = args.videos or sorted(p.name for p in jpeg_root.iterdir() if p.is_dir())
-    extractor = DinoDescriptorExtractor(args.variant, dino_root, weights, device=args.device, max_side=args.max_side)
+    extractor = DinoDescriptorExtractor(args.variant, dino_root, weights, device=args.device, max_side=args.max_side, part_topk=args.part_topk)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     summary = {"variant": args.variant, "weights": str(weights), "videos": {}}
     for video in videos:
@@ -78,6 +79,7 @@ def main() -> None:
                     "frame": frame.stem,
                     "obj_id": obj_id,
                     "tokens_inside": res.tokens_inside,
+                    "part_count": None if res.part_tokens is None else int(res.part_tokens.shape[0]),
                     "source": res.source,
                     "fallback_reason": res.fallback_reason,
                     "crop_box": list(res.crop_box) if res.crop_box else None,
