@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create M3 comparison sheets for real visual inspection.
 
-Rows per sampled frame: RGB, baseline, M2-light, M11, SAM3 adapter (if present), M3.
+Rows per sampled frame: RGB, baseline, M2-light, M11, SAM3 adapter (if present), TinyCrop, M3.
 The script intentionally uses actual RGB frames and masks, not only mask stats.
 """
 from __future__ import annotations
@@ -32,6 +32,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--m2-light-root", type=Path, default=None)
     p.add_argument("--m11-root", type=Path, default=None)
     p.add_argument("--sam31-root", type=Path, default=None)
+    p.add_argument("--tiny-crop-root", type=Path, default=None)
     p.add_argument("--out-dir", type=Path, required=True)
     p.add_argument("--videos", nargs="*", default=None)
     p.add_argument("--frames-per-video", type=int, default=8)
@@ -193,6 +194,7 @@ def make_video_sheet(args: argparse.Namespace, video: str, video_audit: dict[str
         ("M2-light", args.m2_light_root),
         ("M11", args.m11_root),
         ("SAM3", args.sam31_root),
+        ("TinyCrop", args.tiny_crop_root),
         ("M3", args.m3_root),
     ]
     roots = [(name, root) for name, root in roots if root is None or root.is_dir()]
@@ -264,6 +266,7 @@ def main() -> None:
     if args.m2_light_root is not None: args.m2_light_root = args.m2_light_root.resolve()
     if args.m11_root is not None: args.m11_root = args.m11_root.resolve()
     if args.sam31_root is not None: args.sam31_root = args.sam31_root.resolve()
+    if args.tiny_crop_root is not None: args.tiny_crop_root = args.tiny_crop_root.resolve()
     data = json.loads(args.m3_audit_json.read_text(encoding="utf-8"))
     result_by_video = {item["video"]: item for item in data.get("results", [])}
     videos = args.videos or sorted(result_by_video)

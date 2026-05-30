@@ -90,10 +90,15 @@ This section is mandatory. Every deviation must explain why, risk, and validatio
    - Risk: surgical can still over-suppress baseline frames and cannot recover missed targets.
    - Validation: surgical passed the same strong validator; visual/statistical review showed it is still not strong enough to replace M11/SAM2 final.
 
-6. **Skipped M3R and tiny-crop execution in this goal run.**
-   - Why: V2 requires M3R only after trustworthy accepted anchors. Conservative/balanced accepted anchors are not visually trustworthy; surgical intentionally produces no pseudo-anchors. Tiny crop is now justified but would be a new candidate source needing another full visual/validation loop.
-   - Risk: current branch does not solve tiny target recovery.
-   - Validation: baseline, M11, M2-light, and all M3 zips passed invariants; final selection avoids unvalidated M3R/tiny-crop changes.
+6. **Skipped M3R in this goal run.**
+   - Why: V2 requires M3R only after trustworthy accepted anchors. Conservative/balanced accepted anchors are not visually trustworthy; surgical intentionally produces no pseudo-anchors.
+   - Risk: current branch does not solve cases where all existing candidate sources miss true reappearance.
+   - Validation: baseline, M11, M2-light, and all M3 zips passed invariants; final selection avoids unvalidated M3R changes.
+
+7. **M4 tiny-crop was attempted only as a smoke-tested candidate source, not as a full final submission.**
+   - Why: smoke visual evidence showed a decisive negative case on `r13u5z4y`: crop rerun followed correlated wrong evidence after occlusion rather than recovering identity.
+   - Risk: no full M4 zip means the branch does not claim global improvement; however this avoids wasting a full submission on a mechanism already shown unsafe.
+   - Validation: `--require-tiny-crop` verified exact 3-video frame coverage; tiny-crop audit recorded runtime/VRAM; comparison sheets and audits are committed under `docs/assets/m4_tiny_crop/safe_smoke/`.
 
 
 ## Upstream evidence notes
@@ -124,7 +129,7 @@ Planned/attempted variants:
 | B2 | M3-state balanced | done, not final | more permissive but source-switch risk high |
 | B3 | M3-state aggressive | skipped | balanced already showed excessive source-switch risk |
 | C1 | M3R pseudo-anchor | skipped for now | M3 accepted anchors not trustworthy enough for rerun |
-| D1 | tiny crop candidate | deferred | now clearly justified as next work, but not mixed into current final |
+| D1 | tiny crop candidate | smoke-tested in M4, not final | high-resolution crop source helped locally but failed on post-occlusion identity in `r13u5z4y` |
 
 ## Results
 
@@ -194,6 +199,28 @@ Initial independent code review verdict: **REQUEST CHANGES**. Findings and fixes
 ### Second code-review pass
 
 Second review confirmed the prior HIGH/MEDIUM engineering fixes were in place. It flagged one remaining MEDIUM issue in `surgical`: after a post-gap frame it could reconfirm baseline too quickly. This was fixed by keeping post-gap baseline in `REAPPEARING_CANDIDATE` until `confirm_delay` consecutive non-suspicious frames, and by avoiding identity update before that confirmation. A smoke rerun on `r13u5z4y` passed and showed the variant became stricter, reinforcing the decision not to use M3-state as final.
+
+
+## M4 tiny-crop continuation
+
+After the initial M3 conclusion, the next high-quality step was executed on branch `method/m4-tinycrop-candidate`: a training-free SAM2 tiny-crop candidate source plus required-source validation in M3.
+
+Smoke evidence (`1qlssuz2`, `r13u5z4y`, `lcgc29va`):
+
+- tiny-crop source runtime: 31.815s, CUDA peak allocated/reserved ~= 934.96 / 1146.0 MiB;
+- M3+tiny safe balanced smoke runtime: 58.929s;
+- exact tiny-crop frame coverage verified for all 3 selected videos;
+- source usage: tiny_crop 46 object-frames, baseline 30, empty 25, M2-light 10, M2 3, SAM3 3.
+
+Visual result: mixed and **not final**. `lcgc29va` shows some tighter backpack/person masks, `1qlssuz2` is ambiguous, and `r13u5z4y` remains the key failure: after hand occlusion, crop centering follows correlated wrong evidence/velocity and segments a wrong board/strawberry-adjacent region. Thus crop rerun improves local resolution but does not solve identity.
+
+Artifacts:
+
+- report: `docs/m4_tiny_crop_experiment.md`;
+- sheets: `docs/assets/m4_tiny_crop/safe_smoke/{full,zooms}/`;
+- audits: `docs/assets/m4_tiny_crop/safe_smoke/audits/`.
+
+Conclusion: M4 is a useful diagnostic candidate source but is unsafe as final output without a stronger identity verifier.
 
 ## Final selection
 

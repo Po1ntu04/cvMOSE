@@ -18,6 +18,9 @@ M2_ROOT="${M2_ROOT:-$MOSE_WORKSPACE/homework/pred_sam2_m2_memory_gate}"
 M2_LIGHT_ROOT="${M2_LIGHT_ROOT:-$MOSE_WORKSPACE/homework/pred_sam2_m2_light}"
 M11_ROOT="${M11_ROOT:-$MOSE_WORKSPACE/homework/pred_sam2_m11_cycle}"
 SAM31_ROOT="${SAM31_ROOT:-$MOSE_WORKSPACE/homework/pred_sam31_b101}"
+TINY_CROP_ROOT="${TINY_CROP_ROOT:-$MOSE_WORKSPACE/homework/pred_sam2_tiny_crop_candidate}"
+TINY_CROP_AUDIT_JSON="${TINY_CROP_AUDIT_JSON:-$MOSE_WORKSPACE/homework/logs/tiny_crop_candidate_latest.json}"
+REQUIRE_TINY_CROP="${REQUIRE_TINY_CROP:-0}"
 M2_AUDIT_JSON="${M2_AUDIT_JSON:-$MOSE_WORKSPACE/homework/logs/m2_memory_gate_latest.json}"
 M2_LIGHT_AUDIT_JSON="${M2_LIGHT_AUDIT_JSON:-$MOSE_WORKSPACE/homework/logs/m2_light_latest.json}"
 M11_AUDIT_JSON="${M11_AUDIT_JSON:-$MOSE_WORKSPACE/homework/logs/m11_cycle_gate_latest.json}"
@@ -27,12 +30,16 @@ EXTRA_ARGS="${M3_EXTRA_ARGS:-}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 LOCAL_GIT_SHA="$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || true)"
 LOCAL_GIT_BRANCH="$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+LOCAL_GIT_DIRTY="$(git -C "$REPO_ROOT" status --porcelain=v1 2>/dev/null | wc -l | tr -d ' ')"
+LOCAL_GIT_DIFF_HASH="$( (git -C "$REPO_ROOT" diff --binary; git -C "$REPO_ROOT" ls-files --others --exclude-standard -z | xargs -0 -r -I{} sh -c 'printf "UNTRACKED:%s\n" "$1"; cat "$1"' sh "$REPO_ROOT/{}") 2>/dev/null | sha256sum | awk '{print $1}' || true)"
 SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=2)
 
 REMOTE_ARGS=(
   "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$VARIANT" "$PRED_ROOT" "$SUBMIT_ROOT" "$ZIP_PATH" "$AUDIT_JSON" "$AUDIT_DIR"
   "$BASELINE_ROOT" "$M2_ROOT" "$M2_LIGHT_ROOT" "$M11_ROOT" "$SAM31_ROOT"
-  "$M2_AUDIT_JSON" "$M2_LIGHT_AUDIT_JSON" "$M11_AUDIT_JSON" "${VIDEOS:-__EMPTY__}" "$MAKE_SUBMISSION" "${EXTRA_ARGS:-__EMPTY__}" "$PYTHON_BIN" "${LOCAL_GIT_SHA:-__EMPTY__}" "${LOCAL_GIT_BRANCH:-__EMPTY__}"
+  "$TINY_CROP_ROOT" "$TINY_CROP_AUDIT_JSON" "$REQUIRE_TINY_CROP" "$M2_AUDIT_JSON" "$M2_LIGHT_AUDIT_JSON" "$M11_AUDIT_JSON"
+  "${VIDEOS:-__EMPTY__}" "$MAKE_SUBMISSION" "${EXTRA_ARGS:-__EMPTY__}" "$PYTHON_BIN"
+  "${LOCAL_GIT_SHA:-__EMPTY__}" "${LOCAL_GIT_BRANCH:-__EMPTY__}" "${LOCAL_GIT_DIRTY:-__EMPTY__}" "${LOCAL_GIT_DIFF_HASH:-__EMPTY__}"
 )
 REMOTE_CMD="bash -s --"
 for arg in "${REMOTE_ARGS[@]}"; do
@@ -43,11 +50,13 @@ ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "$REMOTE_CMD" <<'REMOTE'
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 CODE_ROOT="$1"; WORKSPACE="$2"; ENV_NAME="$3"; VARIANT="$4"; PRED_ROOT="$5"; SUBMIT_ROOT="$6"; ZIP_PATH="$7"; AUDIT_JSON="$8"; AUDIT_DIR="$9"
-BASELINE_ROOT="${10}"; M2_ROOT="${11}"; M2_LIGHT_ROOT="${12}"; M11_ROOT="${13}"; SAM31_ROOT="${14}"; M2_AUDIT_JSON="${15}"; M2_LIGHT_AUDIT_JSON="${16}"; M11_AUDIT_JSON="${17}"; VIDEOS="${18}"; MAKE_SUBMISSION="${19}"; EXTRA_ARGS="${20}"; PYTHON_BIN="${21}"; GIT_SHA="${22}"; GIT_BRANCH="${23}"
+BASELINE_ROOT="${10}"; M2_ROOT="${11}"; M2_LIGHT_ROOT="${12}"; M11_ROOT="${13}"; SAM31_ROOT="${14}"; TINY_CROP_ROOT="${15}"; TINY_CROP_AUDIT_JSON="${16}"; REQUIRE_TINY_CROP="${17}"; M2_AUDIT_JSON="${18}"; M2_LIGHT_AUDIT_JSON="${19}"; M11_AUDIT_JSON="${20}"; VIDEOS="${21}"; MAKE_SUBMISSION="${22}"; EXTRA_ARGS="${23}"; PYTHON_BIN="${24}"; GIT_SHA="${25}"; GIT_BRANCH="${26}"; GIT_DIRTY="${27}"; GIT_DIFF_HASH="${28}"
 if [[ "$VIDEOS" == "__EMPTY__" ]]; then VIDEOS=""; fi
 if [[ "$EXTRA_ARGS" == "__EMPTY__" ]]; then EXTRA_ARGS=""; fi
 if [[ "$GIT_SHA" != "__EMPTY__" ]]; then export CVMOSE_GIT_SHA="$GIT_SHA"; fi
 if [[ "$GIT_BRANCH" != "__EMPTY__" ]]; then export CVMOSE_GIT_BRANCH="$GIT_BRANCH"; fi
+if [[ "$GIT_DIRTY" != "__EMPTY__" ]]; then export CVMOSE_GIT_DIRTY="$GIT_DIRTY"; fi
+if [[ "$GIT_DIFF_HASH" != "__EMPTY__" ]]; then export CVMOSE_GIT_DIFF_HASH="$GIT_DIFF_HASH"; fi
 cd "$CODE_ROOT"
 require_under() {
   local path="$1"; local prefix="$2"; local label="$3"
@@ -73,20 +82,50 @@ require_under() {
     esac
   fi
 }
-require_under "$PRED_ROOT" "$WORKSPACE/homework/pred_" "PRED_ROOT"
-require_under "$SUBMIT_ROOT" "$WORKSPACE/homework/submission_" "SUBMIT_ROOT"
+require_prefix_any() {
+  local path="$1" label="$2" canon_path canon_prefix prefix ok=0
+  shift 2
+  canon_path="$(realpath -m -- "$path")"
+  if [[ -z "$canon_path" || "$canon_path" == "/" || "$canon_path" == "$WORKSPACE" || "$canon_path" == "$WORKSPACE/homework" ]]; then
+    echo "Refusing unsafe $label path: $path (canonical: $canon_path)" >&2
+    exit 2
+  fi
+  for prefix in "$@"; do
+    canon_prefix="$(realpath -m -- "$prefix")"
+    if [[ "$canon_path" == "$canon_prefix"* ]]; then ok=1; break; fi
+  done
+  if [[ "$ok" != "1" ]]; then
+    echo "Refusing unsafe $label path: $path (not an allowed M3/M4 output prefix)" >&2
+    exit 2
+  fi
+}
+require_prefix_any "$PRED_ROOT" "PRED_ROOT" \
+  "$WORKSPACE/homework/pred_sam2_m3_state_" \
+  "$WORKSPACE/homework/pred_m3_state_" \
+  "$WORKSPACE/homework/pred_m4_"
+require_prefix_any "$SUBMIT_ROOT" "SUBMIT_ROOT" \
+  "$WORKSPACE/homework/submission_433_m3_state_" \
+  "$WORKSPACE/homework/submission_433_m4_"
 require_under "$ZIP_PATH" "$WORKSPACE/homework/" "ZIP_PATH"
-require_under "$AUDIT_JSON" "$WORKSPACE/homework/logs/" "AUDIT_JSON"
-require_under "$AUDIT_DIR" "$WORKSPACE/homework/logs/" "AUDIT_DIR"
-mkdir -p "$(dirname "$AUDIT_JSON")" "$AUDIT_DIR"
-rm -rf "$PRED_ROOT" "$SUBMIT_ROOT" "$AUDIT_DIR"
-rm -f "$ZIP_PATH" "$AUDIT_JSON"
-mkdir -p "$AUDIT_DIR"
+require_prefix_any "$AUDIT_JSON" "AUDIT_JSON" \
+  "$WORKSPACE/homework/logs/m3_state_" \
+  "$WORKSPACE/homework/logs/m4_"
+require_prefix_any "$AUDIT_DIR" "AUDIT_DIR" \
+  "$WORKSPACE/homework/logs/m3_state_" \
+  "$WORKSPACE/homework/logs/m4_"
 read -r -a VIDEO_ARGS <<< "$VIDEOS"
 read -r -a EXTRA <<< "$EXTRA_ARGS"
 if [[ "$MAKE_SUBMISSION" == "auto" ]]; then
   if (( ${#VIDEO_ARGS[@]} > 0 )); then MAKE_SUBMISSION=0; else MAKE_SUBMISSION=1; fi
 fi
+mkdir -p "$(dirname "$AUDIT_JSON")" "$AUDIT_DIR"
+rm -rf "$PRED_ROOT" "$AUDIT_DIR"
+rm -f "$AUDIT_JSON"
+if [[ "$MAKE_SUBMISSION" == "1" ]]; then
+  rm -rf "$SUBMIT_ROOT"
+  rm -f "$ZIP_PATH"
+fi
+mkdir -p "$AUDIT_DIR"
 RUN_ARGS=(
   --workspace "$WORKSPACE"
   --variant "$VARIANT"
@@ -99,6 +138,16 @@ RUN_ARGS=(
 [[ -d "$M2_LIGHT_ROOT" ]] && RUN_ARGS+=(--m2-light-root "$M2_LIGHT_ROOT") || echo "warn: missing M2_LIGHT_ROOT=$M2_LIGHT_ROOT"
 [[ -d "$M11_ROOT" ]] && RUN_ARGS+=(--m11-root "$M11_ROOT") || echo "warn: missing M11_ROOT=$M11_ROOT"
 [[ -d "$SAM31_ROOT" ]] && RUN_ARGS+=(--sam31-adapter-root "$SAM31_ROOT") || echo "warn: missing SAM31_ROOT=$SAM31_ROOT"
+if [[ "$REQUIRE_TINY_CROP" == "1" ]]; then
+  [[ -d "$TINY_CROP_ROOT" ]] || { echo "error: REQUIRE_TINY_CROP=1 but missing TINY_CROP_ROOT=$TINY_CROP_ROOT" >&2; exit 2; }
+  [[ -f "$TINY_CROP_AUDIT_JSON" ]] || { echo "error: REQUIRE_TINY_CROP=1 but missing TINY_CROP_AUDIT_JSON=$TINY_CROP_AUDIT_JSON" >&2; exit 2; }
+  RUN_ARGS+=(--tiny-crop-root "$TINY_CROP_ROOT" --tiny-crop-audit-json "$TINY_CROP_AUDIT_JSON" --require-tiny-crop)
+elif [[ -d "$TINY_CROP_ROOT" ]]; then
+  RUN_ARGS+=(--tiny-crop-root "$TINY_CROP_ROOT")
+  [[ -f "$TINY_CROP_AUDIT_JSON" ]] && RUN_ARGS+=(--tiny-crop-audit-json "$TINY_CROP_AUDIT_JSON")
+else
+  echo "warn: missing TINY_CROP_ROOT=$TINY_CROP_ROOT"
+fi
 [[ -f "$M2_AUDIT_JSON" ]] && RUN_ARGS+=(--m2-audit-json "$M2_AUDIT_JSON") || echo "warn: missing M2_AUDIT_JSON=$M2_AUDIT_JSON"
 [[ -f "$M2_LIGHT_AUDIT_JSON" ]] && RUN_ARGS+=(--m2-light-audit-json "$M2_LIGHT_AUDIT_JSON") || echo "warn: missing M2_LIGHT_AUDIT_JSON=$M2_LIGHT_AUDIT_JSON"
 [[ -f "$M11_AUDIT_JSON" ]] && RUN_ARGS+=(--m11-audit-json "$M11_AUDIT_JSON") || echo "warn: missing M11_AUDIT_JSON=$M11_AUDIT_JSON"

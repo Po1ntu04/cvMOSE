@@ -22,12 +22,12 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
-SOURCE_ORDER = ["baseline", "m2", "m2_light", "m11", "sam31"]
+SOURCE_ORDER = ["baseline", "m2", "m2_light", "m11", "sam31", "tiny_crop"]
 PREFERRED_SOURCE_ORDER = {
-    "conservative": ["baseline", "m2_light", "m2", "m11", "sam31"],
-    "balanced": ["baseline", "m2_light", "m2", "m11", "sam31"],
-    "aggressive": ["baseline", "m2", "m2_light", "sam31", "m11"],
-    "surgical": ["baseline", "m11", "m2_light", "m2", "sam31"],
+    "conservative": ["baseline", "tiny_crop", "m2_light", "m2", "m11", "sam31"],
+    "balanced": ["baseline", "tiny_crop", "m2_light", "m2", "m11", "sam31"],
+    "aggressive": ["baseline", "m2", "m2_light", "tiny_crop", "sam31", "m11"],
+    "surgical": ["baseline", "m11", "tiny_crop", "m2_light", "m2", "sam31"],
 }
 STATE_CONFIRMED = "CONFIRMED_VISIBLE"
 STATE_UNCERTAIN = "UNCERTAIN"
@@ -48,6 +48,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--m2-light-root", type=Path, default=None)
     p.add_argument("--m11-root", type=Path, default=None)
     p.add_argument("--sam31-adapter-root", type=Path, default=None)
+    p.add_argument("--tiny-crop-root", type=Path, default=None)
+    p.add_argument("--tiny-crop-audit-json", type=Path, default=None)
+    p.add_argument("--require-tiny-crop", action="store_true", help="Fail unless tiny-crop source has exact selected video/frame coverage and matching audit")
     p.add_argument("--m2-audit-json", type=Path, default=None)
     p.add_argument("--m2-light-audit-json", type=Path, default=None)
     p.add_argument("--m11-audit-json", type=Path, default=None)
@@ -94,7 +97,7 @@ def complete_args(args: argparse.Namespace) -> argparse.Namespace:
     if args.zip_path is None:
         args.zip_path = ws / "homework" / f"submission_mosev2_m3_state_{args.variant}.zip"
     args.zip_path = args.zip_path.resolve()
-    for attr in ["m2_root", "m2_light_root", "m11_root", "sam31_adapter_root", "m2_audit_json", "m2_light_audit_json", "m11_audit_json"]:
+    for attr in ["m2_root", "m2_light_root", "m11_root", "sam31_adapter_root", "tiny_crop_root", "tiny_crop_audit_json", "m2_audit_json", "m2_light_audit_json", "m11_audit_json"]:
         value = getattr(args, attr)
         if value is not None:
             setattr(args, attr, value.resolve())
@@ -285,6 +288,7 @@ class Candidate:
                 "m2_light": safe_round(self.m2_light_iou),
                 "m11": safe_round(self.m11_iou),
                 "sam31": safe_round(self.sam31_iou),
+                "tiny_crop": safe_round(self.tiny_crop_iou),
             },
             "flags": self.flags,
             "candidate_class": self.candidate_class,
@@ -375,6 +379,7 @@ def source_roots_from_args(args: argparse.Namespace) -> dict[str, Path]:
         "m2_light": args.m2_light_root,
         "m11": args.m11_root,
         "sam31": args.sam31_adapter_root,
+        "tiny_crop": args.tiny_crop_root,
     }
     for name, path in optional.items():
         if path is not None and path.is_dir():
@@ -386,6 +391,60 @@ def read_json(path: Path | None) -> Any:
     if path is None or not path.is_file():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def validate_source_frame_coverage(source: str, root: Path, jpeg_root: Path, videos: list[str]) -> dict[str, Any]:
+    """Validate that a candidate source has exactly the selected videos/frames.
+
+    This is opt-in because many sources are optional historical artifacts.  M4
+    uses it to avoid silently treating missing tiny-crop frames as empty masks.
+    """
+    missing_videos: list[str] = []
+    mismatched: list[dict[str, Any]] = []
+    for video in videos:
+        expected = [f"{p.stem}.png" for p in list_frames(jpeg_root / video)]
+        vdir = root / video
+        if not vdir.is_dir():
+            missing_videos.append(video)
+            continue
+        actual = sorted(p.name for p in vdir.glob("*.png"))
+        if actual != expected:
+            mismatched.append({
+                "video": video,
+                "expected_count": len(expected),
+                "actual_count": len(actual),
+                "missing_first": sorted(set(expected) - set(actual))[:8],
+                "extra_first": sorted(set(actual) - set(expected))[:8],
+            })
+    if missing_videos or mismatched:
+        raise RuntimeError(
+            f"{source} source coverage mismatch: missing_videos={missing_videos[:8]} mismatched={mismatched[:3]}"
+        )
+    return {"source": source, "root": str(root), "videos": len(videos), "status": "ok"}
+
+
+def validate_tiny_crop_audit(path: Path | None, videos: list[str], tiny_crop_root: Path) -> dict[str, Any]:
+    data = read_json(path)
+    if not isinstance(data, dict):
+        raise RuntimeError(f"missing or invalid tiny-crop audit JSON: {path}")
+    if data.get("method") != "m4_tiny_crop_candidate_source":
+        raise RuntimeError(f"unexpected tiny-crop audit method in {path}: {data.get('method')}")
+    audit_root = data.get("outputs", {}).get("out_pred_root") if isinstance(data.get("outputs"), dict) else None
+    if audit_root is not None and Path(str(audit_root)).resolve() != tiny_crop_root.resolve():
+        raise RuntimeError(f"tiny-crop audit root mismatch: audit={audit_root} current={tiny_crop_root}")
+    result_videos = {item.get("video") for item in data.get("results", []) if isinstance(item, dict)}
+    missing = sorted(set(videos) - result_videos)
+    if missing:
+        raise RuntimeError(f"tiny-crop audit does not cover selected videos: {missing[:8]}")
+    return {
+        "path": str(path),
+        "method": data.get("method"),
+        "config": data.get("config", {}),
+        "summary": data.get("summary", {}),
+        "runtime": data.get("runtime", {}),
+        "out_pred_root": audit_root,
+        "videos_checked": len(videos),
+    }
 
 
 def load_m2_state_index(path: Path | None) -> dict[tuple[str, int, int], dict[str, Any]]:
@@ -513,6 +572,8 @@ def flag_candidate(
         flags.append("closer_to_other_obj_identity")
     if cand.agreement_count <= 1 and cand.source != "baseline":
         flags.append("single_source_candidate")
+        if cand.source == "tiny_crop":
+            flags.append("tiny_crop_single_source")
     cur_m2 = m2_state.get((video, state.obj_id, frame_idx), {})
     cur_light = m2_light_state.get((video, state.obj_id, frame_idx), {})
     if cand.source == "m2" and cur_m2.get("state") == "likely_absent":
@@ -615,6 +676,12 @@ def classify_and_select(
     def can_accept_visible(c: Candidate) -> bool:
         if is_hard_reject(c):
             return False
+        # A crop rerun is a useful high-resolution candidate, not independent
+        # identity evidence.  If no other source overlaps it, accepting it as a
+        # confirmed anchor is exactly how post-occlusion same-class distractors
+        # enter the state machine.
+        if c.source == "tiny_crop" and c.agreement_count < 2:
+            return False
         if args.variant == "conservative":
             # Conservative mode treats masked RGB appearance as necessary but
             # not sufficient evidence.  A single-source high-color match after
@@ -635,6 +702,8 @@ def classify_and_select(
 
     def can_output_only(c: Candidate) -> bool:
         if is_hard_reject(c):
+            return False
+        if c.source == "tiny_crop" and post_gap and c.agreement_count < 2:
             return False
         if args.variant == "conservative" and post_gap and c.source != "baseline" and c.agreement_count < 2:
             return False
@@ -1149,6 +1218,15 @@ def main() -> None:
     if args.audit_dir is not None:
         args.audit_dir.mkdir(parents=True, exist_ok=True)
     videos = args.videos or sorted(p.name for p in args.jpeg_root.iterdir() if p.is_dir())
+    tiny_crop_validation = None
+    tiny_crop_audit_summary = None
+    if args.require_tiny_crop:
+        if "tiny_crop" not in source_roots:
+            raise FileNotFoundError(f"--require-tiny-crop set but tiny-crop-root is missing: {args.tiny_crop_root}")
+        tiny_crop_validation = validate_source_frame_coverage("tiny_crop", source_roots["tiny_crop"], args.jpeg_root, videos)
+        tiny_crop_audit_summary = validate_tiny_crop_audit(args.tiny_crop_audit_json, videos, source_roots["tiny_crop"])
+    elif "tiny_crop" in source_roots and args.tiny_crop_audit_json is not None and args.tiny_crop_audit_json.is_file():
+        tiny_crop_audit_summary = {"path": str(args.tiny_crop_audit_json), "present": True}
     m2_state = load_m2_state_index(args.m2_audit_json)
     m2_light_state = load_m2_state_index(args.m2_light_audit_json)
     m11_suppressed = load_m11_suppressed_index(args.m11_audit_json)
@@ -1196,7 +1274,12 @@ def main() -> None:
                 "m2": str(args.m2_audit_json) if args.m2_audit_json else None,
                 "m2_light": str(args.m2_light_audit_json) if args.m2_light_audit_json else None,
                 "m11": str(args.m11_audit_json) if args.m11_audit_json else None,
+                "tiny_crop": str(args.tiny_crop_audit_json) if args.tiny_crop_audit_json else None,
             },
+            "tiny_crop_validation": tiny_crop_validation,
+            "tiny_crop_audit_summary": tiny_crop_audit_summary,
+            "git_dirty": os.environ.get("CVMOSE_GIT_DIRTY"),
+            "git_diff_hash": os.environ.get("CVMOSE_GIT_DIFF_HASH"),
         },
         "config": {
             "variant": args.variant,
