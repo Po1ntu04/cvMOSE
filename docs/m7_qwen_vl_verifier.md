@@ -269,3 +269,28 @@ Interpretation:
 Visual sheet:
 
 - `docs/assets/m7_qwen_vl/q0_real_v2_compare/q0sizv6m_m7_qwen_compare.jpg`
+
+## Real API update: merged key-video verifier and fusion
+
+I continued real `qwen3.5-plus` usage as an architectural verifier, not a mask source.  The current real merged judgment file contains 24 records across `1qlssuz2`, `q0sizv6m`, `msinig6m`, and `r13u5z4y` (`docs/m7_candidate_judge_real_merged_summary.md`).
+
+Key outcome:
+
+- `q0sizv6m`, `msinig6m`, `r13u5z4y`: Qwen was useful as a conservative veto/uncertainty signal only.  Strict `veto_only + require_tracklet` on b101 accepted `0` anchors and changed `0` frames over the four key videos, so it is safe but score-neutral.
+- `1qlssuz2`: Qwen support agreed with the target car on clear frames; b101 `support_and_veto` accepted 2 anchors and changed 33 frames in a bounded repropagation window.  Visual review shows these changes stay on the car and are low-risk small refinements.
+- Tracklet judge real calls produced no usable positive tracklet records under the current API latency/failure profile, so final promotion still relies on M5R descriptor/reprop evidence plus single-frame Qwen support, not on Qwen-only tracklet confirmation.
+
+Fusion outputs generated and validated:
+
+| candidate | zip | policy | validation | recommendation |
+| --- | --- | --- | --- | --- |
+| M7 safe fusion | `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m7_qwen_safe_fusion.zip` | M11 default, no positive replacement | pass; 433 dirs, 66526 PNGs, 418 provided unchanged | M11-equivalent safety baseline |
+| M7 balanced fusion | `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m7_qwen_balanced_fusion.zip` | M11 default + `1qlssuz2` Qwen-support replacement | pass; 433 dirs, 66526 PNGs, 418 provided unchanged | low-risk probe after M11 |
+
+Detailed fusion report: `docs/m7_qwen_fusion_report.md`.
+
+### Focused tiny/semantic verifier pass
+
+A second real Qwen pass over `4vznweiu/lcgc29va/8jsm23a7/2smf7uq9` produced 16 candidate judgments (`docs/m7_candidate_judge_real_tiny_semantic_summary.md`).  Qwen recognized several semantic/tiny targets, but M5R accepted no anchors for `4vznweiu` or `lcgc29va`; it accepted one anchor for `8jsm23a7` and changed 19 frames.  Visual review did not show a clear improvement on this stable-guard video, so it was intentionally **not** added to balanced fusion.
+
+This pass confirms M7's current role: semantic verifier/support, not a replacement for missing high-recall retrieval.
