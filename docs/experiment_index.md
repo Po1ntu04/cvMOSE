@@ -27,6 +27,7 @@ Candidate zips were either left on b101 or not generated when smoke evidence was
 | M3 state selector | Candidate table over baseline/M2/M2-light/M11/SAM3 with explicit presence/identity state and negative banks. | `tools/apply_m3_state_select.py`, `scripts/run_b101_m3_state.sh`, `tools/validate_mose_submission.py`, `tools/make_m3_compare_sheets.py`, `docs/m3_experiment_report.md`, `docs/assets/m3_state/` | Most auditable framework: decisions are visible per source/object/frame; validates 418 provided outputs and 15 predicted videos. | Conservative/balanced import too many weak alternatives or output too many empties; surgical is safer but cannot recover targets. Not final. |
 | M4 tiny crop | Rerun frozen SAM2 on per-object crop videos for small targets; use as M3 candidate source only. | `tools/infer_mosev2_sam2_tiny_crop.py`, `scripts/run_b101_tiny_crop.sh`, `scripts/run_b101_m4_tiny_state.sh`, `docs/m4_tiny_crop_experiment.md`, `docs/assets/m4_tiny_crop/safe_smoke/` | Helps diagnose feature-resolution limits and can tighten small backpack/person masks. | Decisive failure on `r13u5z4y`: crop improves resolution but not identity; after occlusion it follows correlated wrong evidence. Not final. |
 | M5R/RAR scaffold | Reappearance-aware SAM2 controller: RCMS-lite pre-disappearance reservoir, stable/ambiguous/recovery state machine, delayed main-memory commit. | `src/cvmose/reanchor.py`, `tools/infer_mosev2_sam2_rar.py`, `scripts/run_b101_rar.sh`, `docs/m5r_rar_plan.md`, `docs/m5r_rar_smoke.md`, `docs/m5r_rar_review_and_comparison.md`, `docs/assets/m5r_rar/key_compare/` | Cleanest instrumentation for state/anchor/memory governance; review fixes made audit and launcher safer. | Phase A/B does not recover identity; visual comparison rejects it as final and points to retrieval anchors as mandatory. |
+| M5R-C retrieval re-anchor | High-recall candidate pool + SAM2 image/RGB object descriptors + hard negative margin + verified `add_new_mask` repropagation. | `tools/infer_mosev2_sam2_reanchor.py`, `scripts/run_b101_m5r_reanchor.sh`, `scripts/make_m5r_reanchor_compare.py`, `docs/m5r_reanchor_experiment.md`, `docs/assets/m5r_reanchor/key_compare/` | First implementation that truly re-drives SAM2 from later candidate anchors; audits expose candidate/positive/negative decisions. | Current descriptors/proposals are not reliable enough in same-class reappearance; key visual smoke rejects it as final. |
 
 ## Next primary direction
 
@@ -59,6 +60,7 @@ cvMOSE/
 │   ├── m5r_rar_plan.md                      # accepted RAR mainline and ablation protocol
 │   ├── m5r_rar_smoke.md                     # RAR b101 subset/full-15 smoke evidence
 │   ├── m5r_rar_review_and_comparison.md     # RAR code review + real visual comparison verdict
+│   ├── m5r_reanchor_experiment.md           # M5R-C retrieval-anchor implementation and rejection verdict
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record
@@ -81,9 +83,10 @@ cvMOSE/
 │       │   ├── full/                        # 3-video M4 full-frame sheets
 │       │   ├── zooms/                       # 3-video M4 zoom sheets
 │       │   └── sheet_index.json
-│       └── m5r_rar/
-│           ├── smoke_compare/{full,zoom}/   # 2-video RAR smoke sheets
-│           └── key_compare/{full,zoom}/     # 8 key-video RAR visual comparison sheets
+│       ├── m5r_rar/
+│       │   ├── smoke_compare/{full,zoom}/   # 2-video RAR smoke sheets
+│       │   └── key_compare/{full,zoom}/     # 8 key-video RAR visual comparison sheets
+│       └── m5r_reanchor/key_compare/        # 8 key-video M5R-C visual comparison sheets
 ├── scripts/
 │   ├── sync_code_b101.sh                    # code-only sync to b101
 │   ├── run_b101_single_sam2.sh              # baseline single-run launcher
@@ -93,12 +96,15 @@ cvMOSE/
 │   ├── run_b101_m3_state.sh                 # M3 selector launcher
 │   ├── run_b101_tiny_crop.sh                # M4 candidate-source launcher, no submission
 │   ├── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
-│   └── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
+│   ├── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
+│   ├── run_b101_m5r_reanchor.sh             # M5R-C candidate retrieval re-anchor launcher
+│   └── make_m5r_reanchor_compare.py         # M5R-C visual sheet generator
 ├── tools/
 │   ├── infer_mosev2_sam2.py                 # baseline SAM2 inference
 │   ├── infer_mosev2_sam2_m2_memory_gate.py  # M2 memory-write gate
 │   ├── infer_mosev2_sam2_tiny_crop.py       # M4 tiny-crop candidate generator
 │   ├── infer_mosev2_sam2_rar.py             # M5R/RAR SAM2 entrypoint
+│   ├── infer_mosev2_sam2_reanchor.py        # M5R-C candidate retrieval + add_new_mask repropagation
 │   ├── infer_mosev2_sam31.py                # SAM3.1 adapter route
 │   ├── infer_mosev2_sam31_public_boxes.py   # SAM3.1 public/simple control route
 │   ├── sam31_gt_mask_adapter.py             # GT-mask adapter helpers
