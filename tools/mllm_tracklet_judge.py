@@ -18,9 +18,11 @@ if str(SRC_ROOT) not in sys.path:
 from cvmose.mllm_panels import homework_roots, list_frames, load_label, pred_label_path, render_tracklet_judge_panel, write_sheet_index  # noqa: E402
 from cvmose.qwen_vl_client import DEFAULT_MODEL, QwenVLClient  # noqa: E402
 
-SYSTEM_PROMPT = """你是视频目标分割中的多帧一致性验证器。你需要判断候选在连续几帧中是否保持为同一个物理对象，并且是否与首帧 reference target 一致。你不能输出 mask，只能判断是否允许作为 pseudo-anchor。只输出 JSON。"""
+SYSTEM_PROMPT = """你是视频目标分割中的多帧一致性验证器。你需要判断候选在连续几帧中是否保持为同一个物理对象，并且是否与首帧 reference target 一致。你不能输出 mask，只能判断是否允许作为 pseudo-anchor。只输出 JSON。
 
-USER_TEMPLATE = """给你 REF 和候选在连续 2-3 帧中的 crop/overlay。请判断：
+重要视觉约定：所有半透明颜色、绿色/红色 overlay、黄色/蓝色框、候选字母和文字标签都是人工标注，不是物体真实颜色/纹理/文字。判断身份时必须优先看 raw crop / raw context 的真实外观；overlay 只表示 mask 覆盖区域，不能把 overlay 颜色当作目标颜色。"""
+
+USER_TEMPLATE = """给你 REF 和候选在连续 2-3 帧中的 crop/overlay。不要把 overlay 颜色当作目标真实颜色；真实外观只来自 raw crop。请判断：
 1. 这些候选是否是同一个物体连续出现？
 2. 它们是否与 REF 是同一物理实例？
 3. 是否存在切换到同类干扰物、背景、复合区域的风险？

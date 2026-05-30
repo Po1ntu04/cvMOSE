@@ -294,3 +294,19 @@ Detailed fusion report: `docs/m7_qwen_fusion_report.md`.
 A second real Qwen pass over `4vznweiu/lcgc29va/8jsm23a7/2smf7uq9` produced 16 candidate judgments (`docs/m7_candidate_judge_real_tiny_semantic_summary.md`).  Qwen recognized several semantic/tiny targets, but M5R accepted no anchors for `4vznweiu` or `lcgc29va`; it accepted one anchor for `8jsm23a7` and changed 19 frames.  Visual review did not show a clear improvement on this stable-guard video, so it was intentionally **not** added to balanced fusion.
 
 This pass confirms M7's current role: semantic verifier/support, not a replacement for missing high-recall retrieval.
+
+## Real API update: outline-panel verifier fix
+
+Subsequent visual review found that filled green/red overlays could be misread by Qwen as real object appearance.  The panel renderer now uses raw crops plus thin artificial outlines, and all MLLM prompts explicitly state that overlay colors, boxes, letters, and text are artificial.
+
+Real outline-panel evidence:
+
+- `4vznweiu` frame 16: Qwen changed from unsafe support of a wrong same-class die to `uncertain` + veto.
+- `lcgc29va` frames 8-9: Qwen supported `rar_state` only where M11 was empty; a frame-3 non-empty replacement was rejected by the new area-ratio guard.
+
+Validated follow-up zips:
+
+- `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m7_qwen_source_select_outline_guarded_v2.zip`
+- `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m7_qwen_balanced_plus_outline.zip`
+
+Both pass `tools/validate_mose_submission.py` with 433 video dirs, 66526 PNGs, and 418 provided outputs unchanged.  See `docs/m7_overlay_source_select_report.md` for the focused analysis.

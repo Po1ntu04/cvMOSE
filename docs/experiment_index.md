@@ -179,3 +179,8 @@ cvMOSE/
 - Best training-free probe: `submission_mosev2_m6_balanced.zip`; it keeps M11 by default and only accepts DINO-reanchor on `1qlssuz2`/`2smf7uq9`.
 - Aggressive/rule-dependent probe: `submission_mosev2_m6_aggressive.zip` or official MOSEv2 submission-checkpoint zips if public MOSEv2-finetuned resources are allowed.
 - Next experiment should still avoid raw threshold sweep; the real missing capability is higher-recall global later-frame proposal generation plus DINO/SAM identity verification, MLLM semantic veto/support, and delayed prompt injection.
+
+
+## M7 overlay/source-select follow-up
+
+- `docs/m7_overlay_source_select_report.md` records the filled-overlay hallucination bug, the outline-panel fix, guarded source-select ablation, validated zips, and visual evidence paths.

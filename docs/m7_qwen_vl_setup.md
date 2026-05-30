@@ -5,7 +5,7 @@
 - fallback models: `qwen-vl-max, qwen2.5-vl-72b-instruct, qwen-vl-plus`
 - API key present: `True`
 - dry_run: `False`
-- elapsed_sec: `7.1`
+- elapsed_sec: `0.0`
 - success: `True`
 - model_used: `qwen3.5-plus`
 - cache_key: `28efe0c79ca7e010d1c1cff348432b84e4ce67b2409e7da5d65c6da3828f29c2`
@@ -17,7 +17,8 @@
   "image_contains": "text 'Qwen-VL JSON smoke test', a yellow rectangular border, and a green circle inside the rectangle",
   "status": "ok",
   "model_used": "qwen3.5-plus",
-  "mllm_cache_key": "28efe0c79ca7e010d1c1cff348432b84e4ce67b2409e7da5d65c6da3828f29c2"
+  "mllm_cache_key": "28efe0c79ca7e010d1c1cff348432b84e4ce67b2409e7da5d65c6da3828f29c2",
+  "cache_hit": true
 }
 ```
 

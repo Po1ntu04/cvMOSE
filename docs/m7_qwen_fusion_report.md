@@ -90,3 +90,18 @@ Additional visual sheets:
 - `docs/assets/m7_qwen_vl/tiny_semantic_compare/4vznweiu_m7_qwen_compare.jpg`
 - `docs/assets/m7_qwen_vl/tiny_semantic_compare/lcgc29va_m7_qwen_compare.jpg`
 - `docs/assets/m7_qwen_vl/tiny_semantic_compare/8jsm23a7_m7_qwen_compare.jpg`
+
+## Overlay-panel fix and guarded source-select update
+
+A follow-up review found that filled green/red MLLM overlays leaked artificial annotation color into Qwen identity reasoning.  I changed MLLM panels to raw-crop + thin artificial outline and added explicit prompt warnings.  This fixed the clearest bad support case: `4vznweiu` frame 16 changed from supporting a wrong same-class `T/O` die to `uncertain` + veto.
+
+The same pass introduced `tools/apply_m7_qwen_source_select.py`, an output-level ablation that can only copy an existing source mask when Qwen explicitly supports it.  A conservative non-empty area-ratio guard prevents replacing a valid non-empty M11 mask with a substantially smaller/larger source.
+
+Validated new probes:
+
+| candidate | zip | policy | validation | recommendation |
+| --- | --- | --- | --- | --- |
+| M7 source-select guarded | `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m7_qwen_source_select_outline_guarded_v2.zip` | M11 + `lcgc29va` frames 8-9 from `rar_state` only | pass; 418 provided unchanged | diagnostic/low-risk, very small expected effect |
+| M7 balanced-plus outline | `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m7_qwen_balanced_plus_outline.zip` | M11 + prior `1qlssuz2` Qwen-supported reprop + guarded `lcgc29va` source-select | pass; 418 provided unchanged | best current M7 probe after M11/M6 balanced |
+
+Detailed report: `docs/m7_overlay_source_select_report.md`.

@@ -1,0 +1,62 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/m11",
+    "qwen_guarded": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_qwen_source_select_outline_guarded_v2",
+    "rar_state": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/rar_state",
+    "official_large": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_official_submission_large_15only"
+  },
+  "sheets": [
+    {
+      "video": "lcgc29va",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        4,
+        11,
+        15,
+        20,
+        24,
+        30,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "qwen_guarded",
+        "rar_state",
+        "official_large",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m7_qwen_vl/source_select_outline_guarded/lcgc29va_m6_compare.jpg"
+    },
+    {
+      "video": "4vznweiu",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        5,
+        9,
+        16,
+        20,
+        25,
+        29,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "qwen_guarded",
+        "rar_state",
+        "official_large",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m7_qwen_vl/source_select_outline_guarded/4vznweiu_m6_compare.jpg"
+    }
+  ]
+}

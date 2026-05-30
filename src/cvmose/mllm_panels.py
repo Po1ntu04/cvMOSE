@@ -175,6 +175,38 @@ def overlay_mask(img: Image.Image, mask: np.ndarray | None, color: tuple[int, in
     return out.convert("RGB")
 
 
+def outline_mask(img: Image.Image, mask: np.ndarray | None, color: tuple[int, int, int] = BLUE, width: int = 3) -> Image.Image:
+    """Draw only an artificial contour around a mask, avoiding filled colors.
+
+    Filled green overlays caused MLLMs to confuse annotation color with object
+    appearance.  A thin contour preserves localization while keeping the raw
+    object texture visible.
+    """
+    out = img.convert("RGB")
+    if mask is None:
+        return out
+    m = np.asarray(mask).astype(bool)
+    if m.shape[:2] != (out.height, out.width):
+        m_img = Image.fromarray((m.astype(np.uint8) * 255)).resize(out.size, Image.Resampling.NEAREST)
+        m = np.asarray(m_img) > 0
+    if not m.any():
+        return out
+    # Boundary = mask pixels that have at least one 4-neighbor outside mask.
+    padded = np.pad(m, 1, mode="constant", constant_values=False)
+    center = padded[1:-1, 1:-1]
+    eroded = center & padded[:-2, 1:-1] & padded[2:, 1:-1] & padded[1:-1, :-2] & padded[1:-1, 2:]
+    edge = center & ~eroded
+    if width > 1:
+        grown = edge.copy()
+        for _ in range(width - 1):
+            pp = np.pad(grown, 1, mode="constant", constant_values=False)
+            grown = pp[1:-1, 1:-1] | pp[:-2, 1:-1] | pp[2:, 1:-1] | pp[1:-1, :-2] | pp[1:-1, 2:]
+        edge = grown
+    arr = np.asarray(out).copy()
+    arr[edge] = np.asarray(color, dtype=np.uint8)
+    return Image.fromarray(arr, "RGB")
+
+
 def draw_bbox(img: Image.Image, box: list[int] | None, color: tuple[int, int, int] = YELLOW, width: int = 4, label: str | None = None) -> Image.Image:
     out = img.copy()
     d = ImageDraw.Draw(out)
@@ -261,15 +293,15 @@ def render_target_profile_panel(
     min_side = 96 if metrics["is_tiny_by_area"] else 64
     crop_box = expand_box(box, ann.shape, pad=0.75, square=True, min_side=min_side)
     full_box = draw_bbox(rgb, box, YELLOW, width=5, label=f"video={video} obj={obj_id} frame0")
-    full_overlay = overlay_mask(rgb, mask, GREEN, alpha=0.45)
-    full_overlay = draw_bbox(full_overlay, box, YELLOW, width=4, label="GT mask overlay")
+    full_overlay = outline_mask(rgb, mask, BLUE, width=3)
+    full_overlay = draw_bbox(full_overlay, box, YELLOW, width=4, label="GT mask outline")
     crop_raw = crop_pil(rgb, crop_box)
-    crop_overlay = overlay_mask(crop_pil(rgb, crop_box), crop_mask(mask, crop_box), GREEN, alpha=0.55)
+    crop_overlay = outline_mask(crop_pil(rgb, crop_box), crop_mask(mask, crop_box), BLUE, width=3)
     panels = [
         add_caption(full_box, "frame0 RGB + target bbox"),
-        add_caption(full_overlay, "frame0 GT mask overlay (green)"),
+        add_caption(full_overlay, "frame0 GT mask OUTLINE (artificial; ignore color)"),
         add_caption(crop_raw, "target crop raw"),
-        add_caption(crop_overlay, "target crop + mask overlay"),
+        add_caption(crop_overlay, "target crop + ARTIFICIAL mask outline"),
     ]
     if metrics["is_tiny_by_area"]:
         z = int(zoom_factor or 4)
@@ -309,7 +341,11 @@ def render_candidate_judge_panel(
     ref_box = expand_box(bbox_from_mask(ref_mask), ann.shape, pad=0.75, square=True, min_side=96)
     cur_rgb = load_rgb(frame_path_by_idx(frames, frame_idx))
     panels: list[Image.Image] = []
-    panels.append(add_caption(overlay_mask(crop_pil(ref_rgb, ref_box), crop_mask(ref_mask, ref_box), GREEN), "REF: first-frame target instance"))
+    ref_raw = crop_pil(ref_rgb, ref_box)
+    ref_marked = outline_mask(ref_raw, crop_mask(ref_mask, ref_box), BLUE, width=3)
+    ref_pair = Image.new("RGB", (ref_raw.width + ref_marked.width, max(ref_raw.height, ref_marked.height)), WHITE)
+    ref_pair.paste(ref_raw, (0, 0)); ref_pair.paste(ref_marked, (ref_raw.width, 0))
+    panels.append(add_caption(ref_pair, "REF raw | ARTIFICIAL outline; ignore outline color"))
     if pre_gap_frame_idx is not None and 0 <= pre_gap_frame_idx < len(frames):
         pre_rgb = load_rgb(frames[pre_gap_frame_idx])
         panels.append(add_caption(pre_rgb.resize((min(520, pre_rgb.width), int(pre_rgb.height * min(520, pre_rgb.width) / pre_rgb.width)), Image.Resampling.LANCZOS), f"PRE-GAP context frame {pre_gap_frame_idx}"))
@@ -328,10 +364,10 @@ def render_candidate_judge_panel(
         box = cand.bbox or bbox_from_mask(cand.mask)
         crop_box = expand_box(box, cand.mask.shape, pad=0.80, square=True, min_side=112)
         raw = crop_pil(cur_rgb, crop_box)
-        over = overlay_mask(raw, crop_mask(cand.mask, crop_box), GREEN, alpha=0.55)
+        over = outline_mask(raw, crop_mask(cand.mask, crop_box), BLUE, width=3)
         pair = Image.new("RGB", (raw.width + over.width, max(raw.height, over.height)), WHITE)
         pair.paste(raw, (0, 0)); pair.paste(over, (raw.width, 0))
-        panels.append(add_caption(pair, f"Candidate {cand.candidate_id}: {cand.source} raw | overlay"))
+        panels.append(add_caption(pair, f"Candidate {cand.candidate_id}: {cand.source} raw | ARTIFICIAL outline"))
     panels.append(add_caption(Image.new("RGB", (520, 360), (245, 245, 245)), "EMPTY / TARGET ABSENT OPTION"))
     sheet = grid(panels, cols=2, cell=(660, 540))
     out = Path(out_path)
@@ -364,7 +400,7 @@ def render_tracklet_judge_panel(
     ref_mask = ann == int(obj_id)
     ref_box = expand_box(bbox_from_mask(ref_mask), ann.shape, pad=0.75, square=True, min_side=96)
     panels: list[Image.Image] = [
-        add_caption(overlay_mask(crop_pil(ref_rgb, ref_box), crop_mask(ref_mask, ref_box), GREEN), "REF: first-frame target")
+        add_caption(outline_mask(crop_pil(ref_rgb, ref_box), crop_mask(ref_mask, ref_box), BLUE, width=3), "REF raw+ARTIFICIAL outline; ignore outline color")
     ]
     frame_records: list[dict[str, Any]] = []
     for idx in sorted(masks_by_frame)[:3]:
@@ -375,10 +411,10 @@ def render_tracklet_judge_panel(
         box = bbox_from_mask(mask)
         crop_box = expand_box(box, mask.shape, pad=0.80, square=True, min_side=112)
         raw = crop_pil(rgb, crop_box)
-        over = overlay_mask(raw, crop_mask(mask, crop_box), GREEN, alpha=0.55)
+        over = outline_mask(raw, crop_mask(mask, crop_box), BLUE, width=3)
         pair = Image.new("RGB", (raw.width + over.width, max(raw.height, over.height)), WHITE)
         pair.paste(raw, (0, 0)); pair.paste(over, (raw.width, 0))
-        panels.append(add_caption(pair, f"{candidate_source} frame {idx}: raw | overlay"))
+        panels.append(add_caption(pair, f"{candidate_source} frame {idx}: raw | ARTIFICIAL outline"))
         frame_records.append({"frame_idx": int(idx), "area": int(mask.sum()), "bbox": box})
     if anchor_frame < len(frames):
         wide = load_rgb(frames[anchor_frame])
