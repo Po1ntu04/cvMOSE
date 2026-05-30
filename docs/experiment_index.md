@@ -1,6 +1,6 @@
 # Experiment Index and Repository Map
 
-**Best next improvement:** keep SAM2/M11 as the final-quality backbone, and add an independent post-occlusion identity verifier before accepting any crop/SAM3/M2 reappearance proposal.
+**Best next improvement:** keep SAM2/M11 as the final-quality backbone, then build a training-free re-anchor tracker with uncertainty management, proposal retrieval, identity verification, and delayed commit.
 
 This repository versions the runnable code, experiment reports, selected visual evidence, and smoke/full-run audits needed to understand the MOSEv2 attempts. Dataset frames, checkpoints, full remote prediction folders, and non-final candidate zips are intentionally not stored in git.
 
@@ -27,6 +27,10 @@ Candidate zips were either left on b101 or not generated when smoke evidence was
 | M3 state selector | Candidate table over baseline/M2/M2-light/M11/SAM3 with explicit presence/identity state and negative banks. | `tools/apply_m3_state_select.py`, `scripts/run_b101_m3_state.sh`, `tools/validate_mose_submission.py`, `tools/make_m3_compare_sheets.py`, `docs/m3_experiment_report.md`, `docs/assets/m3_state/` | Most auditable framework: decisions are visible per source/object/frame; validates 418 provided outputs and 15 predicted videos. | Conservative/balanced import too many weak alternatives or output too many empties; surgical is safer but cannot recover targets. Not final. |
 | M4 tiny crop | Rerun frozen SAM2 on per-object crop videos for small targets; use as M3 candidate source only. | `tools/infer_mosev2_sam2_tiny_crop.py`, `scripts/run_b101_tiny_crop.sh`, `scripts/run_b101_m4_tiny_state.sh`, `docs/m4_tiny_crop_experiment.md`, `docs/assets/m4_tiny_crop/safe_smoke/` | Helps diagnose feature-resolution limits and can tighten small backpack/person masks. | Decisive failure on `r13u5z4y`: crop improves resolution but not identity; after occlusion it follows correlated wrong evidence. Not final. |
 
+## Next primary direction
+
+The next route is documented in `docs/reanchor_tracker_direction.md`: M11/M2/M3/M4 are useful constraints and proposal sources, but the missing layer is a re-acquisition loop that can verify and commit a recovered identity after occlusion.
+
 ## Why the current best route is not “just run M4/SAM3”
 
 The failure that matters most is not mask sharpness; it is **which instance is being segmented after the target is hidden and later reappears near similar objects**. Crop reruns and SAM3-style detections can supply proposals, but they become harmful if they are treated as independent proof. The next meaningful method should therefore be proposal + verification:
@@ -48,7 +52,8 @@ cvMOSE/
 │   ├── experiment_protocol.md               # required evidence/validation protocol
 │   ├── mose15_observations.md               # semantic observations for the 15 target videos
 │   ├── paper_insights_sam2_sam3.md          # SAM2/SAM3 paper-based task reasoning
-│   ├── research_program.md                  # method roadmap M1-M6
+│   ├── research_program.md                  # method roadmap M1-M6/M5R
+│   ├── reanchor_tracker_direction.md        # next primary re-acquisition architecture
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record

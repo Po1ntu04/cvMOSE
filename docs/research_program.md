@@ -48,6 +48,10 @@ When several ids coexist, independent trackers can assign the same visual eviden
 
 Presence, confirmation delay, detector-guided re-prompting, and positive/negative exemplar logic are system-level ideas.  They can guide SAM2 re-anchoring and postprocessing even if SAM3 public prompting is discarded.
 
+### Insight G — The missing layer is re-acquisition, not another suppressor
+
+M11, M2, M3, and M4 each constrain existing SAM2 evidence, but they do not create a sufficiently independent path to recover the original instance after occlusion.  The next method must separate proposal generation from identity verification and delay memory/final-output commitment until reappearance is confirmed.
+
 ## 4. Method roadmap
 
 Do **not** apply everything at once. Each method must correspond to a failure attribution and leave an experiment record.
@@ -94,6 +98,14 @@ Do **not** apply everything at once. Each method must correspond to a failure at
 - Hypothesis: helps specific videos such as `3epdtmyr` or `z6dx46qr` where adapter has useful non-empty continuity.
 - Main risk: SAM3.1 emptiness or identity loss is mistaken for correctness.
 
+### M5R. Training-free re-anchor tracker
+
+- Input: baseline/M11/M2-light/M3 audits plus optional crop/SAM3 proposals in uncertain windows.
+- Method: detect post-gap uncertainty, retrieve candidate masks, verify them against first-frame identity and hard negatives, then commit only after confirmation delay.
+- Hypothesis: a proposal + verifier + delayed-commit loop can recover targets that M11 only empties and M4 only sees more clearly.
+- Main risk: verifier remains correlated with the wrong proposal source, causing stable distractors to be accepted as anchors.
+- Design note: see `docs/reanchor_tracker_direction.md`.
+
 ## 5. Experiment gates
 
 A method can move from idea to submission candidate only if:
@@ -106,7 +118,7 @@ A method can move from idea to submission candidate only if:
 
 ## 6. Current recommendation
 
-Primary branch: **SAM2 + principled re-anchoring/visibility/multi-object constraints**.
+Primary branch: **SAM2 + training-free re-anchor tracker: propagation + uncertainty management + proposal retrieval + identity verification + delayed commit**.
 
 Secondary branch: **SAM3.1 adapter as diagnostic candidate source only**.
 
