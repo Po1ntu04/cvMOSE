@@ -9,11 +9,12 @@ This repository versions **code + research practice docs + selected visual/audit
 - Default model family for optimization: **SAM2-first**.
 - SAM3.1 public prompting is treated as a failed control route for this homework interface.
 - SAM3.1 GT-mask adapter remains a diagnostic/candidate source, not the primary route.
-- Main research problem: **occlusion-aware instance re-anchoring under tiny targets, same-class distractors, and edge disappear/reappear**.
+- Main research problem: **training-free re-anchor tracking: uncertainty management + proposal retrieval + identity verification + delayed commit under occlusion, tiny targets, same-class distractors, and edge disappear/reappear**.
 
 ## Layout
 
 - `docs/experiment_index.md` — compact index of all uploaded experiment code/docs/figures and final stance.
+- `docs/reanchor_tracker_direction.md` — next primary architecture after M11/M2/M3/M4 saturation.
 - `tools/` — runnable inference/build scripts copied from the MOSEv2 workspace and future method code.
 - `scripts/` — b101 code-only sync and experiment launch wrappers.
 - `src/cvmose/` — reusable utilities.

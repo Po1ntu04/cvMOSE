@@ -1,6 +1,6 @@
 # Experiment Index and Repository Map
 
-**Best next improvement:** keep SAM2/M11 as the final-quality backbone, and add an independent post-occlusion identity verifier before accepting any crop/SAM3/M2 reappearance proposal.
+**Best next improvement:** keep SAM2/M11 as the final-quality backbone, then build a training-free re-anchor tracker with uncertainty management, proposal retrieval, identity verification, and delayed commit.
 
 This repository versions the runnable code, experiment reports, selected visual evidence, and smoke/full-run audits needed to understand the MOSEv2 attempts. Dataset frames, checkpoints, full remote prediction folders, and non-final candidate zips are intentionally not stored in git.
 
@@ -26,6 +26,11 @@ Candidate zips were either left on b101 or not generated when smoke evidence was
 | M2-light | Softer memory gate to provide tri-state evidence for M3. | `scripts/run_b101_m2_light.sh`, `docs/m2_light_ablation.md`, M2-light audit consumed by M3. | Better as evidence source than final method: exposes likely-absent / output-only / memory-write states. | Still cannot solve identity after long occlusion; not independently sufficient. |
 | M3 state selector | Candidate table over baseline/M2/M2-light/M11/SAM3 with explicit presence/identity state and negative banks. | `tools/apply_m3_state_select.py`, `scripts/run_b101_m3_state.sh`, `tools/validate_mose_submission.py`, `tools/make_m3_compare_sheets.py`, `docs/m3_experiment_report.md`, `docs/assets/m3_state/` | Most auditable framework: decisions are visible per source/object/frame; validates 418 provided outputs and 15 predicted videos. | Conservative/balanced import too many weak alternatives or output too many empties; surgical is safer but cannot recover targets. Not final. |
 | M4 tiny crop | Rerun frozen SAM2 on per-object crop videos for small targets; use as M3 candidate source only. | `tools/infer_mosev2_sam2_tiny_crop.py`, `scripts/run_b101_tiny_crop.sh`, `scripts/run_b101_m4_tiny_state.sh`, `docs/m4_tiny_crop_experiment.md`, `docs/assets/m4_tiny_crop/safe_smoke/` | Helps diagnose feature-resolution limits and can tighten small backpack/person masks. | Decisive failure on `r13u5z4y`: crop improves resolution but not identity; after occlusion it follows correlated wrong evidence. Not final. |
+| M5R/RAR scaffold | Reappearance-aware SAM2 controller: RCMS-lite pre-disappearance reservoir, stable/ambiguous/recovery state machine, delayed main-memory commit. | `src/cvmose/reanchor.py`, `tools/infer_mosev2_sam2_rar.py`, `scripts/run_b101_rar.sh`, `docs/m5r_rar_plan.md`, `docs/m5r_rar_smoke.md`, `docs/m5r_rar_review_and_comparison.md`, `docs/assets/m5r_rar/key_compare/` | Cleanest instrumentation for state/anchor/memory governance; review fixes made audit and launcher safer. | Phase A/B does not recover identity; visual comparison rejects it as final and points to retrieval anchors as mandatory. |
+
+## Next primary direction
+
+The next route is documented in `docs/reanchor_tracker_direction.md`, with external method support in `docs/external_method_study.md`: M11/M2/M3/M4 are useful constraints and proposal sources, but the missing layer is a re-acquisition loop that can verify and commit a recovered identity after occlusion.
 
 ## Why the current best route is not “just run M4/SAM3”
 
@@ -48,7 +53,12 @@ cvMOSE/
 │   ├── experiment_protocol.md               # required evidence/validation protocol
 │   ├── mose15_observations.md               # semantic observations for the 15 target videos
 │   ├── paper_insights_sam2_sam3.md          # SAM2/SAM3 paper-based task reasoning
-│   ├── research_program.md                  # method roadmap M1-M6
+│   ├── research_program.md                  # method roadmap M1-M6/M5R
+│   ├── reanchor_tracker_direction.md        # next primary re-acquisition architecture
+│   ├── external_method_study.md             # source-backed external method study for M5R
+│   ├── m5r_rar_plan.md                      # accepted RAR mainline and ablation protocol
+│   ├── m5r_rar_smoke.md                     # RAR b101 subset/full-15 smoke evidence
+│   ├── m5r_rar_review_and_comparison.md     # RAR code review + real visual comparison verdict
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record
@@ -66,11 +76,14 @@ cvMOSE/
 │       ├── m3_state/
 │       │   ├── conservative/{full,zooms}/   # all 15 video M3 conservative sheets
 │       │   └── balanced/{full,zooms}/       # all 15 video M3 balanced sheets
-│       └── m4_tiny_crop/safe_smoke/
-│           ├── audits/                      # tiny-crop and M4 smoke JSON audits
-│           ├── full/                        # 3-video M4 full-frame sheets
-│           ├── zooms/                       # 3-video M4 zoom sheets
-│           └── sheet_index.json
+│       ├── m4_tiny_crop/safe_smoke/
+│       │   ├── audits/                      # tiny-crop and M4 smoke JSON audits
+│       │   ├── full/                        # 3-video M4 full-frame sheets
+│       │   ├── zooms/                       # 3-video M4 zoom sheets
+│       │   └── sheet_index.json
+│       └── m5r_rar/
+│           ├── smoke_compare/{full,zoom}/   # 2-video RAR smoke sheets
+│           └── key_compare/{full,zoom}/     # 8 key-video RAR visual comparison sheets
 ├── scripts/
 │   ├── sync_code_b101.sh                    # code-only sync to b101
 │   ├── run_b101_single_sam2.sh              # baseline single-run launcher
@@ -79,11 +92,13 @@ cvMOSE/
 │   ├── run_b101_m2_light.sh                 # M2-light ablation launcher
 │   ├── run_b101_m3_state.sh                 # M3 selector launcher
 │   ├── run_b101_tiny_crop.sh                # M4 candidate-source launcher, no submission
-│   └── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
+│   ├── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
+│   └── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
 ├── tools/
 │   ├── infer_mosev2_sam2.py                 # baseline SAM2 inference
 │   ├── infer_mosev2_sam2_m2_memory_gate.py  # M2 memory-write gate
 │   ├── infer_mosev2_sam2_tiny_crop.py       # M4 tiny-crop candidate generator
+│   ├── infer_mosev2_sam2_rar.py             # M5R/RAR SAM2 entrypoint
 │   ├── infer_mosev2_sam31.py                # SAM3.1 adapter route
 │   ├── infer_mosev2_sam31_public_boxes.py   # SAM3.1 public/simple control route
 │   ├── sam31_gt_mask_adapter.py             # GT-mask adapter helpers
@@ -92,6 +107,7 @@ cvMOSE/
 │   ├── validate_mose_submission.py          # hard submission invariant checker
 │   ├── build_submission.py                  # submission packaging helper
 │   └── launch_parallel_infer.py             # parallel inference helper
+├── src/cvmose/reanchor.py                   # RAR state/anchor/commit primitives
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 
