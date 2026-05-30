@@ -2,7 +2,7 @@
 
 Principled experiments for the MOSEv2 homework split: first-frame instance masks -> video object segmentation outputs.
 
-This repository intentionally versions **code + research practice docs**, not datasets, checkpoints, rendered analysis images, or submission zips.
+This repository versions **code + research practice docs + selected visual/audit evidence**. It does not version datasets, checkpoints, full remote prediction folders, or non-final candidate zips.
 
 ## Current stance
 
@@ -13,11 +13,17 @@ This repository intentionally versions **code + research practice docs**, not da
 
 ## Layout
 
+- `docs/experiment_index.md` — compact index of all uploaded experiment code/docs/figures and final stance.
 - `tools/` — runnable inference/build scripts copied from the MOSEv2 workspace and future method code.
 - `scripts/` — b101 code-only sync and experiment launch wrappers.
 - `src/cvmose/` — reusable utilities.
 - `docs/` — durable reasoning: problem attribution, insight, method mapping, experiment protocol.
 - `configs/` — example path/env configuration only.
+
+
+## Submission zip policy
+
+Only one local workspace should retain submission zips. This workspace currently keeps only the final candidate `submission_mosev2_final_m11_cycle.zip`; experiment attempts are preserved through code, reports, audit JSON, and selected visual sheets instead.
 
 ## Remote policy
 
@@ -27,7 +33,7 @@ b101 is for running experiments, not for storing full local analysis artifacts. 
 scripts/sync_code_b101.sh
 ```
 
-This syncs code/config only to `${CVMOSE_CODE_ROOT:-/data1/yuzhixiang/cv_mosev2/cvMOSE}` and excludes `docs/`, data, checkpoints, logs, contact sheets, and submission artifacts.
+This syncs code/config only to `${CVMOSE_CODE_ROOT:-/data1/yuzhixiang/cv_mosev2/cvMOSE}` and excludes local docs/assets, data, checkpoints, logs, contact sheets, and submission artifacts.
 
 ## Git identity
 
