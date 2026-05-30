@@ -26,6 +26,7 @@ Candidate zips were either left on b101 or not generated when smoke evidence was
 | M2-light | Softer memory gate to provide tri-state evidence for M3. | `scripts/run_b101_m2_light.sh`, `docs/m2_light_ablation.md`, M2-light audit consumed by M3. | Better as evidence source than final method: exposes likely-absent / output-only / memory-write states. | Still cannot solve identity after long occlusion; not independently sufficient. |
 | M3 state selector | Candidate table over baseline/M2/M2-light/M11/SAM3 with explicit presence/identity state and negative banks. | `tools/apply_m3_state_select.py`, `scripts/run_b101_m3_state.sh`, `tools/validate_mose_submission.py`, `tools/make_m3_compare_sheets.py`, `docs/m3_experiment_report.md`, `docs/assets/m3_state/` | Most auditable framework: decisions are visible per source/object/frame; validates 418 provided outputs and 15 predicted videos. | Conservative/balanced import too many weak alternatives or output too many empties; surgical is safer but cannot recover targets. Not final. |
 | M4 tiny crop | Rerun frozen SAM2 on per-object crop videos for small targets; use as M3 candidate source only. | `tools/infer_mosev2_sam2_tiny_crop.py`, `scripts/run_b101_tiny_crop.sh`, `scripts/run_b101_m4_tiny_state.sh`, `docs/m4_tiny_crop_experiment.md`, `docs/assets/m4_tiny_crop/safe_smoke/` | Helps diagnose feature-resolution limits and can tighten small backpack/person masks. | Decisive failure on `r13u5z4y`: crop improves resolution but not identity; after occlusion it follows correlated wrong evidence. Not final. |
+| M5R/RAR scaffold | Reappearance-aware SAM2 controller: RCMS-lite pre-disappearance reservoir, stable/ambiguous/recovery state machine, delayed main-memory commit. | `src/cvmose/reanchor.py`, `tools/infer_mosev2_sam2_rar.py`, `scripts/run_b101_rar.sh`, `docs/m5r_rar_plan.md`, `docs/m5r_rar_smoke.md` | Aligns implementation with the accepted recovery architecture while keeping SAM3/MLLM/retrieval optional. | Scaffold only; b101 smoke, visualization sheets, retrieval anchors, and final submission decision are still pending. |
 
 ## Next primary direction
 
@@ -55,6 +56,8 @@ cvMOSE/
 │   ├── research_program.md                  # method roadmap M1-M6/M5R
 │   ├── reanchor_tracker_direction.md        # next primary re-acquisition architecture
 │   ├── external_method_study.md             # source-backed external method study for M5R
+│   ├── m5r_rar_plan.md                      # accepted RAR mainline and ablation protocol
+│   ├── m5r_rar_smoke.md                     # initial RAR b101 subset smoke evidence
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record
@@ -85,11 +88,13 @@ cvMOSE/
 │   ├── run_b101_m2_light.sh                 # M2-light ablation launcher
 │   ├── run_b101_m3_state.sh                 # M3 selector launcher
 │   ├── run_b101_tiny_crop.sh                # M4 candidate-source launcher, no submission
-│   └── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
+│   ├── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
+│   └── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
 ├── tools/
 │   ├── infer_mosev2_sam2.py                 # baseline SAM2 inference
 │   ├── infer_mosev2_sam2_m2_memory_gate.py  # M2 memory-write gate
 │   ├── infer_mosev2_sam2_tiny_crop.py       # M4 tiny-crop candidate generator
+│   ├── infer_mosev2_sam2_rar.py             # M5R/RAR SAM2 entrypoint
 │   ├── infer_mosev2_sam31.py                # SAM3.1 adapter route
 │   ├── infer_mosev2_sam31_public_boxes.py   # SAM3.1 public/simple control route
 │   ├── sam31_gt_mask_adapter.py             # GT-mask adapter helpers
@@ -98,6 +103,7 @@ cvMOSE/
 │   ├── validate_mose_submission.py          # hard submission invariant checker
 │   ├── build_submission.py                  # submission packaging helper
 │   └── launch_parallel_infer.py             # parallel inference helper
+├── src/cvmose/reanchor.py                   # RAR state/anchor/commit primitives
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 

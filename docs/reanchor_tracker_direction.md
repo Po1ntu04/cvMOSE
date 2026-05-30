@@ -108,6 +108,10 @@ The source-backed study in `docs/external_method_study.md` confirms this directi
 - Treating SAM3/SAM3.1 public-simple output as primary; it solves concept discovery more than first-mask instance identity.
 - Weighted final-score fusion where a wrong correlated source can overwhelm identity uncertainty.
 
+## RAR implementation convergence
+
+The accepted mainline is now **RAR: Reappearance-Aware ReAnchor**. Phase A/B should be implemented first as RCMS-lite + state machine + delayed commit in `tools/infer_mosev2_sam2_rar.py` and `src/cvmose/reanchor.py`. See `docs/m5r_rar_plan.md` for the locked ablation order, objects, visual evidence requirements, and submission invariants.
+
 ## Proposed next experiment: M5R re-anchor tracker smoke
 
 A minimal next experiment should not be full 15-video first. It should target the hard cases that exposed the wall:
