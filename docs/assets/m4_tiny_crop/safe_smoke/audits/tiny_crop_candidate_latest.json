@@ -1,0 +1,436 @@
+{
+  "method": "m4_tiny_crop_candidate_source",
+  "principle": "training-free SAM2 crop rerun for small first-frame objects; candidate source only",
+  "config": {
+    "crop_size": 512,
+    "min_side": 160,
+    "max_side": 768,
+    "side_scale": 9.0,
+    "eligible_area_frac": 0.02,
+    "max_guide_area_ratio": 10.0,
+    "velocity_damping": 0.75
+  },
+  "provenance": {
+    "git_sha": "43a91424a31d4522542cae106132e5d46ffd1f19",
+    "git_branch": "method/m4-tinycrop-candidate",
+    "git_dirty": "9",
+    "git_diff_hash": "0b49f34c6b5d6674be00fc39abde3b0d6d2c118f95af07ce3009ea191b12d363",
+    "guide_root": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/pred_sam2_m11_cycle"
+  },
+  "summary": {
+    "videos": 3,
+    "frames": 120,
+    "eligible_objects": 3,
+    "conflict_frames": 0
+  },
+  "runtime": {
+    "seconds": 31.815,
+    "cuda_max_memory_allocated_mib": 934.96,
+    "cuda_max_memory_reserved_mib": 1146.0
+  },
+  "outputs": {
+    "out_pred_root": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/pred_sam2_tiny_crop_candidate"
+  },
+  "submission": null,
+  "results": [
+    {
+      "video": "1qlssuz2",
+      "status": "done",
+      "frames": 40,
+      "objects": [
+        1
+      ],
+      "eligible_objects": [
+        1
+      ],
+      "eligible_count": 1,
+      "conflict_frames": 0,
+      "object_audits": {
+        "1": {
+          "init_area": 1304,
+          "init_area_frac": 0.000628858024691358,
+          "eligible": true,
+          "crop_side": 432,
+          "crop_size": 512,
+          "nonempty_frames": 23,
+          "missing_obj_frames": [],
+          "plan_sources": {
+            "guide": 34,
+            "init": 1,
+            "velocity": 5
+          },
+          "sample_plan": [
+            {
+              "frame_idx": 0,
+              "frame_name": "00000.jpg",
+              "source": "init",
+              "center": [
+                755.0,
+                864.0
+              ],
+              "side": 432,
+              "box": [
+                539,
+                648,
+                971,
+                1080
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 1,
+              "frame_name": "00001.jpg",
+              "source": "guide",
+              "center": [
+                795.0,
+                840.0
+              ],
+              "side": 432,
+              "box": [
+                579,
+                624,
+                1011,
+                1056
+              ],
+              "guide_area": 1206
+            },
+            {
+              "frame_idx": 2,
+              "frame_name": "00002.jpg",
+              "source": "guide",
+              "center": [
+                833.0,
+                790.0
+              ],
+              "side": 432,
+              "box": [
+                617,
+                574,
+                1049,
+                1006
+              ],
+              "guide_area": 1041
+            },
+            {
+              "frame_idx": 37,
+              "frame_name": "00037.jpg",
+              "source": "velocity",
+              "center": [
+                1704.0,
+                697.0
+              ],
+              "side": 432,
+              "box": [
+                1488,
+                481,
+                1920,
+                913
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 38,
+              "frame_name": "00038.jpg",
+              "source": "velocity",
+              "center": [
+                1704.0,
+                711.0
+              ],
+              "side": 432,
+              "box": [
+                1488,
+                495,
+                1920,
+                927
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 39,
+              "frame_name": "00039.jpg",
+              "source": "velocity",
+              "center": [
+                1704.0,
+                722.0
+              ],
+              "side": 432,
+              "box": [
+                1488,
+                506,
+                1920,
+                938
+              ],
+              "guide_area": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "video": "r13u5z4y",
+      "status": "done",
+      "frames": 45,
+      "objects": [
+        1
+      ],
+      "eligible_objects": [
+        1
+      ],
+      "eligible_count": 1,
+      "conflict_frames": 0,
+      "object_audits": {
+        "1": {
+          "init_area": 33250,
+          "init_area_frac": 0.01603491512345679,
+          "eligible": true,
+          "crop_side": 768,
+          "crop_size": 512,
+          "nonempty_frames": 30,
+          "missing_obj_frames": [],
+          "plan_sources": {
+            "guide": 5,
+            "init": 1,
+            "velocity": 39
+          },
+          "sample_plan": [
+            {
+              "frame_idx": 0,
+              "frame_name": "00000.jpg",
+              "source": "init",
+              "center": [
+                1056.0,
+                413.0
+              ],
+              "side": 768,
+              "box": [
+                672,
+                29,
+                1440,
+                797
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 1,
+              "frame_name": "00001.jpg",
+              "source": "guide",
+              "center": [
+                1059.0,
+                410.0
+              ],
+              "side": 768,
+              "box": [
+                675,
+                26,
+                1443,
+                794
+              ],
+              "guide_area": 33817
+            },
+            {
+              "frame_idx": 2,
+              "frame_name": "00002.jpg",
+              "source": "guide",
+              "center": [
+                1054.0,
+                409.0
+              ],
+              "side": 768,
+              "box": [
+                670,
+                25,
+                1438,
+                793
+              ],
+              "guide_area": 33600
+            },
+            {
+              "frame_idx": 42,
+              "frame_name": "00042.jpg",
+              "source": "velocity",
+              "center": [
+                384.0,
+                384.0
+              ],
+              "side": 768,
+              "box": [
+                0,
+                0,
+                768,
+                768
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 43,
+              "frame_name": "00043.jpg",
+              "source": "velocity",
+              "center": [
+                384.0,
+                384.0
+              ],
+              "side": 768,
+              "box": [
+                0,
+                0,
+                768,
+                768
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 44,
+              "frame_name": "00044.jpg",
+              "source": "velocity",
+              "center": [
+                384.0,
+                384.0
+              ],
+              "side": 768,
+              "box": [
+                0,
+                0,
+                768,
+                768
+              ],
+              "guide_area": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "video": "lcgc29va",
+      "status": "done",
+      "frames": 35,
+      "objects": [
+        1
+      ],
+      "eligible_objects": [
+        1
+      ],
+      "eligible_count": 1,
+      "conflict_frames": 0,
+      "object_audits": {
+        "1": {
+          "init_area": 947,
+          "init_area_frac": 0.00042815031828703705,
+          "eligible": true,
+          "crop_side": 441,
+          "crop_size": 512,
+          "nonempty_frames": 26,
+          "missing_obj_frames": [],
+          "plan_sources": {
+            "guide": 26,
+            "init": 1,
+            "velocity": 8
+          },
+          "sample_plan": [
+            {
+              "frame_idx": 0,
+              "frame_name": "00000.jpg",
+              "source": "init",
+              "center": [
+                373.5,
+                598.5
+              ],
+              "side": 441,
+              "box": [
+                153,
+                378,
+                594,
+                819
+              ],
+              "guide_area": 0
+            },
+            {
+              "frame_idx": 1,
+              "frame_name": "00001.jpg",
+              "source": "guide",
+              "center": [
+                399.5,
+                597.5
+              ],
+              "side": 441,
+              "box": [
+                179,
+                377,
+                620,
+                818
+              ],
+              "guide_area": 1042
+            },
+            {
+              "frame_idx": 2,
+              "frame_name": "00002.jpg",
+              "source": "guide",
+              "center": [
+                411.5,
+                597.5
+              ],
+              "side": 441,
+              "box": [
+                191,
+                377,
+                632,
+                818
+              ],
+              "guide_area": 908
+            },
+            {
+              "frame_idx": 32,
+              "frame_name": "00032.jpg",
+              "source": "guide",
+              "center": [
+                740.5,
+                594.5
+              ],
+              "side": 441,
+              "box": [
+                520,
+                374,
+                961,
+                815
+              ],
+              "guide_area": 1092
+            },
+            {
+              "frame_idx": 33,
+              "frame_name": "00033.jpg",
+              "source": "guide",
+              "center": [
+                745.5,
+                596.5
+              ],
+              "side": 441,
+              "box": [
+                525,
+                376,
+                966,
+                817
+              ],
+              "guide_area": 1098
+            },
+            {
+              "frame_idx": 34,
+              "frame_name": "00034.jpg",
+              "source": "guide",
+              "center": [
+                750.5,
+                595.5
+              ],
+              "side": 441,
+              "box": [
+                530,
+                375,
+                971,
+                816
+              ],
+              "guide_area": 1230
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

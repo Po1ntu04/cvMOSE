@@ -307,6 +307,40 @@ def reliable_for_memory(
     return reliable, metrics, mask.detach()
 
 
+def memory_audit_state(metrics: dict[str, Any]) -> tuple[str, str]:
+    """Classify an M2 decision for downstream M3-state evidence.
+
+    The first M2 implementation had a binary reliable/unreliable label.  M3
+    needs a more useful distinction: an unreliable frame may be a likely absence
+    (empty/low objectness) or an uncertain visible mask that should not become
+    future memory but may still be a candidate output.
+    """
+    if bool(metrics.get("reliable")):
+        return "memory_write", "reliable"
+    try:
+        area_pixels = float(metrics.get("area_pixels", 0.0) or 0.0)
+        min_area_pixels = float(metrics.get("min_area_frac", 0.0) or 0.0) * float(
+            np.prod(metrics.get("shape_hw", [1, 1]))
+        )
+    except Exception:
+        area_pixels = 0.0
+        min_area_pixels = 1.0
+    obj_score = metrics.get("obj_score")
+    obj_status = str(metrics.get("obj_score_status", "missing"))
+    checks = metrics.get("checks", {}) or {}
+    empty_or_tiny = area_pixels <= max(1.0, min_area_pixels * 2.0)
+    # Respect the configured objectness threshold indirectly through the
+    # already-computed check. A fixed 0.5 cutoff would make the M2-light
+    # ablation (obj_thr=0.25) falsely report valid low-confidence objects as
+    # likely absent, and M3-state consumes this audit as absence evidence.
+    low_obj = obj_status.startswith("ok") and obj_score is not None and not checks.get("obj_ok", True)
+    if empty_or_tiny and (low_obj or not checks.get("area_abs_ok", True)):
+        return "likely_absent", "empty_or_tiny_low_objectness"
+    if empty_or_tiny and area_pixels <= 0:
+        return "likely_absent", "empty_mask"
+    return "output_only_uncertain", "unreliable_nonempty"
+
+
 def _empty_video_audit(video_name: str, obj_ids: list[int], cfg: MemoryGateConfig) -> dict[str, Any]:
     return {
         "video": video_name,
@@ -329,12 +363,18 @@ def _finalize_video_audit(audit: dict[str, Any]) -> dict[str, Any]:
     total_written = 0
     total_skipped = 0
     reason_counts: dict[str, int] = {}
+    state_counts: dict[str, int] = {}
     per_obj = audit.get("objects", {})
     for obj_key, obj_data in per_obj.items():
         frames = obj_data.get("frames", [])
         noncond = [f for f in frames if f.get("storage") == "non_cond_frame_outputs"]
         written = [f for f in noncond if f.get("memory_written")]
         skipped = [f for f in noncond if not f.get("memory_written")]
+        obj_state_counts: dict[str, int] = {}
+        for rec in frames:
+            state = str(rec.get("state", "unknown"))
+            obj_state_counts[state] = obj_state_counts.get(state, 0) + 1
+            state_counts[state] = state_counts.get(state, 0) + 1
         for rec in skipped:
             for reason in rec.get("reasons", []):
                 reason_counts[reason] = reason_counts.get(reason, 0) + 1
@@ -344,6 +384,7 @@ def _finalize_video_audit(audit: dict[str, Any]) -> dict[str, Any]:
             "memory_written": len(written),
             "memory_skipped": len(skipped),
             "skip_ratio": (len(skipped) / len(noncond)) if noncond else 0.0,
+            "state_counts": dict(sorted(obj_state_counts.items())),
         }
         total_noncond += len(noncond)
         total_written += len(written)
@@ -355,6 +396,7 @@ def _finalize_video_audit(audit: dict[str, Any]) -> dict[str, Any]:
         "memory_skipped": total_skipped,
         "skip_ratio": (total_skipped / total_noncond) if total_noncond else 0.0,
         "skip_reason_counts": dict(sorted(reason_counts.items())),
+        "state_counts": dict(sorted(state_counts.items())),
     }
     return audit
 
@@ -422,6 +464,8 @@ def install_reliable_memory_gate(predictor, cfg: MemoryGateConfig, audit: dict[s
                         "storage": storage_key,
                         "reliable": True,
                         "memory_written": True,
+                        "state": "memory_write",
+                        "state_reason": "conditioning_frame",
                         "reasons": [],
                         "is_conditioning": True,
                     }
@@ -457,6 +501,7 @@ def install_reliable_memory_gate(predictor, cfg: MemoryGateConfig, audit: dict[s
                             "reference": "disabled",
                         }
                         reliable = True
+                    state, state_reason = memory_audit_state(metrics)
 
                     current_out["is_reliable_memory"] = bool(reliable)
                     if reliable:
@@ -473,6 +518,8 @@ def install_reliable_memory_gate(predictor, cfg: MemoryGateConfig, audit: dict[s
                         "storage": storage_key,
                         "reliable": bool(reliable),
                         "memory_written": bool(reliable),
+                        "state": state,
+                        "state_reason": state_reason,
                         "is_conditioning": False,
                         **metrics,
                     }
@@ -616,6 +663,7 @@ def aggregate_audit(audit_by_video: dict[str, Any], cfg: MemoryGateConfig, resul
     total_written = 0
     total_skipped = 0
     reason_counts: dict[str, int] = {}
+    state_counts: dict[str, int] = {}
     videos: dict[str, Any] = {}
     for video_name in sorted(audit_by_video):
         audit = _finalize_video_audit(audit_by_video[video_name])
@@ -626,6 +674,8 @@ def aggregate_audit(audit_by_video: dict[str, Any], cfg: MemoryGateConfig, resul
         total_skipped += int(summary.get("memory_skipped", 0))
         for reason, count in summary.get("skip_reason_counts", {}).items():
             reason_counts[reason] = reason_counts.get(reason, 0) + int(count)
+        for state, count in summary.get("state_counts", {}).items():
+            state_counts[state] = state_counts.get(state, 0) + int(count)
     return {
         "method": "m2_reliable_memory_gate",
         "principle": "original SAM2 prediction path; skip unreliable non-conditioning memory writes",
@@ -638,6 +688,7 @@ def aggregate_audit(audit_by_video: dict[str, Any], cfg: MemoryGateConfig, resul
             "memory_skipped": total_skipped,
             "skip_ratio": (total_skipped / total_noncond) if total_noncond else 0.0,
             "skip_reason_counts": dict(sorted(reason_counts.items())),
+            "state_counts": dict(sorted(state_counts.items())),
         },
         "videos": videos,
     }

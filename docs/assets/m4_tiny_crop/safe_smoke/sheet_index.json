@@ -1,0 +1,90 @@
+{
+  "summary": {
+    "videos": 3,
+    "frames": 120,
+    "objects": 3,
+    "changed_vs_baseline": 62,
+    "source_counts": {
+      "first_frame_gt": 3,
+      "tiny_crop": 46,
+      "sam31": 3,
+      "baseline": 30,
+      "empty": 25,
+      "m2_light": 10,
+      "m2": 3
+    },
+    "class_counts": {
+      "gt_anchor": 3,
+      "accept_anchor_candidate": 87,
+      "output_only": 1,
+      "empty": 22,
+      "accept_visible": 4,
+      "reject": 3
+    },
+    "state_counts": {
+      "CONFIRMED_VISIBLE": 94,
+      "UNCERTAIN": 1,
+      "LIKELY_OCCLUDED": 25
+    },
+    "conflict_frames": 0,
+    "empty_outputs": {
+      "1": 25
+    },
+    "accepted_anchor_counts": {
+      "1": 87
+    }
+  },
+  "sheets": [
+    {
+      "video": "1qlssuz2",
+      "frames": [
+        0,
+        1,
+        4,
+        7,
+        10,
+        14,
+        30,
+        34,
+        37,
+        39
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/visuals/m4_tiny_safe_smoke/full/1qlssuz2_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/visuals/m4_tiny_safe_smoke/zooms/1qlssuz2_m3_zoom.jpg"
+    },
+    {
+      "video": "r13u5z4y",
+      "frames": [
+        0,
+        2,
+        7,
+        12,
+        17,
+        25,
+        30,
+        35,
+        40,
+        44
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/visuals/m4_tiny_safe_smoke/full/r13u5z4y_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/visuals/m4_tiny_safe_smoke/zooms/r13u5z4y_m3_zoom.jpg"
+    },
+    {
+      "video": "lcgc29va",
+      "frames": [
+        0,
+        1,
+        5,
+        7,
+        9,
+        11,
+        17,
+        19,
+        22,
+        34
+      ],
+      "full_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/visuals/m4_tiny_safe_smoke/full/lcgc29va_m3_compare.jpg",
+      "zoom_sheet": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/visuals/m4_tiny_safe_smoke/zooms/lcgc29va_m3_zoom.jpg"
+    }
+  ]
+}

@@ -30,9 +30,17 @@ LOCAL_GIT_SHA_ARG="${LOCAL_GIT_SHA:-__EMPTY__}"
 LOCAL_GIT_BRANCH_ARG="${LOCAL_GIT_BRANCH:-__EMPTY__}"
 SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=2)
 
-ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" bash -s -- \
-  "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$GPU" "$GPUS" "$JOBS_PER_GPU" "$M2_PARALLEL" \
-  "$PRED_ROOT" "$SUBMIT_ROOT" "$ZIP_PATH" "$AUDIT_JSON" "$AUDIT_DIR" "$LOG_DIR" "$VIDEOS_ARG" "$EXTRA_ARGS_ARG" "$PYTHON_BIN" "$MAKE_SUBMISSION" "$LOCAL_GIT_SHA_ARG" "$LOCAL_GIT_BRANCH_ARG" <<'REMOTE'
+REMOTE_ARGS=(
+  "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$GPU" "$GPUS" "$JOBS_PER_GPU" "$M2_PARALLEL"
+  "$PRED_ROOT" "$SUBMIT_ROOT" "$ZIP_PATH" "$AUDIT_JSON" "$AUDIT_DIR" "$LOG_DIR" "$VIDEOS_ARG"
+  "$EXTRA_ARGS_ARG" "$PYTHON_BIN" "$MAKE_SUBMISSION" "$LOCAL_GIT_SHA_ARG" "$LOCAL_GIT_BRANCH_ARG"
+)
+REMOTE_CMD="bash -s --"
+for arg in "${REMOTE_ARGS[@]}"; do
+  REMOTE_CMD+=" $(printf '%q' "$arg")"
+done
+
+ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "$REMOTE_CMD" <<'REMOTE'
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 CODE_ROOT="$1"; WORKSPACE="$2"; ENV_NAME="$3"; GPU="$4"; GPUS="$5"; JOBS_PER_GPU="$6"; M2_PARALLEL="$7"
@@ -47,9 +55,26 @@ require_under() {
   local path="$1"
   local prefix="$2"
   local label="$3"
-  if [[ -z "$path" || "$path" == "/" || "$path" != "$prefix"* ]]; then
-    echo "Refusing unsafe $label path: $path (required prefix: $prefix)" >&2
+  local canon_path canon_prefix
+  canon_path="$(realpath -m -- "$path")"
+  canon_prefix="$(realpath -m -- "$prefix")"
+  if [[ -z "$canon_path" || "$canon_path" == "/" || "$canon_path" == "$canon_prefix" || "$canon_path" == "$WORKSPACE" || "$canon_path" == "$WORKSPACE/homework" || "$canon_path" == "$WORKSPACE/homework/logs" ]]; then
+    echo "Refusing unsafe $label path: $path (canonical: $canon_path)" >&2
     exit 2
+  fi
+  if [[ "$prefix" == *_ ]]; then
+    [[ "$canon_path" == "$canon_prefix"* ]] || {
+      echo "Refusing unsafe $label path: $path (required prefix: $canon_prefix)" >&2
+      exit 2
+    }
+  else
+    case "$canon_path/" in
+      "$canon_prefix"/*) ;;
+      *)
+        echo "Refusing unsafe $label path: $path (required under: $canon_prefix)" >&2
+        exit 2
+        ;;
+    esac
   fi
 }
 require_under "$PRED_ROOT" "$WORKSPACE/homework/pred_" "PRED_ROOT"
@@ -101,7 +126,7 @@ import json, pathlib
 root = pathlib.Path(r"$AUDIT_DIR")
 out = pathlib.Path(r"$AUDIT_JSON")
 videos = {}
-summary = {"videos": 0, "noncond_total": 0, "memory_written": 0, "memory_skipped": 0, "skip_reason_counts": {}}
+summary = {"videos": 0, "noncond_total": 0, "memory_written": 0, "memory_skipped": 0, "skip_reason_counts": {}, "state_counts": {}}
 for p in sorted(root.glob('*.json')):
     data = json.loads(p.read_text(encoding='utf-8'))
     videos[data['video']] = data
@@ -111,6 +136,8 @@ for p in sorted(root.glob('*.json')):
         summary[k] += int(s.get(k, 0))
     for reason, count in s.get('skip_reason_counts', {}).items():
         summary['skip_reason_counts'][reason] = summary['skip_reason_counts'].get(reason, 0) + int(count)
+    for state, count in s.get('state_counts', {}).items():
+        summary['state_counts'][state] = summary['state_counts'].get(state, 0) + int(count)
 summary['skip_ratio'] = summary['memory_skipped'] / summary['noncond_total'] if summary['noncond_total'] else 0.0
 payload = {"method": "m2_reliable_memory_gate", "summary": summary, "videos": videos}
 out.parent.mkdir(parents=True, exist_ok=True)
@@ -175,4 +202,14 @@ if make_submission:
 else:
     print("subset_smoke_no_submission_validation=1")
 PY
+if [[ "$MAKE_SUBMISSION" == "1" ]]; then
+  VALIDATION_JSON="$WORKSPACE/homework/logs/$(basename "${AUDIT_JSON%.json}")_validation.json"
+  conda run -n "$ENV_NAME" python tools/validate_mose_submission.py \
+    --workspace "$WORKSPACE" \
+    --pred-root "$PRED_ROOT" \
+    --submit-root "$SUBMIT_ROOT" \
+    --zip-path "$ZIP_PATH" \
+    --output-json "$VALIDATION_JSON"
+  echo "validation_json=$VALIDATION_JSON"
+fi
 REMOTE
