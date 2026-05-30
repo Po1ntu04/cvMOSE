@@ -45,6 +45,7 @@ They are documented and validated in `docs/m6_fusion_report.md`, but not committ
 | M6 Phase 4 SAAS | Prepare SAAS adapter for multi-shot robustness/scene-change candidate source. | `tools/infer_mosev2_saas_adapter.py`, `scripts/run_b101_saas_adapter.sh`, `docs/m6_saas_smoke.md` | Non-vendored harness is ready if a reproducible checkpoint URL is provided. | No smoke promoted: public checkpoint was not obtained scriptably; no source used in fusion. |
 | M6 Phase 5 DINO-reanchor | Replace weak descriptors with frozen DINOv2 masked object descriptor + hard-negative margin + delayed promotion/rollback. | `src/cvmose/dino_descriptors.py`, `tools/precompute_dino_features.py`, updated `tools/infer_mosev2_sam2_reanchor.py`, `docs/m6_dino_reanchor_report.md`, `docs/assets/m6_dino/smoke/` | Best training-free identity verifier so far; prevents accepting obvious wrong anchors and plausibly improves `2smf7uq9`. | Candidate generation is still the bottleneck; not a standalone final root. |
 | M6 Phase 6 safe fusion | Per-video conservative policy over M11, official ceiling, and DINO-reanchor candidates. | `tools/apply_m6_safe_fusion.py`, `docs/m6_fusion_report.md`, `docs/assets/m6_fusion/summary/` | Produces three validated candidate zips while preserving all 418 provided outputs unchanged. | Safe remains M11-dominated; balanced only accepts DINO for two videos; aggressive is rule-dependent. |
+| M7 Qwen-VL verifier | Use Qwen-VL / Aliyun Bailian as cached target profiler, candidate verifier, and delayed-promotion judge for M5R-C. | `src/cvmose/qwen_vl_client.py`, `src/cvmose/mllm_panels.py`, `tools/mllm_target_profile.py`, `tools/mllm_candidate_judge.py`, `tools/mllm_tracklet_judge.py`, `docs/m7_qwen_vl_verifier.md` | Adds semantic/visual audit layer without letting MLLM output masks or promote anchors alone; dry-run panels cover 80 candidate and 40 tracklet checks. | No score claim yet: real API/model confirmation is pending; current artifacts are conservative dry-run scaffolding, not final. |
 
 ## Next primary direction
 
@@ -85,6 +86,11 @@ cvMOSE/
 │   ├── m6_saas_smoke.md                     # SAAS adapter/checkpoint status
 │   ├── m6_dino_reanchor_report.md           # DINOv2 descriptor M5R-C upgrade
 │   ├── m6_fusion_report.md                  # safe/balanced/aggressive fusion candidates
+│   ├── m7_qwen_vl_verifier.md               # Qwen-VL verifier design, dry-run evidence, next commands
+│   ├── m7_qwen_vl_setup.md                  # Bailian/OpenAI-compatible smoke setup result
+│   ├── m7_target_profile_summary.md         # target profiler dry-run route table
+│   ├── m7_candidate_judge_summary.md        # candidate judge dry-run panel summary
+│   ├── m7_tracklet_judge_summary.md         # tracklet judge dry-run panel summary
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record
@@ -127,6 +133,7 @@ cvMOSE/
 │   ├── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
 │   ├── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
 │   ├── run_b101_m5r_reanchor.sh             # M5R-C candidate retrieval re-anchor launcher
+│   ├── make_m7_qwen_compare.py              # M7 Qwen verifier visual sheet generator
 │   ├── run_b101_official_ckpt.sh            # FudanCVL MOSEv2 checkpoint launcher
 │   ├── run_b101_dam4sam_adapter.sh          # external DAM4SAM/d4sm adapter launcher
 │   ├── run_b101_sam2long_adapter.sh         # external SAM2Long adapter launcher
@@ -138,7 +145,11 @@ cvMOSE/
 │   ├── infer_mosev2_sam2_m2_memory_gate.py  # M2 memory-write gate
 │   ├── infer_mosev2_sam2_tiny_crop.py       # M4 tiny-crop candidate generator
 │   ├── infer_mosev2_sam2_rar.py             # M5R/RAR SAM2 entrypoint
-│   ├── infer_mosev2_sam2_reanchor.py        # M5R-C candidate retrieval + add_new_mask repropagation
+│   ├── infer_mosev2_sam2_reanchor.py        # M5R-C candidate retrieval + add_new_mask repropagation + M7 MLLM gate
+│   ├── test_qwen_vl_bailian.py              # Qwen-VL / Bailian OpenAI-compatible smoke test
+│   ├── mllm_target_profile.py               # M7 target profile panel + JSON generation
+│   ├── mllm_candidate_judge.py              # M7 candidate judge panel + JSON generation
+│   ├── mllm_tracklet_judge.py               # M7 tracklet judge panel + JSON generation
 │   ├── infer_mosev2_sam2_official_ckpt.py   # FudanCVL MOSEv2 checkpoint wrapper
 │   ├── infer_mosev2_dam4sam_adapter.py      # DAM4SAM/d4sm wrapper
 │   ├── infer_mosev2_sam2long_adapter.py     # SAM2Long wrapper
@@ -155,7 +166,9 @@ cvMOSE/
 │   └── launch_parallel_infer.py             # parallel inference helper
 ├── src/cvmose/
 │   ├── reanchor.py                          # RAR state/anchor/commit primitives
-│   └── dino_descriptors.py                  # frozen DINOv2 masked object descriptors
+│   ├── dino_descriptors.py                  # frozen DINOv2 masked object descriptors
+│   ├── qwen_vl_client.py                    # cached Bailian/OpenAI-compatible Qwen-VL JSON client
+│   └── mllm_panels.py                       # standardized panels for target/candidate/tracklet verification
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 
@@ -164,4 +177,4 @@ cvMOSE/
 - Safest current submission: `submission_mosev2_m6_safe.zip` in the MOSEv2 homework workspace; it is M11-equivalent and validated.
 - Best training-free probe: `submission_mosev2_m6_balanced.zip`; it keeps M11 by default and only accepts DINO-reanchor on `1qlssuz2`/`2smf7uq9`.
 - Aggressive/rule-dependent probe: `submission_mosev2_m6_aggressive.zip` or official MOSEv2 submission-checkpoint zips if public MOSEv2-finetuned resources are allowed.
-- Next experiment should still avoid raw threshold sweep; the real missing capability is higher-recall global later-frame proposal generation plus DINO/SAM identity verification and delayed prompt injection.
+- Next experiment should still avoid raw threshold sweep; the real missing capability is higher-recall global later-frame proposal generation plus DINO/SAM identity verification, MLLM semantic veto/support, and delayed prompt injection.

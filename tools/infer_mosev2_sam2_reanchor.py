@@ -91,6 +91,14 @@ class Candidate:
     dino_tokens_inside: int | None = None
     fallback_reason: str | None = None
     confirm_reason: str | None = None
+    mllm_policy: str | None = None
+    mllm_candidate_decision: dict[str, Any] | None = None
+    mllm_tracklet_decision: dict[str, Any] | None = None
+    mllm_veto_applied: bool = False
+    mllm_support_applied: bool = False
+    mllm_confidence: float | None = None
+    mllm_risk_tags: list[str] = field(default_factory=list)
+    mllm_cache_key: str | None = None
     rejected: list[str] = field(default_factory=list)
 
     def brief(self) -> dict[str, Any]:
@@ -109,6 +117,14 @@ class Candidate:
             "dino_tokens_inside": self.dino_tokens_inside,
             "fallback_reason": self.fallback_reason,
             "confirm_reason": self.confirm_reason,
+            "mllm_policy": self.mllm_policy,
+            "mllm_candidate_decision": self.mllm_candidate_decision,
+            "mllm_tracklet_decision": self.mllm_tracklet_decision,
+            "mllm_veto_applied": self.mllm_veto_applied,
+            "mllm_support_applied": self.mllm_support_applied,
+            "mllm_confidence": None if self.mllm_confidence is None else round(float(self.mllm_confidence), 4),
+            "mllm_risk_tags": list(self.mllm_risk_tags),
+            "mllm_cache_key": self.mllm_cache_key,
             "descriptor_parts": dict(self.descriptor.parts) if self.descriptor else {},
             "rejected": list(self.rejected),
         }
@@ -194,6 +210,18 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--rollback-max-change-frac", type=float, default=0.50)
     p.add_argument("--rollback-high-conf-margin", type=float, default=0.25)
     p.add_argument("--copy-baseline-on-no-anchor", action="store_true", default=True)
+
+    # M7 Qwen-VL / MLLM verifier inputs.  The MLLM is never a mask source and
+    # never promotes anchors by itself; it only vetoes/supports already-built
+    # M5R-C candidates under descriptor/temporal constraints.
+    p.add_argument("--target-profiles-json", type=Path, default=None)
+    p.add_argument("--mllm-candidate-judgments-json", type=Path, default=None)
+    p.add_argument("--mllm-tracklet-judgments-json", type=Path, default=None)
+    p.add_argument("--mllm-policy", choices=["off", "veto_only", "support_and_veto", "semantic_support"], default="off")
+    p.add_argument("--mllm-min-veto-confidence", type=float, default=0.55)
+    p.add_argument("--mllm-min-support-confidence", type=float, default=0.70)
+    p.add_argument("--mllm-require-tracklet-for-anchor", action="store_true")
+    p.add_argument("--mllm-uncertain-action", choices=["keep_original", "empty", "output_only"], default="keep_original")
     return p.parse_args()
 
 
@@ -225,6 +253,13 @@ def complete_paths(args: argparse.Namespace) -> argparse.Namespace:
     args.dino_variant = variant
     default_weight = DINO_SPECS[variant]["default_weight_name"]
     args.dino_weights = (args.dino_weights or ws / "homework" / "external_checkpoints" / "dinov2" / default_weight).resolve()
+    for attr in ["target_profiles_json", "mllm_candidate_judgments_json", "mllm_tracklet_judgments_json"]:
+        value = getattr(args, attr, None)
+        if value is not None:
+            value = Path(value)
+            if not value.is_absolute():
+                value = (REPO_ROOT / value).resolve()
+            setattr(args, attr, value)
     return args
 
 
@@ -595,6 +630,198 @@ def load_rar_states(path: Path, video: str) -> dict[tuple[int, int], str]:
         for rec in obj.get("frames", []):
             out[(int(obj_id), int(rec.get("frame_idx", -1)))] = str(rec.get("state", ""))
     return out
+
+
+def _json_records(path: Path | None, key: str) -> list[dict[str, Any]]:
+    if path is None or not path.is_file():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"warning: failed to read {key} JSON {path}: {exc}", file=sys.stderr, flush=True)
+        return []
+    if isinstance(data, list):
+        return [x for x in data if isinstance(x, dict)]
+    if isinstance(data, dict):
+        records = data.get(key)
+        if isinstance(records, list):
+            return [x for x in records if isinstance(x, dict)]
+        # Common tool outputs.
+        for alt in ["records", "profiles"]:
+            records = data.get(alt)
+            if isinstance(records, list):
+                return [x for x in records if isinstance(x, dict)]
+    return []
+
+
+def load_mllm_assets(args: argparse.Namespace) -> None:
+    """Load M7 MLLM verifier outputs into lookup maps on args.
+
+    Qwen-VL outputs are deliberately treated as *advisory verification records*:
+    missing or malformed records simply disable MLLM intervention for the
+    corresponding candidate.  This preserves baseline/M11/M5R behavior unless a
+    cached judgment explicitly reaches the policy confidence thresholds.
+    """
+    profiles: dict[tuple[str, int], dict[str, Any]] = {}
+    for rec in _json_records(args.target_profiles_json, "profiles"):
+        try:
+            profiles[(str(rec["video"]), int(rec["obj_id"]))] = rec
+        except Exception:
+            continue
+    candidate_lookup: dict[tuple[str, int, int], list[dict[str, Any]]] = {}
+    for rec in _json_records(args.mllm_candidate_judgments_json, "records"):
+        try:
+            key = (str(rec["video"]), int(rec["obj_id"]), int(rec["frame_idx"]))
+        except Exception:
+            continue
+        candidate_lookup.setdefault(key, []).append(rec)
+    tracklet_lookup: dict[tuple[str, int, int], list[dict[str, Any]]] = {}
+    for rec in _json_records(args.mllm_tracklet_judgments_json, "records"):
+        try:
+            key = (str(rec["video"]), int(rec["obj_id"]), int(rec["anchor_frame"]))
+        except Exception:
+            continue
+        tracklet_lookup.setdefault(key, []).append(rec)
+    args._mllm_profiles = profiles
+    args._mllm_candidate_lookup = candidate_lookup
+    args._mllm_tracklet_lookup = tracklet_lookup
+
+
+def _mllm_profile(args: argparse.Namespace, video: str, obj_id: int) -> dict[str, Any]:
+    return getattr(args, "_mllm_profiles", {}).get((video, int(obj_id)), {})
+
+
+def _candidate_source_match(candidate_source: str, judgment_source: str | None) -> bool:
+    if not judgment_source:
+        return False
+    if candidate_source == judgment_source:
+        return True
+    # Root-derived candidates can carry suffixes such as ":anyfg:0"; MLLM
+    # panels name only the prediction root.  Treat the shared root prefix as a
+    # match, but never match unrelated roots.
+    return candidate_source.split(":", 1)[0] == str(judgment_source).split(":", 1)[0]
+
+
+def _best_candidate_source(record: dict[str, Any]) -> tuple[str | None, dict[str, Any] | None]:
+    judgment = record.get("judgment", record if isinstance(record.get("best_candidate"), str) else {})
+    best = str(judgment.get("best_candidate", "")).strip()
+    if len(best) == 1 and best.isalpha():
+        for cand in record.get("candidates", []):
+            if str(cand.get("candidate_id")) == best:
+                return str(cand.get("source")), cand
+    if best == "keep_baseline":
+        return "baseline", None
+    return None, None
+
+
+def _tracklet_for_source(args: argparse.Namespace, cand: Candidate) -> dict[str, Any] | None:
+    records = getattr(args, "_mllm_tracklet_lookup", {}).get((cand.video, int(cand.obj_id), int(cand.frame_idx)), [])
+    for rec in records:
+        if _candidate_source_match(cand.source, rec.get("source")):
+            return rec.get("tracklet_judgment", rec)
+    return None
+
+
+def apply_mllm_policy(cands: list[Candidate], args: argparse.Namespace) -> None:
+    if getattr(args, "mllm_policy", "off") == "off":
+        return
+    candidate_lookup = getattr(args, "_mllm_candidate_lookup", {})
+    if not candidate_lookup:
+        return
+    for cand in cands:
+        records = candidate_lookup.get((cand.video, int(cand.obj_id), int(cand.frame_idx)), [])
+        if not records:
+            continue
+        profile = _mllm_profile(args, cand.video, int(cand.obj_id))
+        effective_policy = args.mllm_policy
+        if effective_policy == "semantic_support" and not bool(profile.get("is_semantic_dominated")):
+            effective_policy = "veto_only"
+        profile_type = str(profile.get("target_type", "unknown"))
+        for rec in records:
+            judgment = rec.get("judgment", rec)
+            best_source, _ = _best_candidate_source(rec)
+            best_matches_this = _candidate_source_match(cand.source, best_source)
+            conf = float(judgment.get("confidence") or 0.0)
+            risks = list(judgment.get("distractor_risks", judgment.get("risk_tags", [])) or [])
+            cand.mllm_policy = effective_policy
+            cand.mllm_candidate_decision = {
+                "best_candidate": judgment.get("best_candidate"),
+                "target_visible": judgment.get("target_visible"),
+                "recommended_action": judgment.get("recommended_action"),
+                "reason_short": judgment.get("reason_short"),
+                "record_panel": rec.get("panel_path"),
+                "record_source": best_source,
+            }
+            cand.mllm_confidence = conf
+            cand.mllm_risk_tags = risks
+            cand.mllm_cache_key = rec.get("mllm_cache_key") or judgment.get("mllm_cache_key")
+
+            recommended = str(judgment.get("recommended_action", "uncertain"))
+            best = str(judgment.get("best_candidate", "uncertain"))
+            explicit_veto = bool(judgment.get("should_veto_anchor")) and conf >= float(args.mllm_min_veto_confidence)
+            reject_action = recommended in {"reject_all", "keep_empty"} and conf >= 0.65
+            other_high_conf = (
+                best_source is not None
+                and not best_matches_this
+                and conf >= float(args.mllm_min_veto_confidence)
+                and best not in {"uncertain", "none"}
+            )
+            conservative_uncertain = (
+                best in {"uncertain", "none", "empty"}
+                and profile_type in {"same_class_dense", "tiny", "edge_partial"}
+                and conf >= float(args.mllm_min_veto_confidence)
+            )
+            requested_uncertain_reject = (
+                best in {"uncertain", "none", "empty"}
+                and args.mllm_uncertain_action in {"empty", "output_only"}
+                and conf >= float(args.mllm_min_veto_confidence)
+            )
+            if explicit_veto or reject_action or other_high_conf or conservative_uncertain or requested_uncertain_reject:
+                cand.mllm_veto_applied = True
+                reason = "mllm_veto"
+                if other_high_conf:
+                    reason = f"mllm_preferred_other:{best_source}"
+                elif reject_action:
+                    reason = f"mllm_{recommended}"
+                elif conservative_uncertain:
+                    reason = "mllm_conservative_uncertain"
+                elif requested_uncertain_reject:
+                    reason = f"mllm_uncertain_{args.mllm_uncertain_action}"
+                if reason not in cand.rejected:
+                    cand.rejected.append(reason)
+                continue
+
+            support_ok = (
+                effective_policy in {"support_and_veto", "semantic_support"}
+                and best_matches_this
+                and bool(judgment.get("should_support_anchor"))
+                and conf >= float(args.mllm_min_support_confidence)
+            )
+            if support_ok:
+                cand.mllm_support_applied = True
+                # MLLM support is a weak bonus, never a replacement for the
+                # descriptor/temporal checks already encoded in score/rejected.
+                cand.score += 0.02
+
+            track = _tracklet_for_source(args, cand)
+            if track is not None:
+                cand.mllm_tracklet_decision = {
+                    "promote_anchor": track.get("promote_anchor"),
+                    "same_as_reference": track.get("same_as_reference"),
+                    "same_object_across_frames": track.get("same_object_across_frames"),
+                    "confidence": track.get("confidence"),
+                    "risk_tags": track.get("risk_tags", []),
+                }
+            if args.mllm_require_tracklet_for_anchor and effective_policy in {"support_and_veto", "semantic_support", "veto_only"}:
+                track_promote = bool((track or {}).get("promote_anchor"))
+                track_conf = float((track or {}).get("confidence") or 0.0)
+                # Strong non-MLLM descriptor/cycle evidence is still allowed:
+                # Qwen-VL cannot be the sole promotion path.
+                if not track_promote and cand.margin < float(args.strong_margin):
+                    if "mllm_tracklet_required" not in cand.rejected:
+                        cand.rejected.append("mllm_tracklet_required")
+                elif track_promote and track_conf >= float(args.mllm_min_support_confidence):
+                    cand.mllm_support_applied = True
 
 
 def event_frames(
@@ -1110,6 +1337,7 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
         anchor_floor, anchor_floor_reason = anchor_floor_frame(frames, labels_by_source, obj_id, init_area, args)
         cands = collect_candidates(video, frames, labels_by_source, obj_id, events, auto_generator, anchor_floor, args)
         score_candidates(cands, pos_bank, neg_bank, init_area, extractor, dino_extractor, frames, args)
+        apply_mllm_policy(cands, args)
         anchors = choose_anchors(cands, anchor_floor, init_area, args)
         anchors_by_obj[obj_id] = anchors
         rejected_counts: dict[str, int] = {}
@@ -1211,6 +1439,20 @@ def main() -> None:
         for required in [args.dino_root, args.dino_weights]:
             if not required.exists():
                 raise FileNotFoundError(required)
+    load_mllm_assets(args)
+    if args.mllm_policy != "off":
+        print(
+            "mllm_assets=" + json.dumps(
+                {
+                    "policy": args.mllm_policy,
+                    "profiles": len(getattr(args, "_mllm_profiles", {})),
+                    "candidate_frames": len(getattr(args, "_mllm_candidate_lookup", {})),
+                    "tracklet_frames": len(getattr(args, "_mllm_tracklet_lookup", {})),
+                },
+                ensure_ascii=False, sort_keys=True,
+            ),
+            flush=True,
+        )
 
     import torch
 

@@ -38,3 +38,6 @@ artifacts/
 # Versioned documentation figures
 !docs/assets/
 !docs/assets/**
+
+# External repos/checkouts are local-only
+external/
