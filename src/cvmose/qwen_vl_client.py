@@ -66,8 +66,9 @@ class QwenVLConfig:
     fallback_models: list[str] = field(default_factory=lambda: [x.strip() for x in os.getenv("QWEN_VL_FALLBACK_MODELS", DEFAULT_FALLBACKS).split(",") if x.strip()])
     cache_dir: Path = Path("artifacts/m7_qwen_vl/cache")
     dry_run: bool = False
-    max_side: int = 1600
-    jpeg_quality: int = 90
+    max_side: int = field(default_factory=lambda: int(os.getenv("QWEN_VL_MAX_SIDE", "1200")))
+    jpeg_quality: int = field(default_factory=lambda: int(os.getenv("QWEN_VL_JPEG_QUALITY", "88")))
+    timeout: float = field(default_factory=lambda: float(os.getenv("QWEN_VL_TIMEOUT", "120")))
 
 
 class QwenVLClient:
@@ -79,8 +80,8 @@ class QwenVLClient:
         fallback_models: list[str] | None = None,
         cache_dir: str | Path | None = None,
         dry_run: bool = False,
-        max_side: int = 1600,
-        jpeg_quality: int = 90,
+        max_side: int | None = None,
+        jpeg_quality: int | None = None,
     ) -> None:
         cfg = QwenVLConfig()
         if model:
@@ -94,8 +95,10 @@ class QwenVLClient:
         if cache_dir is not None:
             cfg.cache_dir = Path(cache_dir)
         cfg.dry_run = dry_run or not bool(cfg.api_key)
-        cfg.max_side = int(max_side)
-        cfg.jpeg_quality = int(jpeg_quality)
+        if max_side is not None:
+            cfg.max_side = int(max_side)
+        if jpeg_quality is not None:
+            cfg.jpeg_quality = int(jpeg_quality)
         self.cfg = cfg
         self.cache_dir = cfg.cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -254,7 +257,7 @@ class QwenVLClient:
         raw_text = ""
         model_used = None
         for model_try in self.models_to_try:
-            client = OpenAI(api_key=self.cfg.api_key, base_url=self.cfg.base_url)
+            client = OpenAI(api_key=self.cfg.api_key, base_url=self.cfg.base_url, timeout=self.cfg.timeout, max_retries=0)
             try:
                 kwargs: dict[str, Any] = {
                     "model": model_try,

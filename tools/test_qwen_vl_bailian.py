@@ -54,7 +54,7 @@ def main() -> None:
         max_tokens=512,
     )
     elapsed = round(time.time() - started, 2)
-    ok = result.get("status") in {"ok", "dry_run"} and (result.get("image_contains") or result.get("decision") == "uncertain" or result.get("status") == "dry_run")
+    ok = bool(result.get("status") in {"ok", "dry_run"} and (result.get("image_contains") or result.get("decision") == "uncertain" or result.get("status") == "dry_run"))
     args.out_doc.parent.mkdir(parents=True, exist_ok=True)
     args.out_doc.write_text(
         "# M7 Qwen-VL / Bailian setup\n\n"

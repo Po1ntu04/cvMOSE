@@ -1,0 +1,17 @@
+{
+  "videos": {
+    "q0sizv6m": {
+      "selected_frames": [
+        0,
+        10,
+        15,
+        17,
+        33,
+        35,
+        39,
+        41
+      ],
+      "sheet": "docs/assets/m7_qwen_vl/q0_real_v2_compare/q0sizv6m_m7_qwen_compare.jpg"
+    }
+  }
+}

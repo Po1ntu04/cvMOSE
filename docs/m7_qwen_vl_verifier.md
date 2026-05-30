@@ -227,3 +227,45 @@ M7 should produce final/balanced zips only after real Qwen calls and visual revi
 - no large wrong same-class/composite masks on `q0sizv6m`/`msinig6m`;
 - no regression on stable videos such as `8jsm23a7`;
 - 418 provided outputs unchanged via `tools/validate_mose_submission.py`.
+
+## Real API update: qwen3.5-plus q0 smoke
+
+After the API key/model were provided, I ran a real OpenAI-compatible Bailian smoke using `QWEN_VL_MODEL=qwen3.5-plus`.
+
+Real API evidence:
+
+- smoke test: `status=ok`, `model_used=qwen3.5-plus`, elapsed about 7-12 seconds depending on cache/image sizing;
+- target profiles: 16/16 objects returned `status=ok`;
+- q0sizv6m candidate judge subset: 8 real candidate calls;
+- q0sizv6m b101 M5R-veto smoke v1 exposed an implementation issue: judged anchors were rejected, but unjudged high-risk same-class anchors could still be selected;
+- fixed policy: with `--mllm-require-tracklet-for-anchor`, same-class/tiny/edge high-risk candidates without an MLLM judgment are rejected unless their descriptor margin is very strong.
+
+q0sizv6m real Qwen candidate outcome:
+
+| frame | best | veto | conf | short reading |
+| ---: | --- | --- | ---: | --- |
+| 34 | uncertain | false | 0.25 | dense identical guinea-pig cluster; cannot confirm instance |
+| 17 | none | true | 0.90 | candidate is same-class distractor |
+| 36 | uncertain | false | 0.25 | cannot verify specific identity |
+| 35 | uncertain | false | 0.30 | dense crowd prevents re-ID |
+| 40 | uncertain | false | 0.55 | one candidate color/position plausible but not enough to promote |
+| 16 | none | true | 0.10 | same-class neighbor, not the reference instance |
+
+b101 q0 smoke after the high-risk-unjudged fix:
+
+```text
+pred_root=/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/pred_sam2_m7_qwen_veto_q0_real_v2
+audit_json=/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/logs/m7_qwen_veto_q0_real_v2.json
+accepted_anchor_count=0
+changed_vs_baseline=0
+```
+
+Interpretation:
+
+- Qwen3.5-plus is useful as a **safety verifier** on q0: it refuses to certify same-class guinea-pig anchors and explicitly identifies some wrong-neighbor candidates.
+- It does **not** yet provide recovery evidence on q0; the safe outcome is baseline/M11-equivalent rather than a positive improvement.
+- This supports keeping `veto_only` for same-class dense cases and reserving `support_and_veto` for semantic-dominated objects only after real support judgments are available.
+
+Visual sheet:
+
+- `docs/assets/m7_qwen_vl/q0_real_v2_compare/q0sizv6m_m7_qwen_compare.jpg`

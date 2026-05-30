@@ -730,13 +730,22 @@ def apply_mllm_policy(cands: list[Candidate], args: argparse.Namespace) -> None:
         return
     for cand in cands:
         records = candidate_lookup.get((cand.video, int(cand.obj_id), int(cand.frame_idx)), [])
-        if not records:
-            continue
         profile = _mllm_profile(args, cand.video, int(cand.obj_id))
+        profile_type = str(profile.get("target_type", "unknown"))
+        if not records:
+            if (
+                args.mllm_require_tracklet_for_anchor
+                and profile_type in {"same_class_dense", "tiny", "edge_partial"}
+                and cand.margin < float(args.strong_margin)
+            ):
+                cand.mllm_policy = args.mllm_policy
+                cand.mllm_candidate_decision = {"best_candidate": None, "recommended_action": "unjudged_high_risk", "reason_short": "high-risk target has no MLLM judgment for this candidate frame"}
+                if "mllm_unjudged_high_risk" not in cand.rejected:
+                    cand.rejected.append("mllm_unjudged_high_risk")
+            continue
         effective_policy = args.mllm_policy
         if effective_policy == "semantic_support" and not bool(profile.get("is_semantic_dominated")):
             effective_policy = "veto_only"
-        profile_type = str(profile.get("target_type", "unknown"))
         for rec in records:
             judgment = rec.get("judgment", rec)
             best_source, _ = _best_candidate_source(rec)
