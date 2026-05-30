@@ -1,0 +1,202 @@
+{
+  "safe": {
+    "submission": {
+      "submit_root": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_433_m6_safe",
+      "zip_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m6_safe.zip",
+      "video_dirs": 433,
+      "pngs": 66526,
+      "zip_size": 71340697
+    },
+    "rules": [],
+    "notes": [
+      "safe=M11 default; no external/DINO replacement accepted without clear proof"
+    ],
+    "changed_by_video": {},
+    "validation_ok": true,
+    "validation_checks": [
+      {
+        "kind": "pred_root",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_safe",
+        "video_dirs": 15,
+        "pngs": 1004,
+        "ok": true,
+        "errors": []
+      },
+      {
+        "kind": "submit_root",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_433_m6_safe",
+        "video_dirs": 433,
+        "pngs": 66526,
+        "provided_videos": 418,
+        "provided_changed_count": 0,
+        "provided_changed_samples": [],
+        "provided_array_equal_only_count": 0,
+        "predicted_videos": 15,
+        "predicted_error_count": 0,
+        "predicted_error_samples": [],
+        "ok": true,
+        "errors": []
+      },
+      {
+        "kind": "zip",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m6_safe.zip",
+        "size": 71340697,
+        "video_dirs": 433,
+        "pngs": 66526,
+        "testzip_bad_member": null,
+        "provided_videos": 418,
+        "provided_changed_count": 0,
+        "provided_changed_samples": [],
+        "provided_array_equal_only_count": 0,
+        "predicted_videos": 15,
+        "predicted_error_count": 0,
+        "predicted_error_samples": [],
+        "ok": true,
+        "errors": []
+      }
+    ]
+  },
+  "balanced": {
+    "submission": {
+      "submit_root": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_433_m6_balanced",
+      "zip_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m6_balanced.zip",
+      "video_dirs": 433,
+      "pngs": 66526,
+      "zip_size": 71347410
+    },
+    "rules": [
+      "1qlssuz2=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_m5r_dino_key",
+      "2smf7uq9=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_m5r_dino_key"
+    ],
+    "notes": [
+      "balanced=M11 default + DINO on 1qlssuz2/2smf7uq9 after visual review"
+    ],
+    "changed_by_video": {
+      "1qlssuz2": 17,
+      "2smf7uq9": 24
+    },
+    "validation_ok": true,
+    "validation_checks": [
+      {
+        "kind": "pred_root",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_balanced",
+        "video_dirs": 15,
+        "pngs": 1004,
+        "ok": true,
+        "errors": []
+      },
+      {
+        "kind": "submit_root",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_433_m6_balanced",
+        "video_dirs": 433,
+        "pngs": 66526,
+        "provided_videos": 418,
+        "provided_changed_count": 0,
+        "provided_changed_samples": [],
+        "provided_array_equal_only_count": 0,
+        "predicted_videos": 15,
+        "predicted_error_count": 0,
+        "predicted_error_samples": [],
+        "ok": true,
+        "errors": []
+      },
+      {
+        "kind": "zip",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m6_balanced.zip",
+        "size": 71347410,
+        "video_dirs": 433,
+        "pngs": 66526,
+        "testzip_bad_member": null,
+        "provided_videos": 418,
+        "provided_changed_count": 0,
+        "provided_changed_samples": [],
+        "provided_array_equal_only_count": 0,
+        "predicted_videos": 15,
+        "predicted_error_count": 0,
+        "predicted_error_samples": [],
+        "ok": true,
+        "errors": []
+      }
+    ]
+  },
+  "aggressive": {
+    "submission": {
+      "submit_root": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_433_m6_aggressive",
+      "zip_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m6_aggressive.zip",
+      "video_dirs": 433,
+      "pngs": 66526,
+      "zip_size": 71492179
+    },
+    "rules": [
+      "1qlssuz2=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_m5r_dino_key",
+      "2smf7uq9=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_m5r_dino_key",
+      "3epdtmyr=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "4f98052b=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "4vznweiu=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "amfdu83t=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "c8lutf29=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "lcgc29va=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "pe0d85lk=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+      "z6dx46qr=/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2"
+    ],
+    "notes": [
+      "aggressive=M11 default + DINO selected + official-large on non-rejected videos; score probe/rule-dependent"
+    ],
+    "changed_by_video": {
+      "1qlssuz2": 17,
+      "2smf7uq9": 24,
+      "3epdtmyr": 131,
+      "4f98052b": 124,
+      "4vznweiu": 32,
+      "amfdu83t": 2,
+      "c8lutf29": 12,
+      "lcgc29va": 28,
+      "pe0d85lk": 42,
+      "z6dx46qr": 25
+    },
+    "validation_ok": true,
+    "validation_checks": [
+      {
+        "kind": "pred_root",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_aggressive",
+        "video_dirs": 15,
+        "pngs": 1004,
+        "ok": true,
+        "errors": []
+      },
+      {
+        "kind": "submit_root",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_433_m6_aggressive",
+        "video_dirs": 433,
+        "pngs": 66526,
+        "provided_videos": 418,
+        "provided_changed_count": 0,
+        "provided_changed_samples": [],
+        "provided_array_equal_only_count": 0,
+        "predicted_videos": 15,
+        "predicted_error_count": 0,
+        "predicted_error_samples": [],
+        "ok": true,
+        "errors": []
+      },
+      {
+        "kind": "zip",
+        "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m6_aggressive.zip",
+        "size": 71492179,
+        "video_dirs": 433,
+        "pngs": 66526,
+        "testzip_bad_member": null,
+        "provided_videos": 418,
+        "provided_changed_count": 0,
+        "provided_changed_samples": [],
+        "provided_array_equal_only_count": 0,
+        "predicted_videos": 15,
+        "predicted_error_count": 0,
+        "predicted_error_samples": [],
+        "ok": true,
+        "errors": []
+      }
+    ]
+  },
+  "compare_csv_snapshot": "changed_vs_baseline,changed_vs_m11,first_frame_preserved,frames,invalid_label_samples,label_ids_valid,mean_iou_vs_baseline,mean_iou_vs_m11,missing_frames,obj1_empty,obj1_max_area,obj1_mean_area,obj1_min_area,obj2_empty,obj2_max_area,obj2_mean_area,obj2_min_area,obj3_empty,obj3_max_area,obj3_mean_area,obj3_min_area,root,size_errors,video\n0,0,True,40,,True,1.0,1.0,0,5,1304,602.38,0,,,,,,,,,m6_safe,,1qlssuz2\n17,17,True,40,,True,0.981113,0.981113,0,5,1304,610.15,0,,,,,,,,,m6_balanced,,1qlssuz2\n17,17,True,40,,True,0.981113,0.981113,0,5,1304,610.15,0,,,,,,,,,m6_aggressive,,1qlssuz2\n0,0,True,43,,True,1.0,1.0,0,20,43719,12300.37,0,,,,,,,,,m6_safe,,2smf7uq9\n24,24,True,43,,True,0.771131,0.771131,0,11,42663,14395.51,0,,,,,,,,,m6_balanced,,2smf7uq9\n24,24,True,43,,True,0.771131,0.771131,0,11,42663,14395.51,0,,,,,,,,,m6_aggressive,,2smf7uq9\n0,0,True,190,,True,1.0,1.0,0,58,181843,55380.32,0,,,,,,,,,m6_safe,,3epdtmyr\n0,0,True,190,,True,1.0,1.0,0,58,181843,55380.32,0,,,,,,,,,m6_balanced,,3epdtmyr\n131,131,True,190,,True,0.970115,0.970115,0,58,184628,55070.76,0,,,,,,,,,m6_aggressive,,3epdtmyr\n12,0,True,179,,True,0.932961,1.0,0,120,114116,26556.53,0,106,91864,9678.39,0,,,,,m6_safe,,4f98052b\n12,0,True,179,,True,0.932961,1.0,0,120,114116,26556.53,0,106,91864,9678.39,0,,,,,m6_balanced,,4f98052b\n124,124,True,179,,True,0.670007,0.635217,0,120,114961,27169.8,0,73,172144,27077.74,0,,,,,m6_aggressive,,4f98052b\n0,0,True,35,,True,1.0,1.0,0,3,2667,1662.69,0,,,,,,,,,m6_safe,,4vznweiu\n0,0,True,35,,True,1.0,1.0,0,3,2667,1662.69,0,,,,,,,,,m6_balanced,,4vznweiu\n32,32,True,35,,True,0.379776,0.379776,0,2,5586,3042.71,0,,,,,,,,,m6_aggressive,,4vznweiu\n0,0,True,49,,True,1.0,1.0,0,1,8867,7290.63,0,,,,,,,,,m6_safe,,8jsm23a7\n0,0,True,49,,True,1.0,1.0,0,1,8867,7290.63,0,,,,,,,,,m6_balanced,,8jsm23a7\n0,0,True,49,,True,1.0,1.0,0,1,8867,7290.63,0,,,,,,,,,m6_aggressive,,8jsm23a7\n0,0,True,24,,True,1.0,1.0,0,21,1152,122.04,0,,,,,,,,,m6_safe,,amfdu83t\n0,0,True,24,,True,1.0,1.0,0,21,1152,122.04,0,,,,,,,,,m6_balanced,,amfdu83t\n2,2,True,24,,True,0.953095,0.953095,0,22,1129,91.92,0,,,,,,,,,m6_aggressive,,amfdu83t\n0,0,True,47,,True,1.0,1.0,0,34,98306,17781.51,0,,,,,,,,,m6_safe,,c8lutf29\n0,0,True,47,,True,1.0,1.0,0,34,98306,17781.51,0,,,,,,,,,m6_balanced,,c8lutf29\n12,12,True,47,,True,0.765278,0.765278,0,45,40971,934.55,0,,,,,,,,,m6_aggressive,,c8lutf29\n0,0,True,41,,True,1.0,1.0,0,5,90927,11161.59,0,,,,,,,,,m6_safe,,jadgtmfl\n0,0,True,41,,True,1.0,1.0,0,5,90927,11161.59,0,,,,,,,,,m6_balanced,,jadgtmfl\n0,0,True,41,,True,1.0,1.0,0,5,90927,11161.59,0,,,,,,,,,m6_aggressive,,jadgtmfl\n0,0,True,35,,True,1.0,1.0,0,8,1536,601.97,0,,,,,,,,,m6_safe,,lcgc29va\n0,0,True,35,,True,1.0,1.0,0,8,1536,601.97,0,,,,,,,,,m6_balanced,,lcgc29va\n28,28,True,35,,True,0.67212,0.67212,0,8,1701,527.31,0,,,,,,,,,m6_aggressive,,lcgc29va\n25,0,True,134,,True,0.828428,1.0,0,103,81199,12323.34,0,95,183709,25613.63,0,101,92532,10630.1,0,m6_safe,,msinig6m\n25,0,True,134,,True,0.828428,1.0,0,103,81199,12323.34,0,95,183709,25613.63,0,101,92532,10630.1,0,m6_balanced,,msinig6m\n25,0,True,134,,True,0.828428,1.0,0,103,81199,12323.34,0,95,183709,25613.63,0,101,92532,10630.1,0,m6_aggressive,,msinig6m\n0,0,True,62,,True,1.0,1.0,0,41,485350,22456.11,0,26,927403,108324.44,0,,,,,m6_safe,,pe0d85lk\n0,0,True,62,,True,1.0,1.0,0,41,485350,22456.11,0,26,927403,108324.44,0,,,,,m6_balanced,,pe0d85lk\n42,42,True,62,,True,0.964845,0.964845,0,41,485350,22529.73,0,26,929820,114165.27,0,,,,,m6_aggressive,,pe0d85lk\n0,0,True,42,,True,1.0,1.0,0,28,39699,8712.64,0,10,65109,32389.43,0,,,,,m6_safe,,q0sizv6m\n0,0,True,42,,True,1.0,1.0,0,28,39699,8712.64,0,10,65109,32389.43,0,,,,,m6_balanced,,q0sizv6m\n0,0,True,42,,True,1.0,1.0,0,28,39699,8712.64,0,10,65109,32389.43,0,,,,,m6_aggressive,,q0sizv6m\n23,0,True,45,,True,0.488889,1.0,0,39,33817,3875.4,0,,,,,,,,,m6_safe,,r13u5z4y\n23,0,True,45,,True,0.488889,1.0,0,39,33817,3875.4,0,,,,,,,,,m6_balanced,,r13u5z4y\n23,0,True,45,,True,0.488889,1.0,0,39,33817,3875.4,0,,,,,,,,,m6_aggressive,,r13u5z4y\n0,0,True,38,,True,1.0,1.0,0,30,16840,2058.37,0,,,,,,,,,m6_safe,,z6dx46qr\n0,0,True,38,,True,1.0,1.0,0,30,16840,2058.37,0,,,,,,,,,m6_balanced,,z6dx46qr\n25,25,True,38,,True,0.423393,0.423393,0,12,13375,5134.82,0,,,,,,,,,m6_aggressive,,z6dx46qr\n"
+}

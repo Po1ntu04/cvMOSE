@@ -45,6 +45,12 @@ from infer_mosev2_sam2 import (  # noqa: E402
     save_label_png,
 )
 
+from cvmose.dino_descriptors import (  # noqa: E402
+    DINO_SPECS,
+    DinoDescriptorExtractor,
+    DinoDescriptorResult,
+)
+
 
 SOURCE_DEFAULTS = {
     "baseline": "pred_sam2_b101",
@@ -61,6 +67,9 @@ SOURCE_DEFAULTS = {
 class Descriptor:
     vector: np.ndarray
     parts: dict[str, int] = field(default_factory=dict)
+    source: str = "rgb"
+    dino_tokens_inside: int | None = None
+    fallback_reason: str | None = None
 
 
 @dataclass(slots=True)
@@ -78,6 +87,10 @@ class Candidate:
     neg_sim: float = 0.0
     margin: float = 0.0
     score: float = 0.0
+    descriptor_source: str | None = None
+    dino_tokens_inside: int | None = None
+    fallback_reason: str | None = None
+    confirm_reason: str | None = None
     rejected: list[str] = field(default_factory=list)
 
     def brief(self) -> dict[str, Any]:
@@ -92,6 +105,11 @@ class Candidate:
             "neg_sim": round(float(self.neg_sim), 4),
             "margin": round(float(self.margin), 4),
             "score": round(float(self.score), 4),
+            "descriptor_source": self.descriptor_source,
+            "dino_tokens_inside": self.dino_tokens_inside,
+            "fallback_reason": self.fallback_reason,
+            "confirm_reason": self.confirm_reason,
+            "descriptor_parts": dict(self.descriptor.parts) if self.descriptor else {},
             "rejected": list(self.rejected),
         }
 
@@ -130,7 +148,14 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--audit-json", type=Path, default=None)
     p.add_argument("--audit-dir", type=Path, default=None)
 
-    p.add_argument("--descriptor", choices=["rgb", "rgb_sam2"], default="rgb_sam2")
+    p.add_argument("--descriptor", choices=["rgb", "rgb_sam2", "dino_vitb_reg", "dino_vitl_reg", "dino_sam2_fusion"], default="rgb_sam2")
+    p.add_argument("--dino-root", type=Path, default=None, help="External facebookresearch/dinov2 checkout for DINO descriptors")
+    p.add_argument("--dino-weights", type=Path, default=None, help="Local DINOv2 checkpoint path; required for DINO descriptors on offline b101")
+    p.add_argument("--dino-variant", choices=["dino_vitb_reg", "dino_vitl_reg"], default="dino_vitb_reg")
+    p.add_argument("--dino-max-side", type=int, default=700)
+    p.add_argument("--dino-tiny-min-tokens", type=int, default=3)
+    p.add_argument("--dino-tiny-crop-min-side", type=int, default=96)
+    p.add_argument("--dino-tiny-crop-mult", type=float, default=6.0)
     p.add_argument("--include-any-fg-components", action="store_true", default=True)
     p.add_argument("--no-any-fg-components", dest="include_any_fg_components", action="store_false")
     p.add_argument("--sam2-auto-mask-candidates", action="store_true", help="Add SAM2 automatic-mask proposals on recovery frames")
@@ -155,12 +180,19 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--hard-event-area-drop-ratio", type=float, default=0.20)
     p.add_argument("--min-anchor-separation", type=int, default=6)
     p.add_argument("--identity-margin", type=float, default=0.08)
+    p.add_argument("--sameclass-margin", type=float, default=0.18)
     p.add_argument("--positive-thr", type=float, default=0.50)
     p.add_argument("--negative-thr", type=float, default=0.92)
     p.add_argument("--max-area-ratio", type=float, default=8.0)
     p.add_argument("--min-area-ratio", type=float, default=0.02)
     p.add_argument("--merge-policy", choices=["anchor_window", "all_reprop", "baseline_only"], default="anchor_window")
     p.add_argument("--merge-radius", type=int, default=14)
+    p.add_argument("--anchor-confirm-mode", choices=["single", "delayed2", "delayed2_or_cycle"], default="single")
+    p.add_argument("--anchor-confirm-window", type=int, default=3)
+    p.add_argument("--anchor-confirm-min-count", type=int, default=2)
+    p.add_argument("--strong-margin", type=float, default=0.25)
+    p.add_argument("--rollback-max-change-frac", type=float, default=0.50)
+    p.add_argument("--rollback-high-conf-margin", type=float, default=0.25)
     p.add_argument("--copy-baseline-on-no-anchor", action="store_true", default=True)
     return p.parse_args()
 
@@ -184,6 +216,15 @@ def complete_paths(args: argparse.Namespace) -> argparse.Namespace:
     args.rar_audit_json = (args.rar_audit_json or ws / "homework" / "logs" / "rar_state_latest.json").resolve()
     args.audit_json = (args.audit_json or ws / "homework" / "logs" / "m5r_reanchor_latest.json").resolve()
     args.audit_dir = (args.audit_dir or ws / "homework" / "logs" / "m5r_reanchor_by_video").resolve()
+    args.dino_root = (args.dino_root or ws / "external" / "dinov2").resolve()
+    variant = args.dino_variant
+    if args.descriptor == "dino_vitl_reg":
+        variant = "dino_vitl_reg"
+    elif args.descriptor in {"dino_vitb_reg", "dino_sam2_fusion"}:
+        variant = "dino_vitb_reg"
+    args.dino_variant = variant
+    default_weight = DINO_SPECS[variant]["default_weight_name"]
+    args.dino_weights = (args.dino_weights or ws / "homework" / "external_checkpoints" / "dinov2" / default_weight).resolve()
     return args
 
 
@@ -432,19 +473,42 @@ class Sam2AutoMaskCandidateGenerator:
         return out
 
 
-def make_descriptor(rgb: np.ndarray, mask: np.ndarray, sam2_desc: np.ndarray | None) -> Descriptor | None:
+def make_descriptor(
+    rgb: np.ndarray,
+    mask: np.ndarray,
+    sam2_desc: np.ndarray | None,
+    dino_desc: DinoDescriptorResult | None = None,
+    descriptor_mode: str = "rgb_sam2",
+) -> Descriptor | None:
+    if descriptor_mode.startswith("dino") and dino_desc is None:
+        return None
     parts: dict[str, int] = {}
     chunks = []
     r = rgb_descriptor(rgb, mask)
+    # DINO modes use color/shape as a weak auxiliary cue, not the main identity.
+    rgb_weight = 0.25 if descriptor_mode.startswith("dino") else 0.75
     if r is not None:
         parts["rgb_hsv_edge_shape"] = int(r.size)
-        chunks.append(r * 0.75)
+        chunks.append(r * rgb_weight)
+    if dino_desc is not None:
+        parts[dino_desc.source] = int(dino_desc.vector.size)
+        chunks.append(l2_normalize(dino_desc.vector) * 1.75)
     if sam2_desc is not None:
         parts["sam2_image_encoder"] = int(sam2_desc.size)
-        chunks.append(l2_normalize(sam2_desc) * 1.25)
+        sam2_weight = 0.75 if descriptor_mode == "dino_sam2_fusion" else 1.25
+        chunks.append(l2_normalize(sam2_desc) * sam2_weight)
     if not chunks:
         return None
-    return Descriptor(vector=l2_normalize(np.concatenate(chunks)), parts=parts)
+    if dino_desc is not None:
+        source = "dino_sam2_fusion" if sam2_desc is not None and descriptor_mode == "dino_sam2_fusion" else dino_desc.source
+        return Descriptor(
+            vector=l2_normalize(np.concatenate(chunks)),
+            parts=parts,
+            source=source,
+            dino_tokens_inside=dino_desc.tokens_inside,
+            fallback_reason=dino_desc.fallback_reason,
+        )
+    return Descriptor(vector=l2_normalize(np.concatenate(chunks)), parts=parts, source="rgb_sam2" if sam2_desc is not None else "rgb")
 
 
 def connected_components(mask: np.ndarray, min_area: int, max_count: int) -> list[np.ndarray]:
@@ -712,6 +776,7 @@ def build_positive_negative_banks(
     labels_by_source: dict[str, list[np.ndarray | None]],
     events: set[int],
     extractor: Sam2DescriptorExtractor,
+    dino_extractor: DinoDescriptorExtractor | None,
     args: argparse.Namespace,
 ) -> tuple[list[np.ndarray], list[np.ndarray], list[dict[str, Any]]]:
     audit: list[dict[str, Any]] = []
@@ -720,10 +785,13 @@ def build_positive_negative_banks(
 
     def add_desc(kind: str, frame_idx: int, source: str, mask: np.ndarray) -> None:
         rgb = load_rgb(frames[frame_idx])
+        dino_desc = dino_extractor.describe(frame_idx, rgb, mask) if dino_extractor is not None else None
         desc = make_descriptor(
             rgb,
             mask,
-            extractor.describe(frame_idx, mask) if args.descriptor == "rgb_sam2" else None,
+            extractor.describe(frame_idx, mask) if args.descriptor in {"rgb_sam2", "dino_sam2_fusion"} else None,
+            dino_desc,
+            args.descriptor,
         )
         if desc is None:
             return
@@ -731,7 +799,16 @@ def build_positive_negative_banks(
         limit = args.positive_max_frames + 1 if kind == "positive" else args.negative_max_items
         if len(target) < limit:
             target.append(desc.vector)
-            audit.append({"kind": kind, "frame_idx": frame_idx, "source": source, "area": int(mask.sum()), "parts": desc.parts})
+            audit.append({
+                "kind": kind,
+                "frame_idx": frame_idx,
+                "source": source,
+                "area": int(mask.sum()),
+                "parts": desc.parts,
+                "descriptor_source": desc.source,
+                "dino_tokens_inside": desc.dino_tokens_inside,
+                "fallback_reason": desc.fallback_reason,
+            })
 
     add_desc("positive", 0, "first_frame_gt", ann == obj_id)
     first_ring = bbox_ring_mask(ann == obj_id)
@@ -791,6 +868,7 @@ def score_candidates(
     neg_bank: list[np.ndarray],
     init_area: int,
     extractor: Sam2DescriptorExtractor,
+    dino_extractor: DinoDescriptorExtractor | None,
     frames: list[Path],
     args: argparse.Namespace,
 ) -> None:
@@ -801,14 +879,20 @@ def score_candidates(
         if ratio < args.min_area_ratio:
             cand.rejected.append("area_too_small")
         rgb = load_rgb(frames[cand.frame_idx])
+        dino_desc = dino_extractor.describe(cand.frame_idx, rgb, cand.mask) if dino_extractor is not None else None
         cand.descriptor = make_descriptor(
             rgb,
             cand.mask,
-            extractor.describe(cand.frame_idx, cand.mask) if args.descriptor == "rgb_sam2" else None,
+            extractor.describe(cand.frame_idx, cand.mask) if args.descriptor in {"rgb_sam2", "dino_sam2_fusion"} else None,
+            dino_desc,
+            args.descriptor,
         )
         if cand.descriptor is None:
             cand.rejected.append("no_descriptor")
             continue
+        cand.descriptor_source = cand.descriptor.source
+        cand.dino_tokens_inside = cand.descriptor.dino_tokens_inside
+        cand.fallback_reason = cand.descriptor.fallback_reason
         cand.pos_sim = max((cosine(cand.descriptor.vector, p) for p in pos_bank), default=0.0)
         cand.neg_sim = max((cosine(cand.descriptor.vector, n) for n in neg_bank), default=0.0)
         cand.margin = cand.pos_sim - cand.neg_sim
@@ -821,13 +905,48 @@ def score_candidates(
             cand.rejected.append("low_identity_margin")
 
 
-def choose_anchors(cands: list[Candidate], min_frame: int, args: argparse.Namespace) -> list[Candidate]:
+def confirm_candidate(cand: Candidate, valid: list[Candidate], init_area: int, args: argparse.Namespace) -> tuple[bool, str]:
+    if args.anchor_confirm_mode == "single":
+        return True, "single"
+    if args.anchor_confirm_mode == "delayed2_or_cycle" and cand.margin >= args.strong_margin:
+        return True, f"strong_margin:{cand.margin:.3f}"
+    hi = cand.frame_idx + int(args.anchor_confirm_window)
+    max_dist = max(40.0, 3.0 * math.sqrt(max(float(init_area), 1.0)))
+    count = 1
+    reasons = [f"self:{cand.frame_idx}"]
+    for other in valid:
+        if other is cand:
+            continue
+        if other.frame_idx <= cand.frame_idx or other.frame_idx > hi:
+            continue
+        if other.margin < args.identity_margin:
+            continue
+        source_ok = other.source.split(":", 1)[0] == cand.source.split(":", 1)[0]
+        motion_ok = False
+        if cand.centroid is not None and other.centroid is not None:
+            dx = cand.centroid[0] - other.centroid[0]
+            dy = cand.centroid[1] - other.centroid[1]
+            motion_ok = math.hypot(dx, dy) <= max_dist
+        if source_ok or motion_ok:
+            count += 1
+            reasons.append(f"{other.frame_idx}:{other.source}:m={other.margin:.3f}")
+        if count >= int(args.anchor_confirm_min_count):
+            return True, "delayed:" + ",".join(reasons)
+    return False, f"unconfirmed:{count}/{args.anchor_confirm_min_count}"
+
+
+def choose_anchors(cands: list[Candidate], min_frame: int, init_area: int, args: argparse.Namespace) -> list[Candidate]:
     valid = [c for c in cands if c.frame_idx >= min_frame and not c.rejected]
     valid.sort(key=lambda c: (c.score, c.margin, c.pos_sim, c.area), reverse=True)
     anchors: list[Candidate] = []
     for cand in valid:
+        ok, reason = confirm_candidate(cand, valid, init_area, args)
+        if not ok:
+            cand.rejected.append(reason)
+            continue
         if any(abs(cand.frame_idx - old.frame_idx) < args.min_anchor_separation for old in anchors):
             continue
+        cand.confirm_reason = reason
         anchors.append(cand)
         if len(anchors) >= args.max_anchors_per_object:
             break
@@ -886,18 +1005,27 @@ def repropagate_with_anchors(
     else:
         final = [x.copy() for x in baseline_labels]
         windows: dict[int, set[int]] = {}
+        obj_max_margin: dict[int, float] = {}
         for obj_id, anchors in anchors_by_obj.items():
             windows[obj_id] = set()
+            obj_max_margin[obj_id] = max((float(a.margin) for a in anchors), default=0.0)
             for anchor in anchors:
                 lo = max(1, anchor.frame_idx - args.merge_radius)
                 hi = min(len(frames) - 1, anchor.frame_idx + args.merge_radius)
                 windows[obj_id].update(range(lo, hi + 1))
+        rollback_skips: dict[str, int] = {str(obj_id): 0 for obj_id in windows}
         for idx in range(1, len(frames)):
             label = final[idx].copy()
             for obj_id in sorted(windows):
                 if idx not in windows[obj_id]:
                     continue
                 new_mask = reprop_labels[idx] == obj_id
+                old_mask = baseline_labels[idx] == obj_id
+                union = np.logical_or(new_mask, old_mask).sum()
+                changed_frac = float(np.logical_xor(new_mask, old_mask).sum() / max(float(union), 1.0))
+                if changed_frac > args.rollback_max_change_frac and obj_max_margin.get(obj_id, 0.0) < args.rollback_high_conf_margin:
+                    rollback_skips[str(obj_id)] = rollback_skips.get(str(obj_id), 0) + 1
+                    continue
                 label[label == obj_id] = 0
                 label[(label == 0) & new_mask] = obj_id
             final[idx] = label.astype(np.uint8 if label.max(initial=0) <= 255 else np.uint16)
@@ -910,6 +1038,7 @@ def repropagate_with_anchors(
             str(obj_id): sorted(int(x) for x in sorted({f for a in anchors for f in range(max(1, a.frame_idx - args.merge_radius), min(len(frames) - 1, a.frame_idx + args.merge_radius) + 1)}))
             for obj_id, anchors in anchors_by_obj.items()
         },
+        "rollback_skips": rollback_skips if args.merge_policy == "anchor_window" else {},
     }
     del state
     if torch.cuda.is_available():
@@ -943,7 +1072,19 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
         offload_video_to_cpu=args.offload_video_to_cpu,
         offload_state_to_cpu=args.offload_state_to_cpu,
     )
-    extractor = Sam2DescriptorExtractor(predictor, desc_state, enabled=args.descriptor == "rgb_sam2")
+    extractor = Sam2DescriptorExtractor(predictor, desc_state, enabled=args.descriptor in {"rgb_sam2", "dino_sam2_fusion"})
+    dino_extractor = None
+    if args.descriptor in {"dino_vitb_reg", "dino_vitl_reg", "dino_sam2_fusion"}:
+        dino_extractor = DinoDescriptorExtractor(
+            variant=args.dino_variant,
+            dino_root=args.dino_root,
+            weights=args.dino_weights,
+            device=args.device,
+            max_side=args.dino_max_side,
+            tiny_min_tokens=args.dino_tiny_min_tokens,
+            tiny_crop_min_side=args.dino_tiny_crop_min_side,
+            tiny_crop_mult=args.dino_tiny_crop_mult,
+        )
     auto_generator = Sam2AutoMaskCandidateGenerator(args) if args.sam2_auto_mask_candidates else None
 
     anchors_by_obj: dict[int, list[Candidate]] = {}
@@ -953,18 +1094,23 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
         "objects": obj_ids,
         "sources": {k: str(v) for k, v in roots.items()},
         "descriptor": args.descriptor,
+        "dino": {
+            "variant": args.dino_variant if args.descriptor.startswith("dino") else None,
+            "root": str(args.dino_root) if args.descriptor.startswith("dino") else None,
+            "weights": str(args.dino_weights) if args.descriptor.startswith("dino") else None,
+        },
         "objects_audit": {},
     }
     for obj_id in obj_ids:
         events = event_frames(frames, labels_by_source, obj_id, rar_states, args)
         init_area = int((ann == obj_id).sum())
         pos_bank, neg_bank, bank_audit = build_positive_negative_banks(
-            video, frames, ann, obj_id, labels_by_source, events, extractor, args
+            video, frames, ann, obj_id, labels_by_source, events, extractor, dino_extractor, args
         )
         anchor_floor, anchor_floor_reason = anchor_floor_frame(frames, labels_by_source, obj_id, init_area, args)
         cands = collect_candidates(video, frames, labels_by_source, obj_id, events, auto_generator, anchor_floor, args)
-        score_candidates(cands, pos_bank, neg_bank, init_area, extractor, frames, args)
-        anchors = choose_anchors(cands, anchor_floor, args)
+        score_candidates(cands, pos_bank, neg_bank, init_area, extractor, dino_extractor, frames, args)
+        anchors = choose_anchors(cands, anchor_floor, init_area, args)
         anchors_by_obj[obj_id] = anchors
         rejected_counts: dict[str, int] = {}
         source_counts: dict[str, int] = {}
@@ -1031,6 +1177,9 @@ def collect_provenance(args: argparse.Namespace) -> dict[str, Any]:
         "script": str(Path(__file__).resolve()),
         "workspace": str(args.workspace),
         "descriptor": args.descriptor,
+        "dino_variant": args.dino_variant if str(args.descriptor).startswith("dino") else None,
+        "dino_root": str(args.dino_root) if str(args.descriptor).startswith("dino") else None,
+        "dino_weights": str(args.dino_weights) if str(args.descriptor).startswith("dino") else None,
         "pred_root": str(args.pred_root),
     }
 
@@ -1058,6 +1207,10 @@ def main() -> None:
     for required in [args.sam2_root, args.checkpoint, args.jpeg_root, args.ann_root]:
         if not required.exists():
             raise FileNotFoundError(required)
+    if args.descriptor in {"dino_vitb_reg", "dino_vitl_reg", "dino_sam2_fusion"}:
+        for required in [args.dino_root, args.dino_weights]:
+            if not required.exists():
+                raise FileNotFoundError(required)
 
     import torch
 

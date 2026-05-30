@@ -6,8 +6,11 @@ SSH_KEY="${B101_SSH_KEY:-$HOME/.ssh/id_ed25519_b101}"
 REMOTE_HOST="${B101_HOST:-yuzhixiang@b101.guhk.cc}"
 REMOTE_CODE_ROOT="${CVMOSE_CODE_ROOT:-/data1/yuzhixiang/cv_mosev2/cvMOSE}"
 MOSE_WORKSPACE="${MOSE_WORKSPACE:-/data1/yuzhixiang/cv_mosev2/MOSEv2}"
+EXTERNAL_ROOT="${EXTERNAL_ROOT:-/data1/yuzhixiang/cv_mosev2/external}"
+LOCAL_EXTERNAL_ROOT="${LOCAL_EXTERNAL_ROOT:-$REPO_ROOT/external}"
 CONDA_ENV="${CONDA_ENV:-mose_sam2}"
 GPU="${GPU:-4}"
+SYNC_CODE="${SYNC_CODE:-1}"
 PRED_ROOT="${PRED_ROOT:-$MOSE_WORKSPACE/homework/pred_sam2_m5r_reanchor}"
 SUBMIT_ROOT="${SUBMIT_ROOT:-$MOSE_WORKSPACE/homework/submission_433_m5r_reanchor}"
 ZIP_PATH="${ZIP_PATH:-$MOSE_WORKSPACE/homework/submission_mosev2_m5r_reanchor.zip}"
@@ -16,10 +19,28 @@ AUDIT_DIR="${AUDIT_DIR:-$MOSE_WORKSPACE/homework/logs/m5r_reanchor_by_video}"
 VIDEOS="${VIDEOS:-}"
 MAKE_SUBMISSION="${MAKE_SUBMISSION:-auto}"
 EXTRA_ARGS="${M5R_EXTRA_ARGS:-}"
+SYNC_DINO="${SYNC_DINO:-0}"
+LOCAL_DINO_WEIGHTS="${LOCAL_DINO_WEIGHTS:-/home/yu/projects/cv/from fdu/MOSEv2/homework/external_checkpoints/dinov2/dinov2_vitb14_reg4_pretrain.pth}"
+REMOTE_DINO_WEIGHTS="${REMOTE_DINO_WEIGHTS:-$MOSE_WORKSPACE/homework/external_checkpoints/dinov2/dinov2_vitb14_reg4_pretrain.pth}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 LOCAL_GIT_SHA="$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || true)"
 LOCAL_GIT_BRANCH="$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
 SSH_OPTS=(-i "$SSH_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=2)
+
+if [[ "$SYNC_CODE" == "1" ]]; then "$SCRIPT_DIR/sync_code_b101.sh"; fi
+
+if [[ "$SYNC_DINO" == "1" ]]; then
+  test -d "$LOCAL_EXTERNAL_ROOT/dinov2" || { echo "missing local external/dinov2; clone it first" >&2; exit 2; }
+  test -s "$LOCAL_DINO_WEIGHTS" || { echo "missing local DINO weights: $LOCAL_DINO_WEIGHTS" >&2; exit 2; }
+  ssh "${SSH_OPTS[@]}" "$REMOTE_HOST" "mkdir -p '$EXTERNAL_ROOT/dinov2' '$(dirname "$REMOTE_DINO_WEIGHTS")'"
+  rsync -a --delete \
+    --exclude='.git/' --exclude='__pycache__/' --exclude='*.pyc' \
+    -e "ssh -i '$SSH_KEY' -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10" \
+    "$LOCAL_EXTERNAL_ROOT/dinov2/" "$REMOTE_HOST:$EXTERNAL_ROOT/dinov2/"
+  rsync -a --partial \
+    -e "ssh -i '$SSH_KEY' -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=10" \
+    "$LOCAL_DINO_WEIGHTS" "$REMOTE_HOST:$REMOTE_DINO_WEIGHTS"
+fi
 
 REMOTE_ARGS=(
   "$REMOTE_CODE_ROOT" "$MOSE_WORKSPACE" "$CONDA_ENV" "$GPU" "$PRED_ROOT" "$SUBMIT_ROOT" "$ZIP_PATH"
@@ -71,6 +92,9 @@ ALLOWED_EXTRA_FLAGS=(
   --positive-max-frames --negative-max-items --max-candidates-per-object --no-any-fg-components
   --sam2-auto-mask-candidates --auto-mask-max-frames-per-object --auto-mask-points-per-side
   --auto-mask-pred-iou-thr --auto-mask-stability-thr --auto-mask-min-area --auto-mask-max-count
+  --dino-root --dino-weights --dino-variant --dino-max-side --dino-tiny-min-tokens --dino-tiny-crop-min-side --dino-tiny-crop-mult
+  --sameclass-margin --anchor-confirm-mode --anchor-confirm-window --anchor-confirm-min-count --strong-margin
+  --rollback-max-change-frac --rollback-high-conf-margin
   --baseline-root --m11-root --m2-light-root --tiny-crop-root --sam31-root --rar-rcms-root --rar-state-root --rar-audit-json
 )
 is_allowed_extra_flag() { local flag="$1" allowed; for allowed in "${ALLOWED_EXTRA_FLAGS[@]}"; do [[ "$flag" == "$allowed" || "$flag" == "$allowed="* ]] && return 0; done; return 1; }
@@ -88,7 +112,7 @@ if (( ${#VIDEO_ARGS[@]} > 0 )); then RUN_ARGS+=(--videos "${VIDEO_ARGS[@]}"); fi
 if (( ${#EXTRA[@]} > 0 )); then RUN_ARGS+=("${EXTRA[@]}"); fi
 
 echo "m5r_remote_run videos=${VIDEOS:-<all>} make_submission=$MAKE_SUBMISSION pred_root=$PRED_ROOT extra=${EXTRA_ARGS:-<none>}"
-CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES="$GPU" conda run -n "$ENV_NAME" python tools/infer_mosev2_sam2_reanchor.py "${RUN_ARGS[@]}"
+CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES="$GPU" XFORMERS_DISABLED=1 conda run -n "$ENV_NAME" python tools/infer_mosev2_sam2_reanchor.py "${RUN_ARGS[@]}"
 
 "$PYTHON_BIN" - <<PY
 import json, pathlib, zipfile

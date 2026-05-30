@@ -1,0 +1,204 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/m11",
+    "m5r_dino": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_m5r_dino_key",
+    "official_large": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+    "dam_single": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_dam4sam_dam4sam_single_per_obj_smoke"
+  },
+  "sheets": [
+    {
+      "video": "r13u5z4y",
+      "frames": 45,
+      "selected_frames": [
+        0,
+        5,
+        23,
+        28,
+        33,
+        39,
+        44
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/r13u5z4y_m6_compare.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        7,
+        14,
+        20,
+        27,
+        34,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "msinig6m",
+      "frames": 134,
+      "selected_frames": [
+        0,
+        20,
+        44,
+        65,
+        88,
+        110,
+        133
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/msinig6m_m6_compare.jpg"
+    },
+    {
+      "video": "1qlssuz2",
+      "frames": 40,
+      "selected_frames": [
+        0,
+        6,
+        12,
+        19,
+        25,
+        31,
+        39
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/1qlssuz2_m6_compare.jpg"
+    },
+    {
+      "video": "2smf7uq9",
+      "frames": 43,
+      "selected_frames": [
+        0,
+        5,
+        21,
+        26,
+        31,
+        37,
+        42
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/2smf7uq9_m6_compare.jpg"
+    },
+    {
+      "video": "8jsm23a7",
+      "frames": 49,
+      "selected_frames": [
+        0,
+        9,
+        17,
+        25,
+        32,
+        40,
+        48
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/8jsm23a7_m6_compare.jpg"
+    },
+    {
+      "video": "lcgc29va",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        5,
+        14,
+        19,
+        24,
+        29,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/lcgc29va_m6_compare.jpg"
+    },
+    {
+      "video": "4vznweiu",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        5,
+        11,
+        18,
+        23,
+        29,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m5r_dino",
+        "official_large",
+        "dam_single",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m6_dino/smoke/4vznweiu_m6_compare.jpg"
+    }
+  ]
+}

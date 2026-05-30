@@ -2,17 +2,28 @@
 
 **Best next improvement:** keep SAM2/M11 as the final-quality backbone, then build a training-free re-anchor tracker with uncertainty management, proposal retrieval, identity verification, and delayed commit.
 
-This repository versions the runnable code, experiment reports, selected visual evidence, and smoke/full-run audits needed to understand the MOSEv2 attempts. Dataset frames, checkpoints, full remote prediction folders, and non-final candidate zips are intentionally not stored in git.
+This repository versions the runnable code, experiment reports, selected visual evidence, and smoke/full-run audits needed to understand the MOSEv2 attempts. Dataset frames, checkpoints, full remote prediction folders, and candidate submission zips are intentionally not stored in git.
 
 ## Local zip policy
 
-The corrected policy is: **only one local workspace should keep submission zips**. In this repo workspace, the only retained local zip is the current final candidate:
+The corrected policy is: **submission zips live in one data workspace, not scattered across repo checkouts**.
+
+In the git repo workspace, the only retained legacy zip is:
 
 ```text
 submission_mosev2_final_m11_cycle.zip
 ```
 
-Candidate zips were either left on b101 or not generated when smoke evidence was negative. This avoids mixing stale zip artifacts across local workspaces while still committing code, reports, audits, and visual sheets.
+Current M6 candidate zips are kept outside git in:
+
+```text
+/home/yu/projects/cv/from fdu/MOSEv2/homework/
+├── submission_mosev2_m6_safe.zip
+├── submission_mosev2_m6_balanced.zip
+└── submission_mosev2_m6_aggressive.zip
+```
+
+They are documented and validated in `docs/m6_fusion_report.md`, but not committed. This preserves the "one local data workspace for zip artifacts" rule while still committing code, reports, and small visual sheets.
 
 ## Experiment summary
 
@@ -28,6 +39,12 @@ Candidate zips were either left on b101 or not generated when smoke evidence was
 | M4 tiny crop | Rerun frozen SAM2 on per-object crop videos for small targets; use as M3 candidate source only. | `tools/infer_mosev2_sam2_tiny_crop.py`, `scripts/run_b101_tiny_crop.sh`, `scripts/run_b101_m4_tiny_state.sh`, `docs/m4_tiny_crop_experiment.md`, `docs/assets/m4_tiny_crop/safe_smoke/` | Helps diagnose feature-resolution limits and can tighten small backpack/person masks. | Decisive failure on `r13u5z4y`: crop improves resolution but not identity; after occlusion it follows correlated wrong evidence. Not final. |
 | M5R/RAR scaffold | Reappearance-aware SAM2 controller: RCMS-lite pre-disappearance reservoir, stable/ambiguous/recovery state machine, delayed main-memory commit. | `src/cvmose/reanchor.py`, `tools/infer_mosev2_sam2_rar.py`, `scripts/run_b101_rar.sh`, `docs/m5r_rar_plan.md`, `docs/m5r_rar_smoke.md`, `docs/m5r_rar_review_and_comparison.md`, `docs/assets/m5r_rar/key_compare/` | Cleanest instrumentation for state/anchor/memory governance; review fixes made audit and launcher safer. | Phase A/B does not recover identity; visual comparison rejects it as final and points to retrieval anchors as mandatory. |
 | M5R-C retrieval re-anchor | High-recall candidate pool + SAM2 image/RGB object descriptors + hard negative margin + verified `add_new_mask` repropagation. | `tools/infer_mosev2_sam2_reanchor.py`, `scripts/run_b101_m5r_reanchor.sh`, `scripts/make_m5r_reanchor_compare.py`, `docs/m5r_reanchor_experiment.md`, `docs/assets/m5r_reanchor/key_compare/` | First implementation that truly re-drives SAM2 from later candidate anchors; audits expose candidate/positive/negative decisions. | Current descriptors/proposals are not reliable enough in same-class reappearance; key visual smoke rejects it as final. |
+| M6 Phase 1 official ceiling | Test public FudanCVL MOSEv2-finetuned SAM2 checkpoints/submission zips as ceiling/reference. | `tools/infer_mosev2_sam2_official_ckpt.py`, `scripts/run_b101_official_ckpt.sh`, `docs/m6_official_ceiling.md`, `docs/assets/m6_official/compare/` | Establishes score ceiling and confirms public MOSEv2 tricks can change 15-video behavior. | Rule-dependent: MOSEv2-finetuned checkpoints/submissions may be disallowed as final; still fails some identity cases. |
+| M6 Phase 2 DAM4SAM/d4sm | Use external distractor-aware trackers as off-the-shelf candidate roots. | `tools/infer_mosev2_dam4sam_adapter.py`, `scripts/run_b101_dam4sam_adapter.sh`, `docs/m6_dam4sam_smoke.md`, `docs/assets/m6_dam4sam/smoke/` | Good diagnostic for whether external tracker memory avoids distractors. | Smoke rejected: q0sizv6m/msinig6m still produce large wrong same-class/composite masks; not used in fusion. |
+| M6 Phase 3 SAM2Long | Test memory-tree/branching SAM2Long as training-free alternative to hand-written branch logic. | `tools/infer_mosev2_sam2long_adapter.py`, `scripts/run_b101_sam2long_adapter.sh`, `docs/m6_sam2long_smoke.md`, `docs/assets/m6_sam2long/smoke/` | Directly targets greedy-memory error accumulation. | Smoke rejected: branch diversity did not solve identity and sometimes amplified same-class drift. |
+| M6 Phase 4 SAAS | Prepare SAAS adapter for multi-shot robustness/scene-change candidate source. | `tools/infer_mosev2_saas_adapter.py`, `scripts/run_b101_saas_adapter.sh`, `docs/m6_saas_smoke.md` | Non-vendored harness is ready if a reproducible checkpoint URL is provided. | No smoke promoted: public checkpoint was not obtained scriptably; no source used in fusion. |
+| M6 Phase 5 DINO-reanchor | Replace weak descriptors with frozen DINOv2 masked object descriptor + hard-negative margin + delayed promotion/rollback. | `src/cvmose/dino_descriptors.py`, `tools/precompute_dino_features.py`, updated `tools/infer_mosev2_sam2_reanchor.py`, `docs/m6_dino_reanchor_report.md`, `docs/assets/m6_dino/smoke/` | Best training-free identity verifier so far; prevents accepting obvious wrong anchors and plausibly improves `2smf7uq9`. | Candidate generation is still the bottleneck; not a standalone final root. |
+| M6 Phase 6 safe fusion | Per-video conservative policy over M11, official ceiling, and DINO-reanchor candidates. | `tools/apply_m6_safe_fusion.py`, `docs/m6_fusion_report.md`, `docs/assets/m6_fusion/summary/` | Produces three validated candidate zips while preserving all 418 provided outputs unchanged. | Safe remains M11-dominated; balanced only accepts DINO for two videos; aggressive is rule-dependent. |
 
 ## Next primary direction
 
@@ -61,6 +78,13 @@ cvMOSE/
 │   ├── m5r_rar_smoke.md                     # RAR b101 subset/full-15 smoke evidence
 │   ├── m5r_rar_review_and_comparison.md     # RAR code review + real visual comparison verdict
 │   ├── m5r_reanchor_experiment.md           # M5R-C retrieval-anchor implementation and rejection verdict
+│   ├── m6_initial_ceiling_and_plan.md        # M6 branch baseline, constraints, and run plan
+│   ├── m6_official_ceiling.md                # FudanCVL checkpoint/submission ceiling study
+│   ├── m6_dam4sam_smoke.md                  # DAM4SAM/d4sm smoke verdict
+│   ├── m6_sam2long_smoke.md                 # SAM2Long memory-tree smoke verdict
+│   ├── m6_saas_smoke.md                     # SAAS adapter/checkpoint status
+│   ├── m6_dino_reanchor_report.md           # DINOv2 descriptor M5R-C upgrade
+│   ├── m6_fusion_report.md                  # safe/balanced/aggressive fusion candidates
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record
@@ -86,7 +110,12 @@ cvMOSE/
 │       ├── m5r_rar/
 │       │   ├── smoke_compare/{full,zoom}/   # 2-video RAR smoke sheets
 │       │   └── key_compare/{full,zoom}/     # 8 key-video RAR visual comparison sheets
-│       └── m5r_reanchor/key_compare/        # 8 key-video M5R-C visual comparison sheets
+│       ├── m5r_reanchor/key_compare/        # 8 key-video M5R-C visual comparison sheets
+│       ├── m6_official/compare/             # official checkpoint/submission comparison sheets
+│       ├── m6_dam4sam/smoke/                # DAM4SAM/d4sm smoke sheets
+│       ├── m6_sam2long/smoke/               # SAM2Long smoke sheets
+│       ├── m6_dino/smoke/                   # DINO-reanchor smoke sheets
+│       └── m6_fusion/summary/               # final per-video fusion sheets
 ├── scripts/
 │   ├── sync_code_b101.sh                    # code-only sync to b101
 │   ├── run_b101_single_sam2.sh              # baseline single-run launcher
@@ -98,13 +127,24 @@ cvMOSE/
 │   ├── run_b101_m4_tiny_state.sh            # M4 wrapper: requires tiny source by default
 │   ├── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
 │   ├── run_b101_m5r_reanchor.sh             # M5R-C candidate retrieval re-anchor launcher
+│   ├── run_b101_official_ckpt.sh            # FudanCVL MOSEv2 checkpoint launcher
+│   ├── run_b101_dam4sam_adapter.sh          # external DAM4SAM/d4sm adapter launcher
+│   ├── run_b101_sam2long_adapter.sh         # external SAM2Long adapter launcher
+│   ├── run_b101_saas_adapter.sh             # external SAAS adapter launcher
 │   └── make_m5r_reanchor_compare.py         # M5R-C visual sheet generator
 ├── tools/
 │   ├── infer_mosev2_sam2.py                 # baseline SAM2 inference
+│   ├── compare_candidate_roots.py           # multi-root submission invariant/candidate comparison
 │   ├── infer_mosev2_sam2_m2_memory_gate.py  # M2 memory-write gate
 │   ├── infer_mosev2_sam2_tiny_crop.py       # M4 tiny-crop candidate generator
 │   ├── infer_mosev2_sam2_rar.py             # M5R/RAR SAM2 entrypoint
 │   ├── infer_mosev2_sam2_reanchor.py        # M5R-C candidate retrieval + add_new_mask repropagation
+│   ├── infer_mosev2_sam2_official_ckpt.py   # FudanCVL MOSEv2 checkpoint wrapper
+│   ├── infer_mosev2_dam4sam_adapter.py      # DAM4SAM/d4sm wrapper
+│   ├── infer_mosev2_sam2long_adapter.py     # SAM2Long wrapper
+│   ├── infer_mosev2_saas_adapter.py         # SAAS wrapper
+│   ├── apply_m6_safe_fusion.py              # M6 per-video fusion builder
+│   ├── precompute_dino_features.py          # DINO descriptor cache utility
 │   ├── infer_mosev2_sam31.py                # SAM3.1 adapter route
 │   ├── infer_mosev2_sam31_public_boxes.py   # SAM3.1 public/simple control route
 │   ├── sam31_gt_mask_adapter.py             # GT-mask adapter helpers
@@ -113,12 +153,15 @@ cvMOSE/
 │   ├── validate_mose_submission.py          # hard submission invariant checker
 │   ├── build_submission.py                  # submission packaging helper
 │   └── launch_parallel_infer.py             # parallel inference helper
-├── src/cvmose/reanchor.py                   # RAR state/anchor/commit primitives
+├── src/cvmose/
+│   ├── reanchor.py                          # RAR state/anchor/commit primitives
+│   └── dino_descriptors.py                  # frozen DINOv2 masked object descriptors
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 
 ## Final/current stance
 
-- Keep `submission_mosev2_final_m11_cycle.zip` as the current final local submission artifact.
-- Keep M2/M3/M4 code and visual evidence as analysis infrastructure.
-- Next experiment should not be another raw threshold sweep; it should add independent identity verification for reappearance proposals.
+- Safest current submission: `submission_mosev2_m6_safe.zip` in the MOSEv2 homework workspace; it is M11-equivalent and validated.
+- Best training-free probe: `submission_mosev2_m6_balanced.zip`; it keeps M11 by default and only accepts DINO-reanchor on `1qlssuz2`/`2smf7uq9`.
+- Aggressive/rule-dependent probe: `submission_mosev2_m6_aggressive.zip` or official MOSEv2 submission-checkpoint zips if public MOSEv2-finetuned resources are allowed.
+- Next experiment should still avoid raw threshold sweep; the real missing capability is higher-recall global later-frame proposal generation plus DINO/SAM identity verification and delayed prompt injection.

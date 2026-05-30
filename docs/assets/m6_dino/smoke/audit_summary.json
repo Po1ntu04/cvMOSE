@@ -1,0 +1,334 @@
+{
+  "method": "m5r_candidate_retrieval_reanchor",
+  "summary": {
+    "videos": 8,
+    "frames": 423,
+    "accepted_anchor_count": 5,
+    "changed_vs_baseline": 84
+  },
+  "runtime": {
+    "seconds": 1201.9371831417084,
+    "fps": 0.3519318695959906,
+    "cuda_max_memory_allocated_mib": 4196.826171875,
+    "cuda_max_memory_reserved_mib": 10924.0
+  },
+  "provenance": {
+    "git_sha": "342041a8916b45fe97e0b8cd7aa91e0aa31c8270",
+    "git_branch": "method/m6_external_reid_ensemble",
+    "script": "/data1/yuzhixiang/cv_mosev2/cvMOSE/tools/infer_mosev2_sam2_reanchor.py",
+    "workspace": "/data1/yuzhixiang/cv_mosev2/MOSEv2",
+    "descriptor": "dino_vitb_reg",
+    "dino_variant": "dino_vitb_reg",
+    "dino_root": "/data1/yuzhixiang/cv_mosev2/external/dinov2",
+    "dino_weights": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/external_checkpoints/dinov2/dinov2_vitb14_reg4_pretrain.pth",
+    "pred_root": "/data1/yuzhixiang/cv_mosev2/MOSEv2/homework/pred_sam2_m5r_dino_key"
+  },
+  "config_subset": {
+    "descriptor": "dino_vitb_reg",
+    "dino_variant": "dino_vitb_reg",
+    "dino_max_side": 700,
+    "anchor_confirm_mode": "delayed2_or_cycle",
+    "identity_margin": 0.12,
+    "sameclass_margin": 0.18,
+    "merge_policy": "anchor_window",
+    "rollback_max_change_frac": 0.5
+  },
+  "results": [
+    {
+      "video": "r13u5z4y",
+      "status": "done",
+      "frames": 45,
+      "objects": [
+        1
+      ],
+      "accepted_anchor_count": 0,
+      "changed_vs_baseline": 0,
+      "reprop": {
+        "reprop_frames": 0,
+        "merge_policy": "baseline_copy_no_anchor",
+        "merge_radius": 14,
+        "anchor_windows": {}
+      },
+      "seconds": 170.44
+    },
+    {
+      "video": "q0sizv6m",
+      "status": "done",
+      "frames": 42,
+      "objects": [
+        1,
+        2
+      ],
+      "accepted_anchor_count": 0,
+      "changed_vs_baseline": 0,
+      "reprop": {
+        "reprop_frames": 0,
+        "merge_policy": "baseline_copy_no_anchor",
+        "merge_radius": 14,
+        "anchor_windows": {}
+      },
+      "seconds": 118.6
+    },
+    {
+      "video": "msinig6m",
+      "status": "done",
+      "frames": 134,
+      "objects": [
+        1,
+        2,
+        3
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 0,
+      "reprop": {
+        "reprop_frames": 134,
+        "merge_policy": "anchor_window",
+        "merge_radius": 14,
+        "anchor_windows": {
+          "1": [],
+          "2": [],
+          "3": [
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46
+          ]
+        },
+        "rollback_skips": {
+          "1": 0,
+          "2": 0,
+          "3": 12
+        }
+      },
+      "seconds": 436.23
+    },
+    {
+      "video": "1qlssuz2",
+      "status": "done",
+      "frames": 40,
+      "objects": [
+        1
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 17,
+      "reprop": {
+        "reprop_frames": 40,
+        "merge_policy": "anchor_window",
+        "merge_radius": 14,
+        "anchor_windows": {
+          "1": [
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39
+          ]
+        },
+        "rollback_skips": {
+          "1": 0
+        }
+      },
+      "seconds": 86.03
+    },
+    {
+      "video": "2smf7uq9",
+      "status": "done",
+      "frames": 43,
+      "objects": [
+        1
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 24,
+      "reprop": {
+        "reprop_frames": 43,
+        "merge_policy": "anchor_window",
+        "merge_radius": 14,
+        "anchor_windows": {
+          "1": [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42
+          ]
+        },
+        "rollback_skips": {
+          "1": 0
+        }
+      },
+      "seconds": 116.86
+    },
+    {
+      "video": "8jsm23a7",
+      "status": "done",
+      "frames": 49,
+      "objects": [
+        1
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 17,
+      "reprop": {
+        "reprop_frames": 49,
+        "merge_policy": "anchor_window",
+        "merge_radius": 14,
+        "anchor_windows": {
+          "1": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18
+          ]
+        },
+        "rollback_skips": {
+          "1": 1
+        }
+      },
+      "seconds": 93.54
+    },
+    {
+      "video": "lcgc29va",
+      "status": "done",
+      "frames": 35,
+      "objects": [
+        1
+      ],
+      "accepted_anchor_count": 0,
+      "changed_vs_baseline": 0,
+      "reprop": {
+        "reprop_frames": 0,
+        "merge_policy": "baseline_copy_no_anchor",
+        "merge_radius": 14,
+        "anchor_windows": {}
+      },
+      "seconds": 103.26
+    },
+    {
+      "video": "4vznweiu",
+      "status": "done",
+      "frames": 35,
+      "objects": [
+        1
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 26,
+      "reprop": {
+        "reprop_frames": 35,
+        "merge_policy": "anchor_window",
+        "merge_radius": 14,
+        "anchor_windows": {
+          "1": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29
+          ]
+        },
+        "rollback_skips": {
+          "1": 0
+        }
+      },
+      "seconds": 76.97
+    }
+  ]
+}
