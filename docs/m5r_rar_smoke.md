@@ -1,7 +1,7 @@
 # M5R/RAR Smoke Evidence
 
 Date: 2026-05-30
-Status: initial execution evidence; not a quality verdict and not a final candidate
+Status: updated execution evidence; Phase A/B smoke only, not a final candidate
 
 ## Command
 
@@ -84,3 +84,21 @@ python tools/validate_mose_submission.py \
   --submit-root /data1/yuzhixiang/cv_mosev2/MOSEv2/homework/submission_433_rar \
   --zip-path /data1/yuzhixiang/cv_mosev2/MOSEv2/homework/submission_mosev2_rar.zip
 ```
+
+
+## 15-video update after review fixes
+
+After code-review fixes, both `--rar-mode rcms` and default `--rar-mode state` were run on all 15 target videos with `MAKE_SUBMISSION=0`.
+
+| mode | videos | RGB frames | object-frames | actual memory writes | blocked non-cond writes | RCMS promotions | seconds | peak allocated MiB |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `rcms` | 15 | 1004 | 1555 | 1555 | 0 | 157 | 246.05 | 1240.67 |
+| `state` | 15 | 1004 | 1555 | 642 | 913 | 172 | 262.86 | 1158.95 |
+
+The audit semantics are now explicit:
+
+- `policy_decision`: intended state/commit policy;
+- `commit_decision`: actual memory effect (`write_main_memory`, `noncond_memory_blocked`, or `conditioned_memory_existing`);
+- `actual_memory_write`, `blocked_noncond_write`, and `memory_storage_key`: direct memory-write evidence.
+
+Full review and visual analysis are in `docs/m5r_rar_review_and_comparison.md`.

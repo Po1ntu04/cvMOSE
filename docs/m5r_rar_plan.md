@@ -1,7 +1,7 @@
 # M5R Reappearance-Aware ReAnchor Plan
 
 Date: 2026-05-30
-Status: accepted mainline; Phase A/B scaffold implemented, experiments pending on b101
+Status: Phase A/B scaffold implemented and reviewed; visual comparison shows no final-quality improvement yet
 
 ## One-line decision
 
@@ -160,11 +160,11 @@ Implemented locally in this commit:
 - SAM2 RAR entrypoint in `tools/infer_mosev2_sam2_rar.py`.
 - b101 launcher in `scripts/run_b101_rar.sh`.
 - Local syntax validation via `python3 -m py_compile` and `bash -n`.
+- b101 15-video RCMS/state smoke evidence and key-video visual comparison sheets.
 
 Not yet done:
 
-- b101 inference smoke;
-- summary/recovery visualization sheets;
-- retrieval anchors;
+- retrieval-anchor mining / Ablation C;
 - tiny refinement after recovered anchor;
+- final-quality improvement evidence;
 - final zip candidate.

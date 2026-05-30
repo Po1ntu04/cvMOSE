@@ -19,6 +19,8 @@ COMMIT_WRITE_MAIN = "write_main_memory"
 COMMIT_PROVISIONAL = "provisional_only"
 COMMIT_PROMOTE_RCMS = "promote_rcms_anchors"
 COMMIT_OUTPUT_EMPTY = "output_empty"
+COMMIT_CONDITIONED_EXISTING = "conditioned_memory_existing"
+COMMIT_NONCOND_BLOCKED = "noncond_memory_blocked"
 
 
 @dataclass(slots=True)
@@ -71,6 +73,11 @@ class FrameAudit:
     candidate_count: int = 0
     best_candidate_score: float | None = None
     commit_decision: str = COMMIT_PROVISIONAL
+    policy_decision: str = COMMIT_PROVISIONAL
+    actual_memory_write: bool = False
+    blocked_noncond_write: bool = False
+    memory_storage_key: str = "none"
+    promoted_cond_frames: list[int] = field(default_factory=list)
     used_cond_frames: list[int] = field(default_factory=list)
     output_policy: str = "provisional"
     notes: list[str] = field(default_factory=list)
@@ -87,6 +94,11 @@ class FrameAudit:
             "candidate_count": int(self.candidate_count),
             "best_candidate_score": self.best_candidate_score,
             "commit_decision": self.commit_decision,
+            "policy_decision": self.policy_decision,
+            "actual_memory_write": bool(self.actual_memory_write),
+            "blocked_noncond_write": bool(self.blocked_noncond_write),
+            "memory_storage_key": self.memory_storage_key,
+            "promoted_cond_frames": list(self.promoted_cond_frames),
             "used_cond_frames": list(self.used_cond_frames),
             "output_policy": self.output_policy,
             "notes": list(self.notes),

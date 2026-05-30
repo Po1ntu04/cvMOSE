@@ -74,6 +74,29 @@ require_under "$AUDIT_DIR" "$WORKSPACE/homework/logs" "AUDIT_DIR"
 
 read -r -a VIDEO_ARGS <<< "$VIDEOS"
 read -r -a EXTRA <<< "$EXTRA_ARGS"
+ALLOWED_EXTRA_FLAGS=(
+  --rar-mode
+  --rar-output-policy
+  --rar-stable-quality
+  --rar-ambiguous-quality
+  --rar-rcms-quality-thr
+  --rar-rcms-max-anchors
+  --rar-reservoir-size
+  --rar-confirm-frames
+)
+is_allowed_extra_flag() {
+  local flag="$1" allowed
+  for allowed in "${ALLOWED_EXTRA_FLAGS[@]}"; do
+    [[ "$flag" == "$allowed" || "$flag" == "$allowed="* ]] && return 0
+  done
+  return 1
+}
+for token in "${EXTRA[@]}"; do
+  if [[ "$token" == --* ]] && ! is_allowed_extra_flag "$token"; then
+    echo "Refusing unsafe RAR_EXTRA_ARGS flag: $token" >&2
+    exit 2
+  fi
+done
 if [[ "$MAKE_SUBMISSION" == "auto" ]]; then
   if (( ${#VIDEO_ARGS[@]} > 0 )); then MAKE_SUBMISSION=0; else MAKE_SUBMISSION=1; fi
 fi

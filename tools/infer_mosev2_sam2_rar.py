@@ -32,6 +32,9 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from cvmose.reanchor import (  # noqa: E402
+    COMMIT_CONDITIONED_EXISTING,
+    COMMIT_NONCOND_BLOCKED,
+    COMMIT_OUTPUT_EMPTY,
     COMMIT_WRITE_MAIN,
     AnchorBank,
     AnchorRecord,
@@ -135,6 +138,61 @@ def complete_paths(args: argparse.Namespace) -> argparse.Namespace:
     ).resolve()
     args.rar_audit_dir = (args.rar_audit_dir or ws / "homework" / "logs" / "rar_by_video").resolve()
     return args
+
+
+def _has_path_prefix(path: Path, prefix: Path) -> bool:
+    return str(path).startswith(str(prefix))
+
+
+def _require_under(path: Path, prefix: Path, label: str) -> None:
+    try:
+        path.relative_to(prefix)
+    except ValueError as exc:
+        raise ValueError(f"{label} must be under {prefix}, got {path}") from exc
+    if path in {prefix, prefix.parent}:
+        raise ValueError(f"{label} is too broad: {path}")
+
+
+def validate_submission_paths(args: argparse.Namespace) -> None:
+    """Guard direct ``--make-submission`` against destructive/broad paths."""
+
+    homework = args.workspace / "homework"
+    pred_prefix = homework / "pred_"
+    submit_prefix = homework / "submission_"
+    logs = homework / "logs"
+    if args.provided_output_root != homework / "output":
+        raise ValueError(
+            "--provided-output-root must be the immutable homework/output directory for final "
+            f"submission validation, got {args.provided_output_root}"
+        )
+    if not _has_path_prefix(args.pred_root, pred_prefix):
+        raise ValueError(f"--pred-root must use homework/pred_* prefix, got {args.pred_root}")
+    if not _has_path_prefix(args.submit_root, submit_prefix):
+        raise ValueError(f"--submit-root must use homework/submission_* prefix, got {args.submit_root}")
+    _require_under(args.zip_path, homework, "--zip-path")
+    _require_under(args.rar_audit_json, logs, "--rar-audit-json")
+    _require_under(args.rar_audit_dir, logs, "--rar-audit-dir")
+
+
+def validate_written_submission(args: argparse.Namespace) -> None:
+    """Run the full invariant checker after direct Python submission packaging."""
+
+    output_json = args.rar_audit_json.with_name(args.rar_audit_json.stem + "_validation.json")
+    cmd = [
+        sys.executable,
+        str(REPO_ROOT / "tools" / "validate_mose_submission.py"),
+        "--workspace",
+        str(args.workspace),
+        "--pred-root",
+        str(args.pred_root),
+        "--submit-root",
+        str(args.submit_root),
+        "--output-json",
+        str(output_json),
+    ]
+    if not args.no_zip:
+        cmd.extend(["--zip-path", str(args.zip_path)])
+    subprocess.run(cmd, check=True)
 
 
 def config_from_args(args: argparse.Namespace) -> RARConfig:
@@ -349,7 +407,7 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
             for idx in range(batch_size)
         }
         selectors = {idx: Selector() for idx in range(batch_size)}
-        prev_stats: dict[int, MaskStats | None] = {idx: None for idx in range(batch_size)}
+        reference_stats: dict[int, MaskStats | None] = {idx: None for idx in range(batch_size)}
         rcms_promoted_once: set[int] = set()
         video_name = getattr(self, "_rar_current_video", "unknown") or "unknown"
 
@@ -367,7 +425,7 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                     pred_masks = current_out["pred_masks"].to(device, non_blocking=True)
                     _, stats, signals = _quality_from_logits(
                         pred_masks,
-                        prev_stats[obj_idx],
+                        reference_stats[obj_idx],
                         current_out.get("object_score_logits"),
                         cfg,
                     )
@@ -377,7 +435,8 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                         else "stable"
                     )
                     state = machines[obj_idx].state
-                    commit_decision = COMMIT_WRITE_MAIN
+                    policy_decision = COMMIT_WRITE_MAIN
+                    commit_decision = COMMIT_CONDITIONED_EXISTING
                     if frame_idx == start_frame_idx and banks[obj_idx].init_anchor is None:
                         banks[obj_idx].set_init_anchor(
                             AnchorRecord(
@@ -389,8 +448,11 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                                 payload=_clone_anchor_payload(current_out),
                                 selected_as_conditioned=True,
                             )
-                        )
-                    prev_stats[obj_idx] = stats if stats.present else prev_stats[obj_idx]
+                    )
+                    reference_stats[obj_idx] = stats if stats.present else reference_stats[obj_idx]
+                    actual_memory_write = True
+                    blocked_noncond_write = False
+                    memory_storage_key = storage_key
                 else:
                     storage_key = "non_cond_frame_outputs"
                     current_out, pred_masks = self._run_single_frame_inference(
@@ -405,12 +467,15 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                         run_mem_encoder=True,
                     )
                     _, stats, signals = _quality_from_logits(
-                        pred_masks, prev_stats[obj_idx], current_out.get("object_score_logits"), cfg
+                        pred_masks,
+                        reference_stats[obj_idx],
+                        current_out.get("object_score_logits"),
+                        cfg,
                     )
                     state = machines[obj_idx].update(stats, signals)
                     if state == "stable":
                         rcms_promoted_once.discard(obj_idx)
-                    commit_decision = commit_policies[obj_idx].current_decision(state, signals)
+                    policy_decision = commit_policies[obj_idx].current_decision(state, signals)
                     selector_decision = selectors[obj_idx].decide(state, signals)
                     notes.append(f"selector:{selector_decision.action}:{selector_decision.reason}")
 
@@ -419,11 +484,13 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                         # normal non-conditioning memory path otherwise.
                         write_main = True
                     else:
-                        write_main = commit_decision == COMMIT_WRITE_MAIN
+                        write_main = policy_decision == COMMIT_WRITE_MAIN
 
                     if write_main:
                         obj_output_dict[storage_key][frame_idx] = current_out
-                        prev_stats[obj_idx] = stats if stats.present else prev_stats[obj_idx]
+                        reference_stats[obj_idx] = (
+                            stats if stats.present else reference_stats[obj_idx]
+                        )
                         if state == "stable" and signals.quality >= cfg.rcms_quality_thr:
                             banks[obj_idx].add_pre_disappearance(
                                 AnchorRecord(
@@ -437,10 +504,13 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                             )
                     else:
                         notes.append("main_memory_write_blocked_delayed_commit")
-                        if stats.present and state == "ambiguous":
-                            # Keep geometry for the next sanity check, but do not let SAM2 read
-                            # this mask as memory in future frames.
-                            prev_stats[obj_idx] = stats
+                        notes.append("reference_stats_kept_at_last_committed")
+                    actual_memory_write = bool(write_main)
+                    blocked_noncond_write = not bool(write_main)
+                    memory_storage_key = storage_key if write_main else "none"
+                    commit_decision = (
+                        COMMIT_WRITE_MAIN if write_main else COMMIT_NONCOND_BLOCKED
+                    )
 
                     if state == "recovery" and obj_idx not in rcms_promoted_once:
                         selected = banks[obj_idx].select_rcms(
@@ -458,6 +528,19 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                                     None,
                                 )
                             rcms_selected.append(anchor.frame_idx)
+                            if anchor.frame_idx not in obj_output_dict["cond_frame_outputs"]:
+                                raise RuntimeError(
+                                    "RAR invariant failed: promoted anchor missing from "
+                                    f"conditioned memory frame={anchor.frame_idx}"
+                                )
+                            if (
+                                cfg.remove_promoted_from_noncond
+                                and anchor.frame_idx in obj_output_dict["non_cond_frame_outputs"]
+                            ):
+                                raise RuntimeError(
+                                    "RAR invariant failed: promoted anchor still present in "
+                                    f"non-conditioning memory frame={anchor.frame_idx}"
+                                )
                         if selected:
                             notes.append(f"rcms_promoted:{rcms_selected}")
                             rcms_promoted_once.add(obj_idx)
@@ -468,7 +551,7 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                         and signals.empty
                     ):
                         pred_masks = torch.full_like(pred_masks, -1024.0)
-                        commit_decision = "output_empty_recovery"
+                        notes.append(COMMIT_OUTPUT_EMPTY)
 
                 inference_state["frames_tracked_per_obj"][obj_idx][frame_idx] = {"reverse": reverse}
                 pred_masks_per_obj[obj_idx] = pred_masks
@@ -484,6 +567,11 @@ def install_rar_controller(predictor: Any, cfg: RARConfig, audit_by_video: dict[
                     candidate_count=0,
                     best_candidate_score=None,
                     commit_decision=commit_decision,
+                    policy_decision=policy_decision,
+                    actual_memory_write=actual_memory_write,
+                    blocked_noncond_write=blocked_noncond_write,
+                    memory_storage_key=memory_storage_key,
+                    promoted_cond_frames=rcms_selected,
                     used_cond_frames=used_cond,
                     output_policy=cfg.output_policy,
                     notes=notes,
@@ -524,6 +612,9 @@ def _finalize_video_audit(audit: dict[str, Any]) -> dict[str, Any]:
         "frames": 0,
         "state_counts": {},
         "commit_counts": {},
+        "policy_counts": {},
+        "actual_memory_writes": 0,
+        "blocked_noncond_writes": 0,
         "rcms_promotions": 0,
     }
     for obj in audit.get("objects", {}).values():
@@ -531,8 +622,14 @@ def _finalize_video_audit(audit: dict[str, Any]) -> dict[str, Any]:
             summary["frames"] += 1
             state = str(rec.get("state", "unknown"))
             commit = str(rec.get("commit_decision", "unknown"))
+            policy = str(rec.get("policy_decision", commit))
             summary["state_counts"][state] = summary["state_counts"].get(state, 0) + 1
             summary["commit_counts"][commit] = summary["commit_counts"].get(commit, 0) + 1
+            summary["policy_counts"][policy] = summary["policy_counts"].get(policy, 0) + 1
+            if rec.get("actual_memory_write"):
+                summary["actual_memory_writes"] += 1
+            if rec.get("blocked_noncond_write"):
+                summary["blocked_noncond_writes"] += 1
             summary["rcms_promotions"] += len(rec.get("rcms_selected", []) or [])
     summary["state_counts"] = dict(sorted(summary["state_counts"].items()))
     summary["commit_counts"] = dict(sorted(summary["commit_counts"].items()))
@@ -672,6 +769,9 @@ def aggregate_audit(
 ) -> dict[str, Any]:
     state_counts: dict[str, int] = {}
     commit_counts: dict[str, int] = {}
+    policy_counts: dict[str, int] = {}
+    actual_memory_writes = 0
+    blocked_noncond_writes = 0
     rcms_promotions = 0
     videos = {}
     for video, audit in sorted(audit_by_video.items()):
@@ -679,10 +779,14 @@ def aggregate_audit(
         videos[video] = audit
         summary = audit.get("summary", {})
         rcms_promotions += int(summary.get("rcms_promotions", 0))
+        actual_memory_writes += int(summary.get("actual_memory_writes", 0))
+        blocked_noncond_writes += int(summary.get("blocked_noncond_writes", 0))
         for key, value in summary.get("state_counts", {}).items():
             state_counts[key] = state_counts.get(key, 0) + int(value)
         for key, value in summary.get("commit_counts", {}).items():
             commit_counts[key] = commit_counts.get(key, 0) + int(value)
+        for key, value in summary.get("policy_counts", {}).items():
+            policy_counts[key] = policy_counts.get(key, 0) + int(value)
     return {
         "method": "rar_rcms_lite_state_machine",
         "principle": (
@@ -695,6 +799,9 @@ def aggregate_audit(
             "videos": len(videos),
             "state_counts": dict(sorted(state_counts.items())),
             "commit_counts": dict(sorted(commit_counts.items())),
+            "policy_counts": dict(sorted(policy_counts.items())),
+            "actual_memory_writes": actual_memory_writes,
+            "blocked_noncond_writes": blocked_noncond_writes,
             "rcms_promotions": rcms_promotions,
         },
         "videos": videos,
@@ -704,6 +811,8 @@ def aggregate_audit(
 def main() -> None:
     args = complete_paths(parse_args())
     cfg = config_from_args(args)
+    if args.make_submission:
+        validate_submission_paths(args)
     for required in [args.sam2_root, args.checkpoint, args.jpeg_root, args.ann_root]:
         if not required.exists():
             raise FileNotFoundError(required)
@@ -769,6 +878,7 @@ def main() -> None:
 
     if args.make_submission:
         make_submission(args)
+        validate_written_submission(args)
 
 
 if __name__ == "__main__":
