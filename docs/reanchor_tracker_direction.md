@@ -97,6 +97,10 @@ Do not immediately write a reappearing candidate into SAM2 memory or final submi
 
 This addresses the core failure where a stable wrong object becomes the new reference.
 
+## External method support
+
+The source-backed study in `docs/external_method_study.md` confirms this direction from three independent lines: SAM2Long shows training-free branch search can reduce greedy memory accumulation; MOSEv2/RCMS shows high-quality pre-disappearance memories should be promoted into conditioned references at the moment of disappearance; and OAMVOS/Re-Prompting/SAM3-DMS show that uncertainty states, delayed promotion, object retrieval, and per-object memory governance are central for MOSEv2-style identity recovery.
+
 ## What to avoid
 
 - More global threshold sweeps on M11/M2 without a new identity signal.

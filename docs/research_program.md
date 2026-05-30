@@ -104,7 +104,7 @@ Do **not** apply everything at once. Each method must correspond to a failure at
 - Method: detect post-gap uncertainty, retrieve candidate masks, verify them against first-frame identity and hard negatives, then commit only after confirmation delay.
 - Hypothesis: a proposal + verifier + delayed-commit loop can recover targets that M11 only empties and M4 only sees more clearly.
 - Main risk: verifier remains correlated with the wrong proposal source, causing stable distractors to be accepted as anchors.
-- Design note: see `docs/reanchor_tracker_direction.md`.
+- Design note: see `docs/reanchor_tracker_direction.md` and source-backed external study in `docs/external_method_study.md`.
 
 ## 5. Experiment gates
 

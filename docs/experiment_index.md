@@ -29,7 +29,7 @@ Candidate zips were either left on b101 or not generated when smoke evidence was
 
 ## Next primary direction
 
-The next route is documented in `docs/reanchor_tracker_direction.md`: M11/M2/M3/M4 are useful constraints and proposal sources, but the missing layer is a re-acquisition loop that can verify and commit a recovered identity after occlusion.
+The next route is documented in `docs/reanchor_tracker_direction.md`, with external method support in `docs/external_method_study.md`: M11/M2/M3/M4 are useful constraints and proposal sources, but the missing layer is a re-acquisition loop that can verify and commit a recovered identity after occlusion.
 
 ## Why the current best route is not “just run M4/SAM3”
 
@@ -54,6 +54,7 @@ cvMOSE/
 │   ├── paper_insights_sam2_sam3.md          # SAM2/SAM3 paper-based task reasoning
 │   ├── research_program.md                  # method roadmap M1-M6/M5R
 │   ├── reanchor_tracker_direction.md        # next primary re-acquisition architecture
+│   ├── external_method_study.md             # source-backed external method study for M5R
 │   ├── m2_reliable_memory_gate.md           # M2 mechanism and risks
 │   ├── m2_visual_analysis.md                # M2 visual diagnosis
 │   ├── m2_light_ablation.md                 # M2-light ablation record
