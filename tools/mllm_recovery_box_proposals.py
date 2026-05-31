@@ -201,7 +201,8 @@ def system_prompt() -> str:
         "你是视频目标重识别候选框召回器。任务不是分割，不输出 mask。"
         "你只在当前帧中给出与首帧 REF 指定的同一物理实例可能对应的高召回候选框。"
         "如果证据不足，可以给低置信候选并标风险；如果目标不可见或无法判断，也可以返回空。"
-        "必须极度注意同类干扰、遮挡、小目标、复合区域和背景块。只输出严格 JSON。"
+        "必须极度注意同类干扰、遮挡、小目标、复合区域和背景块。"
+        "请先在内部完成三步推理：目标类型路由、候选位置召回、同一物理实例风险审计；但最终只输出严格 JSON。"
     )
 
 
@@ -231,9 +232,18 @@ def user_prompt(video: str, obj_id: int, frame_idx: int, image_size: list[int], 
 - 判断同一物理实例，不是同类任意对象。
 - 高召回优先：如果有多个 plausible 位置，可以都给，但必须标 confidence 和风险。
 - 不要因为候选更大、更清晰、更居中就认为是目标。
+- 如果只有同类相似但没有身份连续性证据，confidence 必须 <=0.45，并标 same_class_distractor/uncertain。
+- 如果候选框会覆盖多个实例/人体/背景复合区域，confidence 必须 <=0.35，并标 composite/background/hand_or_person。
+- tiny 目标只有在放大图上确实可见时才给 >0.55；否则 target_visible=uncertain 或 no。
 - 如果候选可能是人手/人体、多个对象合并、背景块、同类干扰物，请标 risk_tags。
 - 如果目标可能被完全遮挡/出画，允许 target_visible=no 或 uncertain，并返回空 candidates。
 - 对 tiny/遮挡目标，如果只是猜测，confidence 不要高。
+
+Few-shot 判例：
+- 正例：REF 是边缘处小车，CURRENT 中同一辆车在近邻位置重现，box 紧贴车体且不含相邻车辆 -> confidence 0.70，risk_tags=[]。
+- 负例：REF 是某块草莓切片，CURRENT 中有另一块更清晰草莓但无法判断是同一块 -> target_visible=uncertain，candidates 可空或 confidence 0.30，risk_tags=["same_class_distractor","uncertain"]。
+- 负例：REF 是动物局部，CURRENT 框同时覆盖人手、身体和另一只动物 -> confidence 0.25，risk_tags=["composite","hand_or_person","same_class_distractor"]。
+- tiny 负例：REF 很小，CURRENT 网格附近只有模糊点且不能确认 -> confidence 0.20，risk_tags=["tiny_unreadable","uncertain"]。
 
 必须返回严格 JSON，格式：
 {{
@@ -265,6 +275,8 @@ def normalize_proposal(raw: dict[str, Any], meta: dict[str, Any], max_boxes: int
         "should_attempt_sam2_box": bool(raw.get("should_attempt_sam2_box", False)),
         "status": raw.get("status", "ok"),
         "model_used": raw.get("model_used"),
+        "requested_model": raw.get("requested_model"),
+        "fallback_errors": raw.get("fallback_errors", []),
         "mllm_cache_key": raw.get("mllm_cache_key"),
         "cache_hit": raw.get("cache_hit", False),
         "notes": raw.get("notes") or raw.get("reason_short") or "",

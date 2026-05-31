@@ -20,8 +20,8 @@ from typing import Any
 from PIL import Image, ImageDraw
 
 DEFAULT_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-DEFAULT_MODEL = "qwen-vl-max-latest"
-DEFAULT_FALLBACKS = "qwen-vl-max,qwen2.5-vl-72b-instruct,qwen-vl-plus"
+DEFAULT_MODEL = "qwen3.6-plus"
+DEFAULT_FALLBACKS = "qwen3.5-plus,qwen-vl-max-latest,qwen-vl-max,qwen2.5-vl-72b-instruct,qwen-vl-plus"
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -66,8 +66,8 @@ class QwenVLConfig:
     fallback_models: list[str] = field(default_factory=lambda: [x.strip() for x in os.getenv("QWEN_VL_FALLBACK_MODELS", DEFAULT_FALLBACKS).split(",") if x.strip()])
     cache_dir: Path = Path("artifacts/m7_qwen_vl/cache")
     dry_run: bool = False
-    max_side: int = field(default_factory=lambda: int(os.getenv("QWEN_VL_MAX_SIDE", "1200")))
-    jpeg_quality: int = field(default_factory=lambda: int(os.getenv("QWEN_VL_JPEG_QUALITY", "88")))
+    max_side: int = field(default_factory=lambda: int(os.getenv("QWEN_VL_MAX_SIDE", "1600")))
+    jpeg_quality: int = field(default_factory=lambda: int(os.getenv("QWEN_VL_JPEG_QUALITY", "90")))
     timeout: float = field(default_factory=lambda: float(os.getenv("QWEN_VL_TIMEOUT", "120")))
 
 
@@ -135,6 +135,7 @@ class QwenVLClient:
         payload = json.dumps(
             {
                 "model": model,
+                "base_url": self.cfg.base_url,
                 "schema_name": schema_name,
                 "system_prompt": system_prompt,
                 "user_text": user_text,
@@ -211,13 +212,25 @@ class QwenVLClient:
         model = self.cfg.model
         cache_key = self._cache_key(model, system_prompt, user_text, image_hashes, schema_name)
         cache_path = self.cache_dir / f"{cache_key}.json"
-        if cache_path.is_file():
+        refresh = os.getenv("QWEN_VL_REFRESH_CACHE", "").strip().lower() in {"1", "true", "yes", "y"}
+        if cache_path.is_file() and not refresh:
             record = json.loads(cache_path.read_text(encoding="utf-8"))
             parsed = record.get("parsed", {})
             if isinstance(parsed, dict):
-                parsed.setdefault("mllm_cache_key", cache_key)
-                parsed.setdefault("cache_hit", True)
-                return parsed
+                stale_statuses = {"dry_run", "api_error", "client_error"}
+                # A common failure mode in earlier experiments was to generate
+                # dry-run/API-error cache records before the real DashScope key
+                # or model was configured.  Once a real call is requested, those
+                # stale records must not silently veto every candidate.
+                if not self.cfg.dry_run and (record.get("dry_run") or parsed.get("status") in stale_statuses):
+                    pass
+                else:
+                    parsed.setdefault("mllm_cache_key", cache_key)
+                    parsed.setdefault("cache_hit", True)
+                    parsed.setdefault("model_used", record.get("model"))
+                    parsed.setdefault("requested_model", record.get("requested_model", model))
+                    parsed.setdefault("base_url", record.get("base_url", self.cfg.base_url))
+                    return parsed
 
         if self.cfg.dry_run:
             parsed = self._dry_stub(schema_name, metadata, "DASHSCOPE_API_KEY missing or dry_run enabled")

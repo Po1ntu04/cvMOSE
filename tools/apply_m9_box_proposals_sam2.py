@@ -53,7 +53,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--checkpoint", type=Path, default=None)
     p.add_argument("--device", default="cuda")
     p.add_argument("--ranks", nargs="*", type=int, default=[1])
-    p.add_argument("--min-confidence", type=float, default=0.01)
+    p.add_argument("--min-confidence", type=float, default=0.45)
+    p.add_argument("--recall-mode", action="store_true", help="Use low confidence/risk boxes for diagnostics; production mode filters unsafe Qwen boxes")
+    p.add_argument("--allow-risk-tags", nargs="*", default=[], help="Risk tags allowed in production mode, e.g. occluded edge_partial")
     p.add_argument("--box-pad-frac", type=float, default=0.03)
     p.add_argument("--box-pad-px", type=int, default=0)
     p.add_argument("--clip-to-prompt-box", action="store_true", help="Intersect SAM2 output with an expanded prompt box to suppress leakage/composites")
@@ -126,10 +128,15 @@ def pixel_box(bbox_norm: list[float], width: int, height: int, pad_frac: float, 
     return [float(x1), float(y1), float(x2), float(y2)]
 
 
-def parse_candidates(path: Path, min_conf: float) -> list[BoxCandidate]:
+def parse_candidates(path: Path, min_conf: float, recall_mode: bool = False, allow_risk_tags: set[str] | None = None) -> list[BoxCandidate]:
     data = json.loads(path.read_text(encoding="utf-8"))
     out: list[BoxCandidate] = []
+    allow_risk_tags = allow_risk_tags or set()
+    blocked_risks = {"composite", "background", "background_blob", "hand_or_person", "same_class_distractor"}
     for rec in data.get("records", []):
+        visible = str(rec.get("target_visible", "uncertain"))
+        if not recall_mode and (visible == "no" or not bool(rec.get("should_attempt_sam2_box", True))):
+            continue
         try:
             video = str(rec["video"]); obj = int(rec["obj_id"]); frame = int(rec["frame_idx"])
         except Exception:
@@ -139,6 +146,9 @@ def parse_candidates(path: Path, min_conf: float) -> list[BoxCandidate]:
                 conf = float(cand.get("confidence") or 0.0)
                 bbox = [float(x) for x in cand.get("bbox_norm")]
             except Exception:
+                continue
+            risks = {str(x) for x in cand.get("risk_tags", [])} if isinstance(cand.get("risk_tags"), list) else set()
+            if not recall_mode and risks.intersection(blocked_risks - allow_risk_tags):
                 continue
             if conf < min_conf or len(bbox) != 4:
                 continue
@@ -151,7 +161,7 @@ def parse_candidates(path: Path, min_conf: float) -> list[BoxCandidate]:
                     bbox_norm=bbox,
                     confidence=conf,
                     reason_short=str(cand.get("reason_short") or ""),
-                    risk_tags=[str(x) for x in cand.get("risk_tags", [])] if isinstance(cand.get("risk_tags"), list) else [],
+                    risk_tags=sorted(risks),
                     model_used=rec.get("model_used"),
                     panel_path=rec.get("panel_path"),
                 )
@@ -186,7 +196,7 @@ def main() -> None:
     args = complete_paths(parse_args())
     jpeg_root = args.workspace / "homework" / "JPEGImages"
     ann_root = args.workspace / "homework" / "Annotations"
-    candidates = parse_candidates(args.proposals_json, args.min_confidence)
+    candidates = parse_candidates(args.proposals_json, args.min_confidence, args.recall_mode, set(args.allow_risk_tags or []))
     ranks = sorted({int(r) for r in args.ranks if int(r) >= 1})
     roots = {rank: pred_root_for(args.pred_root_template, rank) for rank in ranks}
     for root in roots.values():

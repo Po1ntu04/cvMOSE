@@ -96,6 +96,7 @@ ALLOWED_EXTRA_FLAGS=(
   --sameclass-margin --anchor-confirm-mode --anchor-confirm-window --anchor-confirm-min-count --strong-margin
   --rollback-max-change-frac --rollback-high-conf-margin
   --baseline-root --fallback-root --m11-root --m2-light-root --tiny-crop-root --sam31-root --rar-rcms-root --rar-state-root --rar-audit-json
+  --source-root
   --target-profiles-json --mllm-candidate-judgments-json --mllm-tracklet-judgments-json
   --mllm-policy --mllm-min-veto-confidence --mllm-min-support-confidence --mllm-require-tracklet-for-anchor --mllm-uncertain-action
 )

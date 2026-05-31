@@ -197,3 +197,15 @@ cvMOSE/
 - Proposal summary: `docs/m9_qwen_box_proposals_smoke.md`
 - Visuals: `docs/assets/m9_qwen_boxes/`
 - Core result: Qwen is useful for absence/veto reasoning, but direct coordinate-box output plus SAM2 box prompt is not final-quality; clipping prevents leakage but does not solve identity.
+
+## M10 — Qwen3.6 verifier-to-anchor coupling fix
+
+- Report: `docs/m10_qwen36_reanchor_report.md`
+- Setup: `docs/m9_qwen36_setup.md`
+- Summaries: `docs/m10_qwen36_target_profile_summary.md`, `docs/m10_qwen36_candidate_judge_key_summary.md`, `docs/m10_qwen36_tracklet_judge_key_full_summary.md`
+- Visuals: `docs/assets/m10_qwen36/confirm_compare/`
+- Core result: fixed the main implementation bottleneck where Qwen-judged frames were not prioritized in candidate generation and verified tracklets were still rejected by duplicate delayed-confirm logic. This enables real anchor insertion for `q0sizv6m:obj2`, `msinig6m:obj1`, and `4vznweiu:obj1`; after bounded rollback, only `q0sizv6m:obj2` remains a visually plausible probe over `m7part-balanced`.
+- Validated zips in local MOSEv2 workspace:
+  - submit first: `submission_mosev2_m7_part_balanced.zip` / repo copy `submission_mosev2_m7_part_balanced_submit.zip`
+  - probe: `submission_mosev2_m10_qwen36_q0only.zip`
+  - aggressive probe: `submission_mosev2_m10_qwen36_q0_4v.zip`

@@ -170,6 +170,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--sam31-root", type=Path, default=None)
     p.add_argument("--rar-rcms-root", type=Path, default=None)
     p.add_argument("--rar-state-root", type=Path, default=None)
+    p.add_argument(
+        "--source-root",
+        action="append",
+        default=[],
+        help="Additional high-recall candidate root as name=/path; repeatable. Used only as candidate source, not as default output.",
+    )
     p.add_argument("--rar-audit-json", type=Path, default=None)
     p.add_argument("--audit-json", type=Path, default=None)
     p.add_argument("--audit-dir", type=Path, default=None)
@@ -626,7 +632,19 @@ def source_roots(args: argparse.Namespace) -> dict[str, Path]:
         "rar_rcms": args.rar_rcms_root,
         "rar_state": args.rar_state_root,
     }
-    return {name: root for name, root in roots.items() if root and root.is_dir()}
+    out = {name: root for name, root in roots.items() if root and root.is_dir()}
+    for item in getattr(args, "source_root", []) or []:
+        if "=" not in str(item):
+            raise ValueError(f"--source-root must be name=/path, got {item!r}")
+        name, path = str(item).split("=", 1)
+        name = name.strip()
+        root = Path(path).expanduser().resolve()
+        if not name:
+            raise ValueError(f"empty --source-root name in {item!r}")
+        if not root.is_dir():
+            raise FileNotFoundError(f"extra source root missing: {name}={root}")
+        out[name] = root
+    return out
 
 
 def load_rar_states(path: Path, video: str) -> dict[tuple[int, int], str]:
@@ -703,6 +721,27 @@ def _mllm_profile(args: argparse.Namespace, video: str, obj_id: int) -> dict[str
     return getattr(args, "_mllm_profiles", {}).get((video, int(obj_id)), {})
 
 
+def _mllm_frames_for(args: argparse.Namespace, video: str, obj_id: int) -> set[int]:
+    """Frames explicitly judged by MLLM for this target.
+
+    These frames are a high-value recovery prior.  Earlier M7/M10 runs could
+    ask Qwen to judge q0sizv6m:2@23 or msinig6m:1@70, but the re-anchor loop
+    never generated candidates for those frames (or hit the candidate cap before
+    reaching them).  Include and prioritize them so verifier evidence can
+    actually affect candidate->anchor promotion.
+    """
+    out: set[int] = set()
+    for lookup_name in ["_mllm_candidate_lookup", "_mllm_tracklet_lookup"]:
+        for key in getattr(args, lookup_name, {}):
+            try:
+                v, o, f = key
+            except Exception:
+                continue
+            if str(v) == str(video) and int(o) == int(obj_id):
+                out.add(int(f))
+    return out
+
+
 def _candidate_source_match(candidate_source: str, judgment_source: str | None) -> bool:
     if not judgment_source:
         return False
@@ -732,6 +771,60 @@ def _tracklet_for_source(args: argparse.Namespace, cand: Candidate) -> dict[str,
         if _candidate_source_match(cand.source, rec.get("source")):
             return rec.get("tracklet_judgment", rec)
     return None
+
+
+def _relax_mllm_supported_rejections(cand: Candidate, effective_policy: str, profile_type: str, conf: float, track: dict[str, Any] | None, args: argparse.Namespace) -> None:
+    """Let high-confidence MLLM+tracklet support unblock borderline anchors.
+
+    Earlier M7 used Qwen-VL as a near-pure veto: support only added +0.02 to
+    score, so candidates already marked ``low_identity_margin`` could never be
+    promoted.  This helper still forbids MLLM-only promotion, but it lets a
+    support judgment remove *weak* descriptor/size rejections when another
+    visual condition is present (tracklet promotion, strong descriptor margin,
+    or semantic high confidence).  Hard safety rejections remain sticky.
+    """
+    if not cand.mllm_support_applied:
+        return
+    track_promote = bool((track or {}).get("promote_anchor"))
+    track_conf = float((track or {}).get("confidence") or 0.0)
+    has_track = track_promote and track_conf >= float(args.mllm_min_support_confidence)
+    strong_descriptor = cand.margin >= float(args.strong_margin)
+    semantic_high_conf = (
+        effective_policy == "semantic_support"
+        and profile_type == "semantic_dominated"
+        and conf >= max(float(args.mllm_min_support_confidence), 0.78)
+        and cand.pos_sim >= max(0.45, float(args.positive_thr) * 0.85)
+    )
+    if not (has_track or strong_descriptor or semantic_high_conf):
+        return
+    hard_prefixes = (
+        "area_too_large",
+        "too_close_to_negative",
+        "mllm_veto",
+        "mllm_preferred_other",
+        "mllm_keep_empty",
+        "mllm_reject_all",
+        "mllm_conservative_uncertain",
+        "mllm_uncertain_",
+    )
+    if any(any(reason.startswith(prefix) for prefix in hard_prefixes) for reason in cand.rejected):
+        return
+    removable: set[str] = set()
+    if cand.margin >= max(0.04, float(args.identity_margin) * 0.50) or has_track or semantic_high_conf:
+        removable.add("low_identity_margin")
+    if cand.pos_sim >= max(0.42, float(args.positive_thr) * 0.80) or has_track:
+        removable.add("low_positive_similarity")
+    if profile_type in {"tiny", "semantic_dominated", "edge_partial"} and (has_track or semantic_high_conf):
+        removable.add("area_too_small")
+    if has_track:
+        removable.add("mllm_tracklet_required")
+    before = list(cand.rejected)
+    cand.rejected = [reason for reason in cand.rejected if reason not in removable]
+    removed = sorted(set(before) - set(cand.rejected))
+    if removed:
+        cand.mllm_candidate_decision = dict(cand.mllm_candidate_decision or {})
+        cand.mllm_candidate_decision["relaxed_rejections"] = removed
+        cand.score += 0.10 if has_track else 0.04
 
 
 def apply_mllm_policy(cands: list[Candidate], args: argparse.Namespace) -> None:
@@ -772,6 +865,8 @@ def apply_mllm_policy(cands: list[Candidate], args: argparse.Namespace) -> None:
                 "reason_short": judgment.get("reason_short"),
                 "record_panel": rec.get("panel_path"),
                 "record_source": best_source,
+                "profile_type": profile_type,
+                "is_semantic_dominated": bool(profile.get("is_semantic_dominated")),
             }
             cand.mllm_confidence = conf
             cand.mllm_risk_tags = risks
@@ -820,9 +915,12 @@ def apply_mllm_policy(cands: list[Candidate], args: argparse.Namespace) -> None:
             )
             if support_ok:
                 cand.mllm_support_applied = True
-                # MLLM support is a weak bonus, never a replacement for the
-                # descriptor/temporal checks already encoded in score/rejected.
-                cand.score += 0.02
+                # MLLM support should materially reorder candidates inside a
+                # judged recovery frame.  It is still not a sole promotion path:
+                # weak descriptor/size rejections are only relaxed below when a
+                # tracklet, strong descriptor margin, or semantic evidence also
+                # exists.
+                cand.score += 0.15
 
             track = _tracklet_for_source(args, cand)
             if track is not None:
@@ -843,9 +941,11 @@ def apply_mllm_policy(cands: list[Candidate], args: argparse.Namespace) -> None:
                         cand.rejected.append("mllm_tracklet_required")
                 elif track_promote and track_conf >= float(args.mllm_min_support_confidence):
                     cand.mllm_support_applied = True
+            _relax_mllm_supported_rejections(cand, effective_policy, profile_type, conf, track, args)
 
 
 def event_frames(
+    video: str,
     frames: list[Path],
     labels_by_source: dict[str, list[np.ndarray | None]],
     obj_id: int,
@@ -880,6 +980,9 @@ def event_frames(
             padded.add(j)
     if args.candidate_frame_stride and args.candidate_frame_stride > 0:
         padded.update(range(1, len(frames), args.candidate_frame_stride))
+    for idx in _mllm_frames_for(args, video, obj_id):
+        if 0 < idx < len(frames):
+            padded.add(idx)
     return padded
 
 
@@ -969,7 +1072,9 @@ def collect_candidates(
         auto_frames = set(evidence_frames[:auto_frame_budget])
         if not auto_frames:
             auto_frames = set(fallback_frames[:auto_frame_budget])
-    for idx in sorted(selected_frames):
+    priority_frames = {idx for idx in _mllm_frames_for(args, video, obj_id) if idx in selected_frames}
+    frame_order = sorted(priority_frames) + [idx for idx in sorted(selected_frames) if idx not in priority_frames]
+    for idx in frame_order:
         if idx <= 0 or idx >= len(frames):
             continue
         seen_masks: list[np.ndarray] = []
@@ -1167,6 +1272,13 @@ def confirm_candidate(cand: Candidate, valid: list[Candidate], init_area: int, a
         return True, "single"
     if args.anchor_confirm_mode == "delayed2_or_cycle" and cand.margin >= args.strong_margin:
         return True, f"strong_margin:{cand.margin:.3f}"
+    track = cand.mllm_tracklet_decision or {}
+    if (
+        cand.mllm_support_applied
+        and bool(track.get("promote_anchor"))
+        and float(track.get("confidence") or 0.0) >= float(args.mllm_min_support_confidence)
+    ):
+        return True, f"mllm_tracklet:{track.get('confidence')}"
     hi = cand.frame_idx + int(args.anchor_confirm_window)
     max_dist = max(40.0, 3.0 * math.sqrt(max(float(init_area), 1.0)))
     count = 1
@@ -1192,8 +1304,34 @@ def confirm_candidate(cand: Candidate, valid: list[Candidate], init_area: int, a
     return False, f"unconfirmed:{count}/{args.anchor_confirm_min_count}"
 
 
+def mllm_prefloor_allowed(cand: Candidate, args: argparse.Namespace) -> bool:
+    """Allow a verified semantic/tiny pre-disappearance anchor as RCMS-lite memory.
+
+    The normal anchor floor avoids perturbing a stable prefix.  However, TEP/
+    RCMS-style recovery needs high-quality pre-disappearance memories for
+    targets that later vanish.  We only bypass the floor when Qwen and the
+    tracklet judge both support the candidate, and only for semantic tiny/partial
+    targets rather than dense same-class objects.
+    """
+    dec = cand.mllm_candidate_decision or {}
+    track = cand.mllm_tracklet_decision or {}
+    if not cand.mllm_support_applied:
+        return False
+    if not bool(track.get("promote_anchor")) or float(track.get("confidence") or 0.0) < float(args.mllm_min_support_confidence):
+        return False
+    if not bool(dec.get("is_semantic_dominated")):
+        return False
+    if str(dec.get("profile_type")) not in {"tiny", "semantic_dominated", "edge_partial"}:
+        return False
+    if cand.margin < max(0.04, float(args.identity_margin) * 0.50):
+        return False
+    if cand.pos_sim < max(0.42, float(args.positive_thr) * 0.80):
+        return False
+    return True
+
+
 def choose_anchors(cands: list[Candidate], min_frame: int, init_area: int, args: argparse.Namespace) -> list[Candidate]:
-    valid = [c for c in cands if c.frame_idx >= min_frame and not c.rejected]
+    valid = [c for c in cands if (c.frame_idx >= min_frame or mllm_prefloor_allowed(c, args)) and not c.rejected]
     valid.sort(key=lambda c: (c.score, c.margin, c.pos_sim, c.area), reverse=True)
     anchors: list[Candidate] = []
     for cand in valid:
@@ -1365,7 +1503,7 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
         "objects_audit": {},
     }
     for obj_id in obj_ids:
-        events = event_frames(frames, labels_by_source, obj_id, rar_states, args)
+        events = event_frames(video, frames, labels_by_source, obj_id, rar_states, args)
         init_area = int((ann == obj_id).sum())
         pos_bank, neg_bank, bank_audit = build_positive_negative_banks(
             video, frames, ann, obj_id, labels_by_source, events, extractor, dino_extractor, args

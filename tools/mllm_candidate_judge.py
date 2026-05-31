@@ -51,6 +51,12 @@ USER_TEMPLATE = """给你：
 5. 若目标极小，只有在 crop 中清楚可见时才支持候选。
 6. 若候选来自多源但明显同错，这不是独立证据。
 
+Few-shot 判例：
+- 正确支持：REF 是一辆白色小车，Candidate A 在当前帧同一运动路径上，raw crop 仍能看到同一白车轮廓，mask 不含邻车；返回 best_candidate="A", should_support_anchor=true, recommended_action="promote_after_confirmation"。
+- 保守拒绝：REF 是某块草莓切片，Candidate A 是更清晰但无法证明同一块的相邻草莓；返回 best_candidate="uncertain" 或 "empty", should_support_anchor=false, should_veto_anchor=true, risk 包含 same_class_distractor。
+- 复合区域拒绝：Candidate 同时覆盖人手/人体和动物/物体，哪怕包含目标一部分，也不允许做 anchor；返回 should_veto_anchor=true, risk 包含 composite/hand_or_person。
+- tiny 不可读：放大 crop 中仍看不清目标，返回 uncertain，不能因为位置接近就 support。
+
 返回严格 JSON：
 {
   "video": "<video>",
@@ -93,6 +99,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--m5r-audit-json", type=Path, default=Path("artifacts/m5r_reanchor/m5r_reanchor_key.json"))
     p.add_argument("--pred-roots", default="", help="Comma-separated name=path roots; defaults to discovered baseline/m11/m5r roots")
     p.add_argument("--videos", nargs="*", default=None)
+    p.add_argument("--targets", nargs="*", default=None, help="Optional video:obj filters")
+    p.add_argument("--frames-json", type=Path, default=None, help="Optional JSON mapping video or video:obj -> explicit frame indices")
     p.add_argument("--model", default=os.getenv("QWEN_VL_MODEL", DEFAULT_MODEL))
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--cache-dir", type=Path, default=Path("artifacts/m7_qwen_vl/cache"))
@@ -102,6 +110,23 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-calls", type=int, default=80)
     p.add_argument("--max-candidates", type=int, default=6)
     return p.parse_args()
+
+
+def parse_targets(items: list[str] | None) -> set[tuple[str, int]] | None:
+    if not items:
+        return None
+    out: set[tuple[str, int]] = set()
+    for item in items:
+        video, obj = item.split(":", 1)
+        out.add((video, int(obj)))
+    return out
+
+
+def load_frames_json(path: Path | None) -> dict[str, list[int]]:
+    if path is None or not path.is_file():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {str(k): [int(x) for x in v] for k, v in data.items()}
 
 
 def parse_pred_roots(text: str, workspace: Path) -> dict[str, Path]:
@@ -320,6 +345,8 @@ def main() -> None:
     _, audit_by_video = load_audit(args.m5r_audit_json)
     jpeg_root, ann_root = homework_roots(args.workspace)
     videos = args.videos or sorted(p.name for p in jpeg_root.iterdir() if p.is_dir())
+    target_filter = parse_targets(args.targets)
+    frame_cfg = load_frames_json(args.frames_json)
     client = QwenVLClient(model=args.model, cache_dir=args.cache_dir, dry_run=args.dry_run)
     records: list[dict[str, Any]] = []
     index: list[dict[str, Any]] = []
@@ -332,12 +359,18 @@ def main() -> None:
         ann = load_label(ann_files[0])
         obj_ids = [int(x) for x in sorted(set(ann.reshape(-1).tolist())) if int(x) != 0]
         for obj_id in obj_ids:
+            if target_filter and (video, obj_id) not in target_filter:
+                continue
             if calls >= args.max_calls:
                 break
             prof = profiles.get((video, obj_id), {})
             target_type = str(prof.get("target_type", "unknown"))
             route_hint = ROUTE_HINTS.get(target_type, "")
-            frame_idxs = select_high_risk_frames(video=video, obj_id=obj_id, frames_count=len(frames), audit_by_video=audit_by_video, roots=roots, workspace=args.workspace)
+            key_obj = f"{video}:{obj_id}"
+            if key_obj in frame_cfg or video in frame_cfg:
+                frame_idxs = [f for f in (frame_cfg.get(key_obj) or frame_cfg.get(video) or []) if 0 < int(f) < len(frames)]
+            else:
+                frame_idxs = select_high_risk_frames(video=video, obj_id=obj_id, frames_count=len(frames), audit_by_video=audit_by_video, roots=roots, workspace=args.workspace)
             for frame_idx in frame_idxs:
                 if calls >= args.max_calls:
                     break

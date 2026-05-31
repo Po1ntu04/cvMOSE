@@ -47,6 +47,11 @@ USER_TEMPLATE = """给你 REF 和候选在连续 2-3 帧中的 crop/overlay。�
 - 若存在 same_class_switch 风险，promote_anchor 必须 false，除非证据极强。
 - 若帧间候选显著跳变，promote_anchor 必须 false。
 
+Few-shot 判例：
+- 连续正确：候选在 t/t+1/t+2 是同一小车/同一物体，位置和外观连续，且与 REF 的颜色/形状/局部结构一致 -> promote_anchor=true。
+- 同类切换：t 是一个草莓切片，t+1/t+2 跳到旁边另一块，或和 REF 只能判断同类不能判断同一实例 -> promote_anchor=false, risk_tags 包含 same_class_switch。
+- 复合/人体：连续 mask 包含人手、背景或多个实例，即使目标可能在其中 -> promote_anchor=false, risk_tags 包含 composite/background/occlusion。
+
 video={video}; obj_id={obj_id}; anchor_frame={anchor_frame}; candidate_source={source}; candidate_id={candidate_id}; candidate_judge={candidate_judge}
 """
 
