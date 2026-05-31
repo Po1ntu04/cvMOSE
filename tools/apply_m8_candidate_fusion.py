@@ -37,6 +37,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--only-empty-default", action="store_true", default=True)
     p.add_argument("--allow-nonempty-replacement", dest="only_empty_default", action="store_false")
     p.add_argument("--allow-stable-guard", action="store_true")
+    p.add_argument("--allow-component-candidates", action="store_true", help="Reconstruct connected-component candidates from source label>0 masks instead of copying src==obj_id")
+    p.add_argument("--component-min-area", type=int, default=12)
     p.add_argument("--require-qwen-for-sameclass", action="store_true", default=True)
     p.add_argument("--allow-unverified-sameclass", dest="require_qwen_for_sameclass", action="store_false")
     p.add_argument("--make-submission", action="store_true")
@@ -101,12 +103,9 @@ def candidate_rules(data: dict[str, Any], args: argparse.Namespace) -> tuple[dic
                     reason = f"missing_root:{root_name}"
                 elif src.startswith("default") or root_name == "default":
                     reason = "same_as_default"
-                elif ":anyfg:" in src:
-                    # The audit can score connected components for recall diagnostics,
-                    # but this output-level fusion only has access to stored label PNGs.
-                    # Copying src==obj_id from the full root would not reproduce the
-                    # audited component, so component candidates must be passed to a
-                    # re-anchor stage rather than copied here.
+                elif ":anyfg:" in src and not args.allow_component_candidates:
+                    # Component candidates can now be reconstructed explicitly when
+                    # --allow-component-candidates is set.  Keep the default safe.
                     reason = "component_candidate_requires_reanchor"
                 elif score < args.min_score:
                     reason = f"low_score:{score:.3f}"
@@ -176,7 +175,27 @@ def main() -> None:
                     src, _ = load_label(src_path)
                     if src.shape != label.shape:
                         skipped.append({"frame_idx": idx, "obj_id": obj, "source": r.get("source"), "reason": "shape_mismatch"}); continue
-                    mask = src == obj
+                    src_name = str(r.get("source") or "")
+                    if ":anyfg:" in src_name:
+                        try:
+                            comp_idx = int(src_name.rsplit(":", 1)[1])
+                        except Exception:
+                            comp_idx = 0
+                        fg = src > 0
+                        try:
+                            import cv2  # type: ignore
+                            n, labels, stats, _ = cv2.connectedComponentsWithStats(fg.astype(np.uint8), 8)
+                            comps = []
+                            for cc in range(1, n):
+                                area = int(stats[cc, cv2.CC_STAT_AREA])
+                                if area >= int(args.component_min_area):
+                                    comps.append((area, labels == cc))
+                            comps.sort(key=lambda x: x[0], reverse=True)
+                            mask = comps[comp_idx][1] if comp_idx < len(comps) else np.zeros_like(fg, dtype=bool)
+                        except Exception:
+                            skipped.append({"frame_idx": idx, "obj_id": obj, "source": r.get("source"), "reason": "component_extract_failed"}); continue
+                    else:
+                        mask = src == obj
                     if int(mask.sum()) <= 0:
                         skipped.append({"frame_idx": idx, "obj_id": obj, "source": r.get("source"), "reason": "source_empty"}); continue
                     before = label.copy()

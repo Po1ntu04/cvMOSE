@@ -1,0 +1,37 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/m11",
+    "component": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m9_box_clip_component_probe",
+    "m9clip2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m9_qwen_box_clip_rank2",
+    "m9clip3": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m9_qwen_box_clip_rank3"
+  },
+  "sheets": [
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        5,
+        11,
+        17,
+        23,
+        29,
+        35,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "component",
+        "m9clip2",
+        "m9clip3",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m9_qwen_boxes/compare_component_probe/q0sizv6m_m6_compare.jpg"
+    }
+  ]
+}

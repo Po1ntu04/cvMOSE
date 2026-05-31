@@ -190,3 +190,10 @@ cvMOSE/
 ## M7 overlay/source-select follow-up
 
 - `docs/m7_overlay_source_select_report.md` records the filled-overlay hallucination bug, the outline-panel fix, guarded source-select ablation, validated zips, and visual evidence paths.
+
+## M9 — Qwen-box recovery smoke
+
+- Report: `docs/m9_qwen_box_recovery_report.md`
+- Proposal summary: `docs/m9_qwen_box_proposals_smoke.md`
+- Visuals: `docs/assets/m9_qwen_boxes/`
+- Core result: Qwen is useful for absence/veto reasoning, but direct coordinate-box output plus SAM2 box prompt is not final-quality; clipping prevents leakage but does not solve identity.
