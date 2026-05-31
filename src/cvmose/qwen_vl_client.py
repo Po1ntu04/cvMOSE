@@ -82,6 +82,7 @@ class QwenVLClient:
         dry_run: bool = False,
         max_side: int | None = None,
         jpeg_quality: int | None = None,
+        timeout: float | None = None,
     ) -> None:
         cfg = QwenVLConfig()
         if model:
@@ -99,6 +100,8 @@ class QwenVLClient:
             cfg.max_side = int(max_side)
         if jpeg_quality is not None:
             cfg.jpeg_quality = int(jpeg_quality)
+        if timeout is not None:
+            cfg.timeout = float(timeout)
         self.cfg = cfg
         self.cache_dir = cfg.cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
