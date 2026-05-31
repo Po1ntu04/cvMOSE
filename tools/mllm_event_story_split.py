@@ -145,23 +145,43 @@ def discover_targets(workspace: Path, videos: list[str], target_filter: set[tupl
 
 
 def choose_frames(num_frames: int, extra: list[int] | None = None, max_frames: int = 4) -> list[int]:
-    base = [0, 1, 2, num_frames - 1]
-    if extra:
-        base.extend(extra)
-    out: list[int] = []
-    for idx in base:
+    """Choose split-harness frames without dropping explicit late reappearance frames.
+
+    The previous implementation sorted and sliced after mixing defaults and
+    overrides, which could silently drop a user-specified final/reappearance
+    frame (e.g. 8jsm23a7 frame 48).  For event-chain analysis, explicit extras
+    are stronger evidence than uniform chronology, so preserve early identity
+    frames plus the latest requested/reappearance frame first.
+    """
+    max_frames = max(1, int(max_frames))
+    cleaned: list[int] = []
+    for idx in (extra or []):
         idx = max(0, min(num_frames - 1, int(idx)))
-        if idx not in out:
-            out.append(idx)
-    if len(out) <= max_frames:
-        return out
-    keep = [out[0], out[1], out[-1]]
-    middle = [x for x in out[2:-1] if x not in keep]
-    need = max_frames - len(keep)
-    if need > 0 and middle:
-        picks = np.linspace(0, len(middle) - 1, need).round().astype(int).tolist()
-        keep[2:2] = [middle[i] for i in picks]
-    return sorted(dict.fromkeys(keep))[:max_frames]
+        if idx not in cleaned:
+            cleaned.append(idx)
+    if cleaned:
+        mandatory = []
+        for idx in [0, 1, 2, max(cleaned)]:
+            idx = max(0, min(num_frames - 1, int(idx)))
+            if idx not in mandatory:
+                mandatory.append(idx)
+        middle = [x for x in cleaned if x not in mandatory]
+    else:
+        mandatory = []
+        for idx in [0, 1, 2, num_frames - 1]:
+            idx = max(0, min(num_frames - 1, int(idx)))
+            if idx not in mandatory:
+                mandatory.append(idx)
+        middle = []
+    if len(mandatory) >= max_frames:
+        # Keep the earliest identity context and the latest event/reappearance.
+        return sorted(dict.fromkeys([*mandatory[: max(0, max_frames - 1)], mandatory[-1]]))
+    need = max_frames - len(mandatory)
+    picks: list[int] = []
+    if middle and need > 0:
+        idxs = np.linspace(0, len(middle) - 1, min(need, len(middle))).round().astype(int).tolist()
+        picks = [middle[i] for i in idxs]
+    return sorted(dict.fromkeys([*mandatory, *picks]))[:max_frames]
 
 
 def load_json_map(path: Path | None) -> dict[str, list[int]]:
@@ -456,10 +476,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--frames-json", type=Path, default=None)
     p.add_argument("--hints-json", type=Path, default=None)
     p.add_argument("--no-builtin-hints", action="store_true")
-    p.add_argument("--out-json", type=Path, default=Path("artifacts/m12_event_story_split/split_records.json"))
-    p.add_argument("--out-panel-dir", type=Path, default=Path("artifacts/m12_event_story_split/panels"))
-    p.add_argument("--out-doc", type=Path, default=Path("docs/m12_qwen36_split_event_story.md"))
-    p.add_argument("--cache-dir", type=Path, default=Path("artifacts/m12_event_story_split/cache"))
+    p.add_argument("--out-json", type=Path, default=Path("artifacts/m13_event_story_split/split_records.json"))
+    p.add_argument("--out-panel-dir", type=Path, default=Path("artifacts/m13_event_story_split/panels"))
+    p.add_argument("--out-doc", type=Path, default=Path("docs/m13_qwen36_split_event_story.md"))
+    p.add_argument("--cache-dir", type=Path, default=Path("artifacts/m13_event_story_split/cache"))
     p.add_argument("--model", default=os.getenv("QWEN_VL_MODEL", DEFAULT_MODEL))
     p.add_argument("--allow-fallback", action="store_true", help="By default split mode tests qwen3.6-plus directly with no fallback.")
     p.add_argument("--dry-run", action="store_true")
@@ -562,7 +582,7 @@ def call_frame_observation(
 def write_doc(path: Path, payload: dict[str, Any]) -> None:
     rows = payload.get("records", [])
     lines = [
-        "# M12 qwen3.6 split-frame event-story report",
+        "# M13 qwen3.6 split-frame event-story report",
         "",
         "**Purpose:** avoid qwen3.6-plus multi-frame panel timeouts by splitting visual evidence into small frame observations, then aggregating text-only.",
         "",
