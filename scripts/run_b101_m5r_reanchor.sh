@@ -95,7 +95,7 @@ ALLOWED_EXTRA_FLAGS=(
   --dino-root --dino-weights --dino-variant --dino-max-side --dino-tiny-min-tokens --dino-tiny-crop-min-side --dino-tiny-crop-mult
   --sameclass-margin --anchor-confirm-mode --anchor-confirm-window --anchor-confirm-min-count --strong-margin
   --rollback-max-change-frac --rollback-high-conf-margin
-  --baseline-root --m11-root --m2-light-root --tiny-crop-root --sam31-root --rar-rcms-root --rar-state-root --rar-audit-json
+  --baseline-root --fallback-root --m11-root --m2-light-root --tiny-crop-root --sam31-root --rar-rcms-root --rar-state-root --rar-audit-json
   --target-profiles-json --mllm-candidate-judgments-json --mllm-tracklet-judgments-json
   --mllm-policy --mllm-min-veto-confidence --mllm-min-support-confidence --mllm-require-tracklet-for-anchor --mllm-uncertain-action
 )
