@@ -48,3 +48,13 @@ A code-review pass found one blocking risk: the teach-box runner could create an
 - `tools/apply_m13_object_fusion.py` validates generated zips fail-closed.
 - `scripts/run_b101_m13_teach_boxes.sh` now defaults M13 probes to `--propagate-direction both` with a bounded window, matching the reverse-anchor conclusion.
 - A local temp subset-submission test passed after automatically filling missing predicted videos: `provided_changed_count=0`, `predicted_error_count=0`, `ok=true`.
+
+## Hidden feedback update: zofficial-balanced = 43.34
+
+The latest full-test log for `submission_mosev2_m13_8rev_zofficial_balanced.zip` reports `J&F_new=43.34`, above the prior 43.30 family. Row-level inspection shows the improvement is concentrated in `z6dx46qr`:
+
+- `z6dx46qr`: `40.47 -> 65.14`, explaining about `+0.043` global score over 575 object rows.
+- `8jsm23a7`: remains `2.13`, so the visually better reverse-anchor did not translate to hidden-metric gain.
+- `q0sizv6m`: unchanged, as expected because the unsafe reverse-anchor was excluded.
+
+Interpretation: this is a valid incremental improvement and confirms the fusion infrastructure is useful, but it is not a structural MLLM breakthrough. The next high-value step is to understand why `8jsm23a7` remains at 2.13 despite the plausible visual event fix, then pursue stronger bbox/identity sources rather than more Qwen box geometry alone.

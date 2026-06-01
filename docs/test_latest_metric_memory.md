@@ -107,3 +107,25 @@ Even lifting all known 15-video target rows below 70 up to 70 yields only about 
 ## Most useful next log
 
 Since conservative now appears metric-equivalent to balanced, the most useful next detailed log is `submission_m10_q0only.zip` if we want to isolate whether the q0-only anchor changes any row at all. If the goal is to find a route toward a real gain rather than diagnose M10, the next most useful detailed log is a genuinely different 43.29/43.30 family candidate such as `submission_m6_agg.zip` / `submission_m6_balanced.zip`, because it may reveal which object rows can move without hurting the stable M7 rows.
+
+## M13 zofficial-balanced hidden feedback: 43.34
+
+Latest `/home/yu/projects/cv/from fdu/MOSEv2/homework/test_latest.log` corresponds to `submission_mosev2_m13_8rev_zofficial_balanced.zip` / zofficial-balanced feedback:
+
+- J&F_new: `43.34`
+- J: `41.60`
+- F_new: `45.07`
+- disappear J&F_new: `60.43`
+- reappear J&F_new: `20.62`
+- F: `47.27`
+- J&F: `44.44`
+
+Compared with the confirmed 43.30 M7 family (`J&F_new≈43.29597`), this is about `+0.044` global J&F_new. The row-level evidence indicates the gain is almost entirely from `z6dx46qr`:
+
+| video row | M7 family J&F_new | latest M13 J&F_new | delta | interpretation |
+| --- | ---: | ---: | ---: | --- |
+| `z6dx46qr` | `40.47` | `65.14` | `+24.67` | This explains roughly `+24.67 / 575 ≈ +0.043` global J&F_new, matching the total improvement. The useful component is the official-large interval replacement, not direct MLLM box prompting. |
+| `8jsm23a7` | `2.13` | `2.13` | `0.00` | Despite visual improvement in the M13 reverse-anchor sheet, hidden metric did not improve at reported row precision. The mask is still not aligned with GT, or the visually plausible object hypothesis does not match the annotation. |
+| `q0sizv6m` rows | `74.48/12.34` | `74.48/12.34` | `0.00` | q0 remains unchanged because the unsafe reverse-anchor/composite candidate was correctly excluded from this fusion. |
+
+Conclusion: `43.34` is a **real small leaderboard improvement** and the first non-flat gain above the 43.30 family, but it is **not** the expected 44-level breakthrough. It validates that carefully selected per-object interval fusion can move hidden score, while the MLLM reverse-anchor path still lacks hidden-metric proof.
