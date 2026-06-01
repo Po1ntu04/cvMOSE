@@ -1,0 +1,48 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "q0bottom": "/home/yu/projects/cv/cvMOSE/artifacts/q0_fix/remote_downloads/pred_m17_q0_bottom_maskbox",
+    "old_m16": "/home/yu/projects/cv/cvMOSE/artifacts/m16_remaining/remote_downloads/pred_m16_remaining_maskbox"
+  },
+  "sheets": [
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16,
+        18,
+        20,
+        23,
+        25,
+        27,
+        29,
+        31,
+        33,
+        35,
+        37,
+        39,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "q0bottom",
+        "old_m16",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m17_q0_bottom_compare/q0sizv6m_m6_compare.jpg"
+    }
+  ]
+}

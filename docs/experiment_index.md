@@ -191,6 +191,19 @@ cvMOSE/
   - `submission_mosev2_m16_8js_q0_r13.zip`
 - Recommendation: keep M15 safe as proven best until hidden feedback arrives; test M16 in the order 8js-only, 8js+q0, then 8js+q0+r13.
 
+
+## M17 — q0sizv6m temporal-continuity repair
+
+- Report: `docs/m17_q0_temporal_continuity_report.md`
+- New tool: `tools/apply_m17_q0_temporal_color_fix.py` for a narrow training-free q0 obj2 target-color + spatiotemporal ROI probe.
+- Visuals: `docs/assets/m17_q0_analysis/`, `docs/assets/m17_q0_box_compare/`, `docs/assets/m17_q0_color_compare/`, `docs/assets/m17_q0_early_compare/`
+- Validated q0-specific probe zips:
+  - `submission_mosev2_m17_q0_early_box.zip`
+  - `submission_mosev2_m17_q0_full_box.zip`
+  - `submission_mosev2_m17_q0_early_color.zip`
+  - `submission_mosev2_m17_q0_color_{conservative,balanced,wide}.zip`
+- Recommendation: test `q0_early_box` first, then `q0_full_box`; old late M16 q0 anchors are considered wrong-instance and should not be trusted.
+
 ## Final/current stance
 
 - Safest current submission: `submission_mosev2_m8_candidate_pool_key7_safe_v2.zip` in the MOSEv2 homework workspace; it is M11-dominated, validates 418 provided outputs unchanged, and only imports the Qwen-supported `lcgc29va` tiny recovery.
