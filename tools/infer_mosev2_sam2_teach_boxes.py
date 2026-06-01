@@ -192,7 +192,8 @@ def collect_actions(args: argparse.Namespace) -> dict[str, dict[int, list[BoxAct
         diagnosis = str(j.get("current_prediction_diagnosis") or "")
         actions: list[BoxAction] = []
         for idx, plan in enumerate(j.get("positive_prompt_plan") or []):
-            if plan.get("prompt_type", "box") != "box":
+            prompt_type = str(plan.get("prompt_type", "box"))
+            if prompt_type not in {"box", "mask_box", "mask_from_box"}:
                 continue
             frame_idx = int(plan.get("frame_idx") or 0)
             if frame_idx <= 0:
@@ -201,7 +202,7 @@ def collect_actions(args: argparse.Namespace) -> dict[str, dict[int, list[BoxAct
             box = plan.get("box_norm_1000") or plan.get("bbox_norm")
             if conf < args.min_confidence or not isinstance(box, list) or len(box) != 4:
                 continue
-            actions.append(BoxAction(video, obj_id, frame_idx, [float(x) for x in box], conf, f"split_plan:{idx}", str(plan.get("location_description") or ""), event, diagnosis, str(plan.get("prompt_type") or "box")))
+            actions.append(BoxAction(video, obj_id, frame_idx, [float(x) for x in box], conf, f"split_plan:{idx}", str(plan.get("location_description") or ""), event, diagnosis, prompt_type))
         actions.sort(key=lambda a: (a.frame_idx if args.prefer_last_anchor else -a.confidence), reverse=args.prefer_last_anchor)
         actions = actions[: max(0, int(args.max_actions_per_object))]
         if actions:
@@ -286,7 +287,22 @@ def run_video(predictor, args: argparse.Namespace, video: str, actions_by_obj: d
                 if action.frame_idx >= len(frames):
                     continue
                 box_xyxy = norm_to_xyxy(action.box_norm_1000, width, height)
-                predictor.add_new_points_or_box(state, frame_idx=int(action.frame_idx), obj_id=int(obj_id), box=box_xyxy, clear_old_points=True, normalize_coords=True)
+                if action.prompt_type in {"mask_box", "mask_from_box"}:
+                    x1, y1, x2, y2 = expand_xyxy_int(box_xyxy, width, height, 0.0)
+                    prompt_mask = np.zeros((height, width), dtype=bool)
+                    prompt_mask[y1 : y2 + 1, x1 : x2 + 1] = True
+                    predictor.add_new_mask(
+                        state, frame_idx=int(action.frame_idx), obj_id=int(obj_id), mask=prompt_mask
+                    )
+                else:
+                    predictor.add_new_points_or_box(
+                        state,
+                        frame_idx=int(action.frame_idx),
+                        obj_id=int(obj_id),
+                        box=box_xyxy,
+                        clear_old_points=True,
+                        normalize_coords=True,
+                    )
                 d = asdict(action); d["box_xyxy"] = [round(float(x), 2) for x in box_xyxy]
                 action_audit.append(d)
         reprop_labels: dict[int, np.ndarray] = {}

@@ -179,6 +179,18 @@ cvMOSE/
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 
+
+## M16 — remaining-object mask-box re-anchor probes
+
+- Report: `docs/m16_remaining_reanchor_report.md`
+- Core code change: `tools/infer_mosev2_sam2_teach_boxes.py` supports `prompt_type=mask_box` / `mask_from_box` so a box can be injected as a rectangular pseudo-mask via SAM2 `add_new_mask`.
+- Visuals: `docs/assets/m16_remaining_maskbox_compare/` and `docs/assets/m16_remaining_fusion_compare/`
+- Validated probe zips in the MOSEv2 homework workspace and repo convenience copies:
+  - `submission_mosev2_m16_8js_only.zip`
+  - `submission_mosev2_m16_8js_q0.zip`
+  - `submission_mosev2_m16_8js_q0_r13.zip`
+- Recommendation: keep M15 safe as proven best until hidden feedback arrives; test M16 in the order 8js-only, 8js+q0, then 8js+q0+r13.
+
 ## Final/current stance
 
 - Safest current submission: `submission_mosev2_m8_candidate_pool_key7_safe_v2.zip` in the MOSEv2 homework workspace; it is M11-dominated, validates 418 provided outputs unchanged, and only imports the Qwen-supported `lcgc29va` tiny recovery.
