@@ -209,3 +209,12 @@ cvMOSE/
   - submit first: `submission_mosev2_m7_part_balanced.zip` / repo copy `submission_mosev2_m7_part_balanced_submit.zip`
   - probe: `submission_mosev2_m10_qwen36_q0only.zip`
   - aggressive probe: `submission_mosev2_m10_qwen36_q0_4v.zip`
+
+## M14 — same-class kangaroo re-ID probe
+
+- Report: `docs/m14_amfdu83t_kangaroo_reid.md`
+- Qwen split note: `docs/m14_amfdu83t_qwen36_split.md`
+- New tool: `tools/mllm_sameclass_atlas.py`
+- SAM2 teach-box update: `tools/infer_mosev2_sam2_teach_boxes.py --clip-mode nearest`
+- Visuals: `docs/assets/m14_amfdu83t_sources_a/`, `docs/assets/m14_amfdu83t_sources_b/`, `docs/assets/m14_amfdu83t_box_probes/`, `docs/assets/m14_amfdu83t_tight_probes_a/`, `docs/assets/m14_amfdu83t_tight_probes_b/`, `docs/assets/m14_amfdu83t_temporal_8_11_large/`
+- Validated probe zip: `submission_mosev2_m14_zofficial_amfdu_temporal811.zip` and MOSE workspace copy `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m14_zofficial_amfdu_temporal811.zip`.

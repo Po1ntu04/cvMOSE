@@ -1,0 +1,41 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_conservative",
+    "m6agg": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_aggressive",
+    "sam2long": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_sam2long_np2_iou03_u1_smoke",
+    "dam": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_dam4sam_dam4sam_single_per_obj_smoke"
+  },
+  "sheets": [
+    {
+      "video": "amfdu83t",
+      "frames": 24,
+      "selected_frames": [
+        0,
+        1,
+        2,
+        6,
+        7,
+        8,
+        10,
+        12,
+        14,
+        18,
+        20,
+        23
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m6agg",
+        "sam2long",
+        "dam",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m14_amfdu83t_sources_b/amfdu83t_m6_compare.jpg"
+    }
+  ]
+}

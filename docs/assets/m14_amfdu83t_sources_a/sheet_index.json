@@ -1,0 +1,41 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_conservative",
+    "official_l": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2",
+    "official_b": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_bplus_mosev2",
+    "m6bal": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_balanced"
+  },
+  "sheets": [
+    {
+      "video": "amfdu83t",
+      "frames": 24,
+      "selected_frames": [
+        0,
+        1,
+        2,
+        6,
+        7,
+        8,
+        10,
+        12,
+        14,
+        18,
+        20,
+        23
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "official_l",
+        "official_b",
+        "m6bal",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m14_amfdu83t_sources_a/amfdu83t_m6_compare.jpg"
+    }
+  ]
+}

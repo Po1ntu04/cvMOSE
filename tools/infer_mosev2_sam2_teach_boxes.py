@@ -65,6 +65,16 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--reverse-max-frames", type=int, default=0, help="0 means reverse all the way to frame 0; otherwise bound reverse propagation length.")
     p.add_argument("--clip-to-anchor-box", action="store_true", help="When merging target masks, keep only pixels inside expanded MLLM anchor boxes.")
     p.add_argument("--clip-pad-frac", type=float, default=0.35, help="Fractional box padding for --clip-to-anchor-box.")
+    p.add_argument(
+        "--clip-mode",
+        choices=["union", "nearest"],
+        default="union",
+        help=(
+            "How --clip-to-anchor-box clips repropagated masks. union preserves "
+            "the original M13 behavior; nearest clips each merged frame to the "
+            "temporally nearest anchor box for safer crowded same-class probes."
+        ),
+    )
     p.add_argument("--offload-video-to-cpu", action="store_true", default=True)
     p.add_argument("--no-offload-video-to-cpu", dest="offload_video_to_cpu", action="store_false")
     p.add_argument("--offload-state-to-cpu", action="store_true", default=True)
@@ -220,6 +230,27 @@ def anchor_clip_masks(actions_by_obj: dict[int, list[BoxAction]], width: int, he
         out[int(obj_id)] = mask
     return out
 
+
+def anchor_clip_box_masks_by_action(actions_by_obj: dict[int, list[BoxAction]], width: int, height: int, pad_frac: float) -> dict[int, list[tuple[int, np.ndarray]]]:
+    """Build one expanded clip mask per anchor action.
+
+    The original M13 union clip is too permissive when several anchors are
+    placed around adjacent same-class objects.  A temporally nearest clip keeps
+    each merged frame tied to its local anchor instead of allowing a later box
+    to admit a nearby distractor in an earlier frame.
+    """
+    out: dict[int, list[tuple[int, np.ndarray]]] = {}
+    for obj_id, actions in actions_by_obj.items():
+        items: list[tuple[int, np.ndarray]] = []
+        for action in actions:
+            mask = np.zeros((height, width), dtype=bool)
+            box = norm_to_xyxy(action.box_norm_1000, width, height)
+            x1, y1, x2, y2 = expand_xyxy_int(box, width, height, pad_frac)
+            mask[y1 : y2 + 1, x1 : x2 + 1] = True
+            items.append((int(action.frame_idx), mask))
+        out[int(obj_id)] = items
+    return out
+
 def merge_window(frames_count: int, actions: list[BoxAction], mode: str, radius: int) -> set[int]:
     if not actions:
         return set()
@@ -283,6 +314,11 @@ def run_video(predictor, args: argparse.Namespace, video: str, actions_by_obj: d
         width, height = img0.size
     windows_by_obj: dict[int, set[int]] = {obj_id: merge_window(len(frames), acts, args.merge_mode, args.merge_radius) for obj_id, acts in actions_by_obj.items()}
     clip_masks = anchor_clip_masks(actions_by_obj, width, height, args.clip_pad_frac) if args.clip_to_anchor_box else {}
+    nearest_clip_masks = (
+        anchor_clip_box_masks_by_action(actions_by_obj, width, height, args.clip_pad_frac)
+        if args.clip_to_anchor_box and args.clip_mode == "nearest"
+        else {}
+    )
     changed_frames: dict[str, list[int]] = {str(obj_id): [] for obj_id in windows_by_obj}
     for i, frame in enumerate(frames):
         if i == 0:
@@ -297,7 +333,13 @@ def run_video(predictor, args: argparse.Namespace, video: str, actions_by_obj: d
                         before = final.copy()
                         final[final == int(obj_id)] = 0
                         candidate_mask = (rp == int(obj_id))
-                        if int(obj_id) in clip_masks:
+                        if int(obj_id) in nearest_clip_masks:
+                            nearest = min(
+                                nearest_clip_masks[int(obj_id)],
+                                key=lambda item: (abs(int(i) - int(item[0])), -int(item[0])),
+                            )
+                            candidate_mask = candidate_mask & nearest[1]
+                        elif int(obj_id) in clip_masks:
                             candidate_mask = candidate_mask & clip_masks[int(obj_id)]
                         final[candidate_mask] = int(obj_id)
                         if not np.array_equal(before == int(obj_id), final == int(obj_id)):
@@ -389,7 +431,7 @@ def main() -> None:
         else:
             results.append(copy_video_from_baseline(args, video))
     summary = {"method": "m13_teach_sam_boxes", "videos": len(videos), "action_count": sum(sum(len(v) for v in d.values()) for d in actions.values()), "elapsed_sec": round(time.time() - started, 2)}
-    payload = {"summary": summary, "split_json": str(args.split_json), "baseline_root": str(args.baseline_root), "pred_root": str(args.pred_root), "merge_mode": args.merge_mode, "merge_radius": args.merge_radius, "propagate_direction": args.propagate_direction, "reverse_max_frames": args.reverse_max_frames, "clip_to_anchor_box": bool(args.clip_to_anchor_box), "clip_pad_frac": float(args.clip_pad_frac), "results": results}
+    payload = {"summary": summary, "split_json": str(args.split_json), "baseline_root": str(args.baseline_root), "pred_root": str(args.pred_root), "merge_mode": args.merge_mode, "merge_radius": args.merge_radius, "propagate_direction": args.propagate_direction, "reverse_max_frames": args.reverse_max_frames, "clip_to_anchor_box": bool(args.clip_to_anchor_box), "clip_pad_frac": float(args.clip_pad_frac), "clip_mode": str(args.clip_mode), "results": results}
     args.audit_json.parent.mkdir(parents=True, exist_ok=True)
     args.audit_json.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if args.make_submission:
