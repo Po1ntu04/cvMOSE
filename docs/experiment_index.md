@@ -216,5 +216,5 @@ cvMOSE/
 - Qwen split note: `docs/m14_amfdu83t_qwen36_split.md`
 - New tool: `tools/mllm_sameclass_atlas.py`
 - SAM2 teach-box update: `tools/infer_mosev2_sam2_teach_boxes.py --clip-mode nearest`
-- Visuals: `docs/assets/m14_amfdu83t_sources_a/`, `docs/assets/m14_amfdu83t_sources_b/`, `docs/assets/m14_amfdu83t_box_probes/`, `docs/assets/m14_amfdu83t_tight_probes_a/`, `docs/assets/m14_amfdu83t_tight_probes_b/`, `docs/assets/m14_amfdu83t_temporal_8_11_large/`
-- Validated probe zip: `submission_mosev2_m14_zofficial_amfdu_temporal811.zip` and MOSE workspace copy `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m14_zofficial_amfdu_temporal811.zip`.
+- Visuals: `docs/assets/m14_amfdu83t_sources_a/`, `docs/assets/m14_amfdu83t_sources_b/`, `docs/assets/m14_amfdu83t_box_probes/`, `docs/assets/m14_amfdu83t_tight_probes_a/`, `docs/assets/m14_amfdu83t_tight_probes_b/`, `docs/assets/m14_amfdu83t_temporal_8_11_large/`, `docs/assets/m14_amfdu83t_post11_probe_large/`, `docs/assets/m14_amfdu83t_post11_compare/`
+- Validated probe zips: `submission_mosev2_m14_zofficial_amfdu_temporal811.zip` (frames 8-11 only, now known truncated) and `submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip` (frames 8-23 post-anchor propagation); MOSE workspace copy `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip`.

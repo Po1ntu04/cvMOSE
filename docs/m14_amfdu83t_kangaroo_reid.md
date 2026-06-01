@@ -157,3 +157,37 @@ The limitation:
    - no dense multi-frame panels.
 3. Teach SAM2 with **tight positive boxes plus explicit negative/distractor memory**, then use delayed commit and nearest-anchor clipping.
 4. Only fuse frame intervals whose masks are visually single-instance and do not merge adjacent same-class objects.
+
+## Correction: post-11 propagation was artificially truncated
+
+After review, the previous `temporal_8_11` probe was too conservative in a misleading way: it used `--merge-radius 0`, so only prompt frames `8-11` were written to the output.  Direct visual inspection shows SAM2 had a plausible continuing track after frame `00011`, but the merge policy discarded it.
+
+New diagnostic run:
+
+```bash
+--merge-mode from_anchor --propagate-direction both --max-actions-per-object 4
+```
+
+Candidate root:
+
+- `artifacts/m14_amfdu_candidates/temporal_from8_noclip/pred_m14_amfdu_temporal_from8_noclip`
+
+Visual evidence:
+
+- `docs/assets/m14_amfdu83t_post11_probe_large/`
+- `docs/assets/m14_amfdu83t_post11_compare/amfdu83t_m6_compare.jpg`
+
+Observed behavior:
+
+- Frames `00008-00011`: same reappearance/overtake path as before.
+- Frames `00012-00023`: SAM2 continues a single plausible kangaroo track instead of going empty.
+- The no-clip continuation is not automatically safe, but it is clearly more faithful to the intended mechanism than the prior radius-0 truncation.
+
+Validated follow-up zip:
+
+- Repo/local hardlink: `submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip`
+- MOSE workspace: `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip`
+- Fusion: start from `zofficial_balanced`, replace only `amfdu83t:obj1` frames `8-23`.
+- Validation: `ok=true`; 433 videos; 66526 PNGs; 418 provided outputs changed count `0`.
+
+Takeaway: for re-anchor experiments, `radius=0` is useful for isolating anchor quality, but it is the wrong merge policy for measuring whether SAM2 can keep tracking after the anchor.  A proper policy needs two stages: first inspect unconstrained post-anchor propagation, then selectively clip/rollback only when drift or composite masks appear.
