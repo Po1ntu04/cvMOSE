@@ -1,0 +1,143 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "count": 7,
+  "ledgers": [
+    {
+      "key": "q0sizv6m:obj2",
+      "video": "q0sizv6m",
+      "obj_id": 2,
+      "review_status": "approved",
+      "current_best_source": "m17_q0_full_box",
+      "current_state": "RECOVERY_BRANCH",
+      "path": "q0sizv6m_obj2.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            27,
+            34
+          ],
+          "question": "choose trim/rump/empty schedule using hidden feedback and zoom sheet"
+        }
+      ]
+    },
+    {
+      "key": "8jsm23a7:obj1",
+      "video": "8jsm23a7",
+      "obj_id": 1,
+      "review_status": "needs_more_evidence",
+      "current_best_source": "m15_safe_unchanged_for_8js",
+      "current_state": "AMBIGUOUS",
+      "path": "8jsm23a7_obj1.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            0,
+            2,
+            20,
+            26,
+            48
+          ],
+          "question": "build M18 Mahjong entity atlas with target hypothesis plus >=2 hard distractors"
+        }
+      ]
+    },
+    {
+      "key": "r13u5z4y:obj1",
+      "video": "r13u5z4y",
+      "obj_id": 1,
+      "review_status": "needs_more_evidence",
+      "current_best_source": "m15_safe_empty_after_occlusion",
+      "current_state": "OCCLUDED",
+      "path": "r13u5z4y_obj1.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            0,
+            7,
+            19,
+            20,
+            44
+          ],
+          "question": "strawberry atlas; only accept anchor if target slice can be distinguished from hard negatives"
+        }
+      ]
+    },
+    {
+      "key": "1qlssuz2:obj1",
+      "video": "1qlssuz2",
+      "obj_id": 1,
+      "review_status": "needs_more_evidence",
+      "current_best_source": "m15_safe_current_track",
+      "current_state": "AMBIGUOUS",
+      "path": "1qlssuz2_obj1.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            13,
+            14,
+            37,
+            39
+          ],
+          "question": "detector-level small vehicle proof; no broad SAM2 window replacement"
+        }
+      ]
+    },
+    {
+      "key": "4vznweiu:obj1",
+      "video": "4vznweiu",
+      "obj_id": 1,
+      "review_status": "needs_more_evidence",
+      "current_best_source": "m15_safe_current_track",
+      "current_state": "AMBIGUOUS",
+      "path": "4vznweiu_obj1.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            0,
+            1,
+            10,
+            20,
+            34
+          ],
+          "question": "build high-resolution bead/letter atlas before any replacement"
+        }
+      ]
+    },
+    {
+      "key": "amfdu83t:obj1",
+      "video": "amfdu83t",
+      "obj_id": 1,
+      "review_status": "approved",
+      "current_best_source": "m15_safe_m14_from8_noclip",
+      "current_state": "RECONFIRMED",
+      "path": "amfdu83t_obj1.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            12,
+            23
+          ],
+          "question": "monitor continuation; if regression appears, trim but keep positive memory"
+        }
+      ]
+    },
+    {
+      "key": "z6dx46qr:obj1",
+      "video": "z6dx46qr",
+      "obj_id": 1,
+      "review_status": "approved",
+      "current_best_source": "m13_zofficial_balanced_official_large_interval",
+      "current_state": "RECONFIRMED",
+      "path": "z6dx46qr_obj1.json",
+      "next_review_windows": [
+        {
+          "frames": [
+            25,
+            37
+          ],
+          "question": "look for source-independent low-contrast continuation; do not direct-box prompt"
+        }
+      ]
+    }
+  ]
+}

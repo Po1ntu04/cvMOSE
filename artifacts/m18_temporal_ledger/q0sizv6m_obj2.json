@@ -1,0 +1,341 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "q0sizv6m:obj2",
+  "video": "q0sizv6m",
+  "obj_id": 2,
+  "current_best_source": "m17_q0_full_box",
+  "current_state": "RECOVERY_BRANCH",
+  "review_status": "approved",
+  "target_profile": {
+    "first_frame_description": "cropped white/black animal at the left/bottom edge; not the mid-left herd animal",
+    "tiny": false,
+    "same_class_dense": true,
+    "edge_partial": true,
+    "category": "black-white animal",
+    "identity_cues": [
+      "left-edge partial first mask",
+      "moves toward camera",
+      "bottom/foreground reappearance",
+      "late lower-rump/edge then absent"
+    ],
+    "first_frame_stats": {
+      "frame_count": 42,
+      "image_size": [
+        1080,
+        1256
+      ],
+      "object_ids": [
+        1,
+        2
+      ],
+      "area": 7787,
+      "area_frac": 0.00574059,
+      "bbox": [
+        0,
+        552,
+        78,
+        701
+      ],
+      "edge_touch": true
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        2
+      ],
+      "state": "visible_initial",
+      "summary": "first-frame partial left-edge animal remains the target",
+      "evidence": [
+        "docs/m17_q0_temporal_continuity_report.md"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        3,
+        5
+      ],
+      "state": "occluded_or_absent",
+      "summary": "do not promote same-class masks while target is missing/occluded",
+      "evidence": [
+        "docs/m17_q0_temporal_continuity_report.md"
+      ],
+      "allowed_output": "empty"
+    },
+    {
+      "frames": [
+        6,
+        12
+      ],
+      "state": "reappears_bottom_foreground",
+      "summary": "nose/head/body reappear from lower-left/bottom foreground; full-box probe has hidden support",
+      "evidence": [
+        "artifacts/q0_fix/q0_bottom_box_split.json",
+        "docs/m17_q0_temporal_continuity_report.md"
+      ],
+      "allowed_output": "candidate"
+    },
+    {
+      "frames": [
+        13,
+        29
+      ],
+      "state": "foreground_continuation_high_risk",
+      "summary": "full-box continuation explains hidden gain but may contain composite foreground masks",
+      "evidence": [
+        "artifacts/q0_fix/q0_story_trim_after34.json"
+      ],
+      "allowed_output": "candidate"
+    },
+    {
+      "frames": [
+        30,
+        33
+      ],
+      "state": "partial_rump_or_absent",
+      "summary": "only possible rump/edge; trim/rump policies need hidden/visual review",
+      "evidence": [
+        "artifacts/q0_fix/q0_story_rump_31_33.json"
+      ],
+      "allowed_output": "review_only"
+    },
+    {
+      "frames": [
+        34,
+        41
+      ],
+      "state": "absent_after_disappearance",
+      "summary": "late false positives should not be promoted; empty policy is under test",
+      "evidence": [
+        "docs/m17_q0_temporal_continuity_report.md"
+      ],
+      "allowed_output": "empty"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "q0_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "partial left-edge target animal",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "edge_partial"
+      ]
+    },
+    {
+      "memory_id": "q0_fullbox_hidden_good",
+      "kind": "positive",
+      "source": "m17_q0_full_box",
+      "frames": [
+        6,
+        29
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "hidden-confirmed bottom/foreground recovery path",
+      "evidence": [],
+      "confidence": 0.85,
+      "tags": [
+        "hidden_win"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "q0_old_position_animal",
+      "kind": "distractor",
+      "source": "m15_safe_baseline",
+      "frames": [
+        13,
+        41
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "mid-left same-class animal near old scene position after frame 13",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "old_position_distractor",
+        "same_class"
+      ]
+    },
+    {
+      "memory_id": "q0_late_fullbox_false_positive",
+      "kind": "distractor",
+      "source": "m17_q0_full_box",
+      "frames": [
+        34,
+        41
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "late masks around 36 and 39-41 likely false after disappearance",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "absent_window",
+        "rejected_policy"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "q0_fullbox_f6",
+      "source": "q0_bottom_box",
+      "frame_idx": 6,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "lower-left/bottom foreground SAM2 box-prompt branch",
+      "positive_evidence": [
+        "hidden row improves 12.34 -> 68.29"
+      ],
+      "negative_evidence": [
+        "same-class/composite foreground risk late"
+      ],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "manual_story",
+        "SAM2_box",
+        "hidden_feedback"
+      ],
+      "risk_tags": [
+        "same_class_dense"
+      ],
+      "decision": "promote",
+      "decision_reason": "Two independent signals: user/visual story plus hidden row lift; keep bounded by story schedule.",
+      "review_status": "approved"
+    },
+    {
+      "anchor_id": "q0_trim_after34",
+      "source": "m17_story_trim_after34",
+      "frame_idx": 30,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "force empty after visible foreground interval",
+      "positive_evidence": [
+        "matches disappearance story"
+      ],
+      "negative_evidence": [
+        "not hidden-confirmed yet"
+      ],
+      "temporal_story_compatibility": 0.65,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "visual_story"
+      ],
+      "risk_tags": [
+        "score_probe"
+      ],
+      "decision": "output_only",
+      "decision_reason": "Candidate is a schedule probe, not a memory anchor.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "q0_rump_31_33",
+      "source": "q0_color_balanced",
+      "frame_idx": 31,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "color/ROI rump candidate before disappearance",
+      "positive_evidence": [
+        "matches partial-rump hypothesis"
+      ],
+      "negative_evidence": [
+        "fragmented color mask; no hidden feedback"
+      ],
+      "temporal_story_compatibility": 0.45,
+      "descriptor_margin": null,
+      "independent_sources": [],
+      "risk_tags": [
+        "composite_background",
+        "single_signal"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "Same-class dense partial evidence cannot promote.",
+      "review_status": "needs_more_evidence"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 12.34,
+      "row_j": 12.5,
+      "row_f_new": 12.5,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "pre-q0 baseline row"
+    },
+    {
+      "source": "m17_q0_early_box",
+      "hidden_jf_new": 43.47,
+      "row_jf_new": null,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "user-reported hidden score"
+    },
+    {
+      "source": "m17_q0_full_box",
+      "hidden_jf_new": 43.54,
+      "row_jf_new": 68.29,
+      "row_j": 66.96,
+      "row_f_new": 67.43,
+      "delta_vs_previous_row_jf_new": 55.95,
+      "note": "hidden-confirmed q0 obj2 recovery"
+    }
+  ],
+  "source_table": [
+    {
+      "frames": [
+        6,
+        29
+      ],
+      "source": "q0_bottom_box",
+      "status": "approved for balanced/safe if no newer regression"
+    },
+    {
+      "frames": [
+        30,
+        33
+      ],
+      "source": "trim/rump policy",
+      "status": "needs hidden review"
+    },
+    {
+      "frames": [
+        34,
+        41
+      ],
+      "source": "empty",
+      "status": "story probe; do not promote memory"
+    }
+  ],
+  "next_review_windows": [
+    {
+      "frames": [
+        27,
+        34
+      ],
+      "question": "choose trim/rump/empty schedule using hidden feedback and zoom sheet"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": [
+    "Gate-A sample object: expresses target, hard distractor, event story, and forbidden late replacements without chat context."
+  ]
+}

@@ -34,7 +34,12 @@ logs/
 tmp/
 
 # Local analysis artifacts
-artifacts/
+artifacts/*
+!artifacts/m18_temporal_ledger/
+!artifacts/m18_temporal_ledger/*.json
+!artifacts/m18_candidate_retrieval/
+!artifacts/m18_candidate_retrieval/*.json
+!artifacts/m18_candidate_retrieval/*.csv
 # Versioned documentation figures
 !docs/assets/
 !docs/assets/**

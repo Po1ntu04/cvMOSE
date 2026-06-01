@@ -1,0 +1,208 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "z6dx46qr:obj1",
+  "video": "z6dx46qr",
+  "obj_id": 1,
+  "current_best_source": "m13_zofficial_balanced_official_large_interval",
+  "current_state": "RECONFIRMED",
+  "review_status": "approved",
+  "target_profile": {
+    "first_frame_description": "low-contrast underwater/sand tiny target with two-dot/eye-like cues",
+    "tiny": true,
+    "same_class_dense": false,
+    "edge_partial": false,
+    "category": "low-contrast aquatic/underwater object",
+    "identity_cues": [
+      "two dark dot relation",
+      "low-contrast body",
+      "official-large interval continuity"
+    ],
+    "first_frame_stats": {
+      "frame_count": 38,
+      "image_size": [
+        1920,
+        1080
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 7670,
+      "area_frac": 0.00369888,
+      "bbox": [
+        979,
+        204,
+        1098,
+        290
+      ],
+      "edge_touch": false
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        7
+      ],
+      "state": "visible_initial_low_contrast",
+      "summary": "baseline/first GT gives positive memory",
+      "evidence": [
+        "docs/m13_candidate_fusions.md"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        8,
+        24
+      ],
+      "state": "official_large_interval_supported",
+      "summary": "official-large interval is hidden-confirmed; direct MLLM/SAM boxes oversegment",
+      "evidence": [
+        "docs/test_latest_metric_memory.md",
+        "docs/m13_candidate_fusions.md"
+      ],
+      "allowed_output": "candidate"
+    },
+    {
+      "frames": [
+        25,
+        37
+      ],
+      "state": "low_contrast_uncertain",
+      "summary": "do not extend without detector/retrieval support",
+      "evidence": [
+        "docs/m13_candidate_fusions.md"
+      ],
+      "allowed_output": "review_only"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "z6_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "low-contrast target reference",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "tiny"
+      ]
+    },
+    {
+      "memory_id": "z6_official_interval",
+      "kind": "positive",
+      "source": "official_large",
+      "frames": [
+        8,
+        24
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "hidden-confirmed official-large interval frames 8-24",
+      "evidence": [],
+      "confidence": 0.85,
+      "tags": [
+        "hidden_win"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "z6_direct_box_blob",
+      "kind": "distractor",
+      "source": "m13_direct_sam2_box",
+      "frames": [
+        8,
+        24
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "direct box prompting produced large low-contrast blobs",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "rejected_route",
+        "oversegmentation"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "z6_official_l_8_24",
+      "source": "official_large",
+      "frame_idx": 8,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "official-large interval replacement",
+      "positive_evidence": [
+        "row lift 40.47 -> 65.14"
+      ],
+      "negative_evidence": [
+        "not proof for later extension"
+      ],
+      "temporal_story_compatibility": 0.8,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "official_large",
+        "hidden_feedback"
+      ],
+      "risk_tags": [
+        "low_contrast"
+      ],
+      "decision": "promote",
+      "decision_reason": "Hidden-confirmed interval; direct SAM2 box alternative rejected.",
+      "review_status": "approved"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m7_family",
+      "hidden_jf_new": 43.3,
+      "row_jf_new": 40.47,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "pre-zofficial row"
+    },
+    {
+      "source": "m13_zofficial_balanced",
+      "hidden_jf_new": 43.34,
+      "row_jf_new": 65.14,
+      "row_j": 61.77,
+      "row_f_new": 79.12,
+      "delta_vs_previous_row_jf_new": 24.67,
+      "note": "official-large interval gain"
+    }
+  ],
+  "source_table": [
+    {
+      "frames": [
+        8,
+        24
+      ],
+      "source": "official_large",
+      "status": "approved safe/balanced"
+    }
+  ],
+  "next_review_windows": [
+    {
+      "frames": [
+        25,
+        37
+      ],
+      "question": "look for source-independent low-contrast continuation; do not direct-box prompt"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": []
+}

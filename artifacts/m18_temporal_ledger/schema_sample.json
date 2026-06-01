@@ -1,0 +1,77 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "q0sizv6m:obj2",
+  "video": "q0sizv6m",
+  "obj_id": 2,
+  "current_best_source": "m17_q0_full_box",
+  "current_state": "RECOVERY_BRANCH",
+  "review_status": "needs_more_evidence",
+  "target_profile": {
+    "first_frame_description": "cropped white/black animal at the left/bottom edge",
+    "tiny": false,
+    "same_class_dense": true,
+    "edge_partial": true,
+    "category": "animal",
+    "identity_cues": [
+      "left-edge partial body",
+      "moves toward lower foreground"
+    ],
+    "first_frame_stats": {
+      "area": 7787,
+      "bbox": [
+        0,
+        552,
+        78,
+        701
+      ]
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        2
+      ],
+      "state": "visible_initial",
+      "summary": "target starts as the left-edge cropped animal",
+      "evidence": [
+        "first_frame_gt"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        3,
+        5
+      ],
+      "state": "occluded_or_absent",
+      "summary": "no durable mask should be promoted",
+      "evidence": [
+        "m17_visual_review"
+      ],
+      "allowed_output": "empty"
+    },
+    {
+      "frames": [
+        6,
+        29
+      ],
+      "state": "reappears_bottom_foreground",
+      "summary": "SAM2 full-box candidate has hidden-score support but remains composite-risk late",
+      "evidence": [
+        "m17_q0_full_box_hidden_row_68.29"
+      ],
+      "allowed_output": "candidate"
+    }
+  ],
+  "positive_memory": [],
+  "distractor_memory": [],
+  "candidate_anchors": [],
+  "score_history": [],
+  "source_table": [],
+  "next_review_windows": [],
+  "hard_rules": [
+    "same-class dense requires delayed confirmation"
+  ],
+  "notes": []
+}

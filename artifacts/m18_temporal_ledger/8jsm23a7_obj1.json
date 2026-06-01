@@ -1,0 +1,233 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "8jsm23a7:obj1",
+  "video": "8jsm23a7",
+  "obj_id": 1,
+  "current_best_source": "m15_safe_unchanged_for_8js",
+  "current_state": "AMBIGUOUS",
+  "review_status": "needs_more_evidence",
+  "target_profile": {
+    "first_frame_description": "single annotated Mahjong tile instance in a crowded tile scene; later picked/moved/placed among same-class tiles",
+    "tiny": true,
+    "same_class_dense": true,
+    "edge_partial": false,
+    "category": "Mahjong tile",
+    "identity_cues": [
+      "tile face markings",
+      "picked-up physical tile",
+      "front-row placement event",
+      "avoid two-bamboo/front-back-row distractors"
+    ],
+    "first_frame_stats": {
+      "frame_count": 49,
+      "image_size": [
+        1080,
+        1920
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 2761,
+      "area_frac": 0.0013315,
+      "bbox": [
+        150,
+        467,
+        246,
+        535
+      ],
+      "edge_touch": false
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        2
+      ],
+      "state": "visible_initial",
+      "summary": "first annotated tile establishes exact instance; do not infer from category alone",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        3,
+        19
+      ],
+      "state": "picked_moved_occluded_or_handheld",
+      "summary": "object may be carried/occluded; old table position becomes a hard negative",
+      "evidence": [
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "review_only"
+    },
+    {
+      "frames": [
+        20,
+        48
+      ],
+      "state": "placed_among_front_row_same_class",
+      "summary": "candidate must distinguish seven-bamboo target from two-bamboo/front/back-row tiles",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md",
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "candidate"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "8js_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "exact annotated tile face at frame0",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "tiny"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "8js_m13_wrong_two_bamboo",
+      "kind": "distractor",
+      "source": "m13_reverse_anchor",
+      "frames": [
+        20,
+        48
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "left-side two-bamboo tile in farther/upper row; visually plausible false positive",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "hard_negative",
+        "same_class",
+        "old_false_positive"
+      ]
+    },
+    {
+      "memory_id": "8js_old_position",
+      "kind": "distractor",
+      "source": "event_story",
+      "frames": [
+        3,
+        48
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "original table location after tile is picked up; temporally impossible target",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "old_position_distractor",
+        "temporally_impossible"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "8js_m15_frame20",
+      "source": "m15_8js_frame20_fromanchor",
+      "frame_idx": 20,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "front-row tile reanchor probe",
+      "positive_evidence": [
+        "mechanism aligned with placement event"
+      ],
+      "negative_evidence": [
+        "M15 balanced hidden-tied safe; exact identity ambiguous"
+      ],
+      "temporal_story_compatibility": 0.55,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "Qwen_event",
+        "SAM2"
+      ],
+      "risk_tags": [
+        "same_class_dense",
+        "tile_face_ambiguous"
+      ],
+      "decision": "output_only",
+      "decision_reason": "Not safe: no hidden row lift and single visual/MLLM signal is insufficient.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "8js_m16_maskbox",
+      "source": "m16mask",
+      "frame_idx": 26,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "near/front-row mask-box tile hypothesis",
+      "positive_evidence": [
+        "non-empty tile after placement"
+      ],
+      "negative_evidence": [
+        "may still target wrong face or part tile"
+      ],
+      "temporal_story_compatibility": 0.55,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "manual_box",
+        "SAM2_maskbox"
+      ],
+      "risk_tags": [
+        "same_class_dense",
+        "single_frame_prompt"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "Requires same-class atlas with at least two hard distractors before promotion.",
+      "review_status": "needs_more_evidence"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 2.13,
+      "row_j": 2.13,
+      "row_f_new": 2.13,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "still unsolved"
+    },
+    {
+      "source": "m15_balanced",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 2.13,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "extra 8js edit produced no measurable row gain"
+    }
+  ],
+  "source_table": [],
+  "next_review_windows": [
+    {
+      "frames": [
+        0,
+        2,
+        20,
+        26,
+        48
+      ],
+      "question": "build M18 Mahjong entity atlas with target hypothesis plus >=2 hard distractors"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": []
+}

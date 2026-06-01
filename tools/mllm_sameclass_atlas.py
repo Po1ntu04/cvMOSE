@@ -239,8 +239,9 @@ video={target.video}, obj_id={target.obj_id}, frame={frame_idx}.
 The REF crop/full frame identifies one exact physical instance in frame 0. The current frame has a coordinate grid.
 Human observation/hypothesis, if any: {hint or 'none'}
 
-For this frame, enumerate up to 8 same-class or visually similar candidates, including plausible target and hard negatives.
+For this frame, enumerate up to 8 same-class or visually similar physical entities, including plausible target and hard negatives.
 Use normalized full-frame boxes [x1,y1,x2,y2] in 0..1000 coordinates.
+Explicitly separate target candidates, old-position distractors, same-category but temporally impossible entities, and composite/background risks.
 Be conservative: if the original target is out of frame, say so. If several objects are similar, mark them as hard_negative/uncertain rather than pretending identity is certain.
 
 Return strict JSON:
@@ -253,6 +254,9 @@ Return strict JSON:
   ],
   "positive_box_norm_1000":[0,0,0,0] | null,
   "hard_negative_boxes":[[0,0,0,0]],
+  "old_position_distractors":[[0,0,0,0]],
+  "temporally_impossible_boxes":[[0,0,0,0]],
+  "composite_background_risks":[{{"bbox_norm_1000":[0,0,0,0],"reason":"short"}}],
   "identity_cues_seen":["..."],
   "confidence":0.0
 }}
@@ -273,6 +277,9 @@ Return strict JSON only, with at most 4 candidates. If unsure, prefer uncertain:
   "candidates":[{{"candidate_id":"A","bbox_norm_1000":[0,0,0,0],"description":"short","role":"same_instance_candidate|hard_negative|uncertain","motion_clue":"short","confidence":0.0}}],
   "positive_box_norm_1000":[0,0,0,0] | null,
   "hard_negative_boxes":[[0,0,0,0]],
+  "old_position_distractors":[[0,0,0,0]],
+  "temporally_impossible_boxes":[[0,0,0,0]],
+  "composite_background_risks":[{{"bbox_norm_1000":[0,0,0,0],"reason":"short"}}],
   "identity_cues_seen":["..."],
   "confidence":0.0
 }}
@@ -303,11 +310,21 @@ Return strict JSON:
   "status":"ok|uncertain|manual_review",
   "target_summary":"first-frame physical instance summary",
   "same_class_problem":"why same-class distractors are hard here",
+  "same_class_entity_table":[{{"entity_id":"E1","frames_seen":[0],"description":"physical entity","role":"target_candidate|hard_distractor|uncertain|background_composite","evidence":["..."]}}],
+  "target_candidate_list":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"entity_id":"E1","reason":"...","confidence":0.0}}],
+  "distractor_candidate_list":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"entity_id":"D1","description":"hard negative","reason":"..."}}],
+  "old_position_distractors":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"reason":"target cannot still be here after event"}}],
+  "same_category_temporally_impossible":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"reason":"temporal story contradiction"}}],
+  "candidate_likely_composite_background":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"reason":"box/mask covers multiple entities or background"}}],
+  "recommended_reanchor_frames":[{{"frame_idx":0,"entity_id":"E1","box_norm_1000":[0,0,0,0],"confidence":0.0,"rationale":"..."}}],
+  "negative_boxes_for_verification":[{{"frame_idx":0,"box_norm_1000":[0,0,0,0],"reason":"hard negative for descriptor/visual check"}}],
   "positive_track_hypothesis":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"reason":"...","confidence":0.0}}],
   "negative_memory_bank":[{{"frame_idx":0,"bbox_norm_1000":[0,0,0,0],"description":"hard negative","reason":"..."}}],
   "positive_prompt_plan":[{{"frame_idx":0,"location_description":"...","box_norm_1000":[0,0,0,0],"prompt_type":"box","confidence":0.0,"rationale":"..."}}],
+  "promotion_preconditions":["descriptor positive-negative margin","story compatibility","2-of-3 temporal consistency or independent source agreement"],
   "commit_policy":{{"merge_mode":"window","merge_radius":0,"clip_mode":"nearest","needs_delayed_confirmation":true,"unsafe_frames":[0]}},
   "recommended_action":"keep_current|reanchor_at_frame|manual_review|generate_more_candidates",
+  "final_allowable":false,
   "confidence":0.0,
   "failure_if_wrong":"most likely failure mode"
 }}
@@ -343,21 +360,21 @@ def parse_args() -> argparse.Namespace:
 
 def write_doc(path: Path, payload: dict[str, Any]) -> None:
     lines = [
-        "# M14 same-class candidate atlas report",
+        "# M18 same-class candidate/distractor atlas report",
         "",
-        "This tool builds per-frame same-class candidate/negative banks with Qwen-VL and aggregates a conservative re-anchor plan. It is diagnostic and must be validated by SAM2 bounded propagation plus visual review before any submission use.",
+        "This split harness builds per-frame same-class candidate/negative banks with Qwen-VL and aggregates an M18 target/distractor memory plan. It is diagnostic and must be validated by descriptor checks, SAM2 bounded propagation, and visual review before any submission use.",
         "",
         f"- model: `{payload.get('model')}`",
         f"- dry_run: `{payload.get('dry_run')}`",
         f"- targets: `{len(payload.get('records', []))}`",
         "",
-        "| video | obj | frames | aggregate status | action | conf | positives | negatives |",
-        "| --- | ---: | --- | --- | --- | ---: | ---: | ---: |",
+        "| video | obj | frames | aggregate status | action | final allowable | conf | targets | distractors | negatives |",
+        "| --- | ---: | --- | --- | --- | --- | ---: | ---: | ---: | ---: |",
     ]
     for rec in payload.get("records", []):
         agg = rec.get("aggregate", {}) or {}
         lines.append(
-            f"| `{rec.get('video')}` | {rec.get('obj_id')} | {','.join(map(str, rec.get('frames', [])))} | {agg.get('status','?')} | {agg.get('recommended_action','?')} | {float(agg.get('confidence') or 0):.2f} | {len(agg.get('positive_prompt_plan') or [])} | {len(agg.get('negative_memory_bank') or [])} |"
+            f"| `{rec.get('video')}` | {rec.get('obj_id')} | {','.join(map(str, rec.get('frames', [])))} | {agg.get('status','?')} | {agg.get('recommended_action','?')} | {agg.get('final_allowable', False)} | {float(agg.get('confidence') or 0):.2f} | {len(agg.get('target_candidate_list') or agg.get('positive_prompt_plan') or [])} | {len(agg.get('distractor_candidate_list') or [])} | {len(agg.get('negative_memory_bank') or [])} |"
         )
     lines += [
         "",

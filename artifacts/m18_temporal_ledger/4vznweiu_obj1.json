@@ -1,0 +1,163 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "4vznweiu:obj1",
+  "video": "4vznweiu",
+  "obj_id": 1,
+  "current_best_source": "m15_safe_current_track",
+  "current_state": "AMBIGUOUS",
+  "review_status": "needs_more_evidence",
+  "target_profile": {
+    "first_frame_description": "tiny semantic bead/letter-like object among adjacent beads/flowers",
+    "tiny": true,
+    "same_class_dense": true,
+    "edge_partial": false,
+    "category": "tiny bead/letter object",
+    "identity_cues": [
+      "T-like/letter bead relation",
+      "adjacent bead cluster",
+      "avoid flowers or neighboring letters"
+    ],
+    "first_frame_stats": {
+      "frame_count": 35,
+      "image_size": [
+        1080,
+        1920
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 2465,
+      "area_frac": 0.00118875,
+      "bbox": [
+        282,
+        461,
+        331,
+        520
+      ],
+      "edge_touch": false
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        34
+      ],
+      "state": "tiny_semantic_current_best",
+      "summary": "current path is weak but safer than broad aggressive alternatives",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md",
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "keep_current"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "4v_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "tiny target bead/letter reference",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "tiny"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "4v_adjacent_letters_flowers",
+      "kind": "distractor",
+      "source": "m15_4v_window",
+      "frames": [
+        1,
+        34
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "adjacent bead/flower candidates selected by aggressive probe",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "hard_negative",
+        "semantic_distractor"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "4v_m15_window",
+      "source": "m15_4v_window",
+      "frame_idx": 1,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "aggressive bead/letter window",
+      "positive_evidence": [
+        "non-empty alternative"
+      ],
+      "negative_evidence": [
+        "shifts between bead cluster and flowers; aggressive regressed"
+      ],
+      "temporal_story_compatibility": 0.1,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "Qwen_event",
+        "SAM2"
+      ],
+      "risk_tags": [
+        "same_class_dense",
+        "semantic_swap",
+        "aggressive_regression"
+      ],
+      "decision": "reject",
+      "decision_reason": "Not final-allowable without high-resolution letter atlas.",
+      "review_status": "rejected"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 33.5,
+      "row_j": 36.38,
+      "row_f_new": 37.64,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "unchanged safe row"
+    },
+    {
+      "source": "m15_aggressive",
+      "hidden_jf_new": 43.38,
+      "row_jf_new": null,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "aggressive package with 1ql/4v additions regressed globally"
+    }
+  ],
+  "source_table": [],
+  "next_review_windows": [
+    {
+      "frames": [
+        0,
+        1,
+        10,
+        20,
+        34
+      ],
+      "question": "build high-resolution bead/letter atlas before any replacement"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": []
+}

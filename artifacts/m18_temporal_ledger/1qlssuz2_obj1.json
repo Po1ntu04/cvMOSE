@@ -1,0 +1,184 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "1qlssuz2:obj1",
+  "video": "1qlssuz2",
+  "obj_id": 1,
+  "current_best_source": "m15_safe_current_track",
+  "current_state": "AMBIGUOUS",
+  "review_status": "needs_more_evidence",
+  "target_profile": {
+    "first_frame_description": "tiny white vehicle/road object; current track is coherent but low hidden row",
+    "tiny": true,
+    "same_class_dense": false,
+    "edge_partial": false,
+    "category": "tiny vehicle/road object",
+    "identity_cues": [
+      "small white vehicle",
+      "road/camera-motion context",
+      "avoid broad expansion"
+    ],
+    "first_frame_stats": {
+      "frame_count": 40,
+      "image_size": [
+        1920,
+        1080
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 1304,
+      "area_frac": 0.00062886,
+      "bbox": [
+        732,
+        873,
+        780,
+        920
+      ],
+      "edge_touch": false
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        12
+      ],
+      "state": "visible_or_coherent_current",
+      "summary": "current SAM2 path is mostly coherent",
+      "evidence": [
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        13,
+        14
+      ],
+      "state": "bridge_or_occlusion_uncertain",
+      "summary": "possible gap window; needs targeted evidence",
+      "evidence": [
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "review_only"
+    },
+    {
+      "frames": [
+        15,
+        39
+      ],
+      "state": "tiny_continuation_uncertain",
+      "summary": "avoid broad aggressive replacement without detector support",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md"
+      ],
+      "allowed_output": "keep_current"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "1ql_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "tiny white vehicle reference",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "tiny"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "1ql_broad_window_rejected",
+      "kind": "distractor",
+      "source": "m15_1ql_window",
+      "frames": [
+        13,
+        39
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "over-expanded aggressive window; likely background/adjacent road included",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "rejected_aggressive",
+        "composite_background"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "1ql_m15_window",
+      "source": "m15_1ql_window",
+      "frame_idx": 13,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "aggressive tiny-car window",
+      "positive_evidence": [
+        "may fill visibility"
+      ],
+      "negative_evidence": [
+        "M15 aggressive lowered score; masks too large"
+      ],
+      "temporal_story_compatibility": 0.15,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "Qwen_event",
+        "SAM2"
+      ],
+      "risk_tags": [
+        "overexpanded",
+        "aggressive_regression"
+      ],
+      "decision": "reject",
+      "decision_reason": "Aggressive package regressed and visual review found overlarge masks.",
+      "review_status": "rejected"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 36.88,
+      "row_j": 40.36,
+      "row_f_new": 42.11,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "unchanged safe row"
+    },
+    {
+      "source": "m15_aggressive",
+      "hidden_jf_new": 43.38,
+      "row_jf_new": null,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "aggressive package with 1ql/4v additions regressed globally"
+    }
+  ],
+  "source_table": [],
+  "next_review_windows": [
+    {
+      "frames": [
+        13,
+        14,
+        37,
+        39
+      ],
+      "question": "detector-level small vehicle proof; no broad SAM2 window replacement"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": []
+}

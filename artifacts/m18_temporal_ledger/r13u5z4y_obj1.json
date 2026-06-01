@@ -1,0 +1,175 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "r13u5z4y:obj1",
+  "video": "r13u5z4y",
+  "obj_id": 1,
+  "current_best_source": "m15_safe_empty_after_occlusion",
+  "current_state": "OCCLUDED",
+  "review_status": "needs_more_evidence",
+  "target_profile": {
+    "first_frame_description": "strawberry slice among many similar red/white slices; identity becomes ambiguous after occlusion/contact",
+    "tiny": false,
+    "same_class_dense": true,
+    "edge_partial": false,
+    "category": "strawberry slice",
+    "identity_cues": [
+      "specific cut shape",
+      "local neighbor order",
+      "avoid more salient reappearing slice unless identity proven"
+    ],
+    "first_frame_stats": {
+      "frame_count": 45,
+      "image_size": [
+        1920,
+        1080
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 33250,
+      "area_frac": 0.01603492,
+      "bbox": [
+        799,
+        338,
+        1304,
+        542
+      ],
+      "edge_touch": false
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        6
+      ],
+      "state": "visible_initial",
+      "summary": "target slice visible before multi-object contact",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        7,
+        19
+      ],
+      "state": "occluded_contact",
+      "summary": "dense strawberry contact; empty is safer than wrong same-class slice",
+      "evidence": [
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "empty"
+    },
+    {
+      "frames": [
+        20,
+        44
+      ],
+      "state": "possible_reappearance_same_class_dense",
+      "summary": "accept only candidates distinguishable from hard-negative slices",
+      "evidence": [
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "candidate"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "r13_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "initial strawberry slice",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "r13_more_salient_slice",
+      "kind": "distractor",
+      "source": "m16mask_or_visual",
+      "frames": [
+        20,
+        44
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "more visible post-occlusion slice that may be a hard negative",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "hard_negative",
+        "same_class"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "r13_m16_maskbox",
+      "source": "m16mask",
+      "frame_idx": 20,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "left-slice reappearance mask-box hypothesis",
+      "positive_evidence": [
+        "non-empty after occlusion"
+      ],
+      "negative_evidence": [
+        "same-class slices cannot be distinguished yet"
+      ],
+      "temporal_story_compatibility": 0.35,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "manual_box",
+        "SAM2_maskbox"
+      ],
+      "risk_tags": [
+        "same_class_dense",
+        "hard_negative_similarity"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "If candidate is more like hard negative, keep empty.",
+      "review_status": "needs_more_evidence"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 38.84,
+      "row_j": 39.53,
+      "row_f_new": 39.53,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "reappearance remains unsolved/empty"
+    }
+  ],
+  "source_table": [],
+  "next_review_windows": [
+    {
+      "frames": [
+        0,
+        7,
+        19,
+        20,
+        44
+      ],
+      "question": "strawberry atlas; only accept anchor if target slice can be distinguished from hard negatives"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": []
+}
