@@ -105,24 +105,40 @@ def load_hints(path: Path | None) -> dict[str, str]:
 
 
 def choose_frames(num_frames: int, extras: list[int] | None, max_frames: int) -> list[int]:
-    wanted: list[int] = []
-    for idx in [0, 1, 2, *(extras or []), num_frames - 1]:
+    """Choose split-harness frames without dropping explicit event evidence.
+
+    Gate-B atlas calls are expensive and context-sensitive.  If a ledger names
+    reappearance/late-review frames, those frames should outrank generic uniform
+    sampling; otherwise qwen3.6 may reason about the wrong window and return a
+    plausible but irrelevant old-position object.
+    """
+    max_frames = max(1, int(max_frames))
+    cleaned: list[int] = []
+    for idx in extras or []:
         idx = max(0, min(num_frames - 1, int(idx)))
-        if idx not in wanted:
-            wanted.append(idx)
-    if len(wanted) <= max_frames:
-        return sorted(wanted)
-    # Preserve early identity context and late/reappearance extras over uniform sampling.
-    mandatory = []
-    for idx in [0, 1, 2, max(wanted)]:
-        if idx not in mandatory:
-            mandatory.append(idx)
-    middle = [x for x in wanted if x not in mandatory]
-    remaining = max(0, max_frames - len(mandatory))
+        if idx not in cleaned:
+            cleaned.append(idx)
+    if cleaned:
+        mandatory: list[int] = []
+        for idx in [0, 1, 2, max(cleaned)]:
+            idx = max(0, min(num_frames - 1, int(idx)))
+            if idx not in mandatory:
+                mandatory.append(idx)
+        middle = [x for x in cleaned if x not in mandatory]
+    else:
+        mandatory = []
+        for idx in [0, 1, 2, num_frames - 1]:
+            if idx not in mandatory:
+                mandatory.append(idx)
+        middle = []
+    if len(mandatory) >= max_frames:
+        return sorted(dict.fromkeys([*mandatory[: max(0, max_frames - 1)], mandatory[-1]]))
+    remaining = max_frames - len(mandatory)
+    picks: list[int] = []
     if remaining and middle:
-        picks = np.linspace(0, len(middle) - 1, min(remaining, len(middle))).round().astype(int).tolist()
-        mandatory.extend(middle[i] for i in picks)
-    return sorted(dict.fromkeys(mandatory))[:max_frames]
+        sample_idxs = np.linspace(0, len(middle) - 1, min(remaining, len(middle))).round().astype(int).tolist()
+        picks = [middle[i] for i in sample_idxs]
+    return sorted(dict.fromkeys([*mandatory, *picks]))
 
 
 def fit(img: Image.Image, box: tuple[int, int, int, int]) -> Image.Image:
@@ -229,7 +245,40 @@ def frame_system_prompt() -> str:
     return """
 You are a same-class candidate atlas builder for video object segmentation.
 Your job is to enumerate physical object candidates and hard negatives in ONE frame.
-Do not output masks. Do not choose the most salient object by category. Return strict JSON only.
+Do not output masks. Do not choose the most salient object by category.
+Treat human hints as hypotheses to verify visually, not as ground truth.
+Return strict JSON only.
+""".strip()
+
+
+def caption_frame_system_prompt() -> str:
+    return """
+You are a fast visual observer for same-class video object tracking.
+Use the panel only to produce a short, conservative frame observation. Do not
+solve the whole video. Do not segment. Return strict JSON only.
+""".strip()
+
+
+def caption_frame_user_prompt(target: Target, frame_idx: int, hint: str) -> str:
+    return f"""
+video={target.video}, obj_id={target.obj_id}, frame={frame_idx}.
+REF is the exact first-frame physical target. The current frame panel may show
+similar objects and coordinate grids. Human hint is only a hypothesis:
+{hint or 'none'}
+
+Return compact JSON only:
+{{
+  "status":"ok|uncertain",
+  "target_visible":"yes|no|partial|uncertain",
+  "caption":"<=30 words: what REF-like evidence is visible and where",
+  "possible_target_box_norm_1000":[0,0,0,0] | null,
+  "hard_negative_boxes":[[0,0,0,0]],
+  "old_position_distractors":[[0,0,0,0]],
+  "temporally_impossible_boxes":[[0,0,0,0]],
+  "identity_cues_seen":["..."],
+  "confidence":0.0
+}}
+If uncertain, prefer null/uncertain over guessing.
 """.strip()
 
 
@@ -243,6 +292,7 @@ For this frame, enumerate up to 8 same-class or visually similar physical entiti
 Use normalized full-frame boxes [x1,y1,x2,y2] in 0..1000 coordinates.
 Explicitly separate target candidates, old-position distractors, same-category but temporally impossible entities, and composite/background risks.
 Be conservative: if the original target is out of frame, say so. If several objects are similar, mark them as hard_negative/uncertain rather than pretending identity is certain.
+If the hint says the target moved, explicitly mark objects remaining at the old position as old_position_distractors unless the frame evidence clearly contradicts the hint.
 
 Return strict JSON:
 {{
@@ -291,6 +341,7 @@ def aggregate_system_prompt() -> str:
 你是同类多目标视频重识别的事件链/负例记忆分析器。你会收到逐帧 candidate atlas JSON。
 目标是建立：1) 正例轨迹假设；2) 每帧同类 hard-negative bank；3) 可供 SAM2 bounded propagation 测试的保守 re-anchor box plan。
 不要输出 mask。不要把人类提示当 GT；若证据不够，输出 uncertain/manual_review。
+这些结果会写入 target/distractor ledger；错误正例比漏掉正例更危险。只有在至少两个线索一致时才建议 reanchor；否则优先输出 negative memory 或 manual_review。
 输出严格 JSON。
 """.strip()
 
@@ -343,6 +394,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--out-doc", type=Path, default=Path("docs/m14_sameclass_atlas.md"))
     p.add_argument("--cache-dir", type=Path, default=Path("artifacts/m14_sameclass_atlas/cache"))
     p.add_argument("--model", default=os.getenv("QWEN_VL_MODEL", DEFAULT_MODEL))
+    p.add_argument("--vision-model", default=None, help="Optional model for per-frame visual calls; defaults to --model.")
+    p.add_argument("--aggregate-model", default=None, help="Optional model for text-only aggregation; defaults to --model.")
+    p.add_argument("--allow-fallback", action="store_true", help="Allow QwenVLClient fallback models for visual calls.")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--max-calls", type=int, default=4)
     p.add_argument("--max-frames", type=int, default=7)
@@ -355,6 +409,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--frame-max-tokens", type=int, default=1536)
     p.add_argument("--aggregate-max-tokens", type=int, default=2048)
     p.add_argument("--panel-mode", choices=["compact", "standard"], default="compact")
+    p.add_argument("--frame-task", choices=["caption", "atlas"], default="caption", help="caption is the timeout-resistant qwen3.6 split mode; atlas asks richer per-frame candidate JSON.")
     return p.parse_args()
 
 
@@ -365,6 +420,8 @@ def write_doc(path: Path, payload: dict[str, Any]) -> None:
         "This split harness builds per-frame same-class candidate/negative banks with Qwen-VL and aggregates an M18 target/distractor memory plan. It is diagnostic and must be validated by descriptor checks, SAM2 bounded propagation, and visual review before any submission use.",
         "",
         f"- model: `{payload.get('model')}`",
+        f"- vision_model: `{payload.get('vision_model', payload.get('model'))}`",
+        f"- aggregate_model: `{payload.get('aggregate_model', payload.get('model'))}`",
         f"- dry_run: `{payload.get('dry_run')}`",
         f"- targets: `{len(payload.get('records', []))}`",
         "",
@@ -393,9 +450,16 @@ def main() -> None:
     hints = load_hints(args.hints_json)
     frame_overrides = load_json_map(args.frames_json)
     targets = discover_targets(args.workspace, args.videos, parse_targets(args.targets))[: max(0, int(args.max_calls))]
-    frame_client = QwenVLClient(model=args.model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=args.max_side, jpeg_quality=args.jpeg_quality, timeout=args.frame_timeout)
-    retry_client = QwenVLClient(model=args.model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=min(args.max_side, 650), jpeg_quality=max(55, min(args.jpeg_quality, 72)), timeout=args.retry_timeout)
-    aggregate_client = QwenVLClient(model=args.model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=args.max_side, jpeg_quality=args.jpeg_quality, timeout=args.aggregate_timeout)
+    vision_model = args.vision_model or args.model
+    aggregate_model = args.aggregate_model or args.model
+    visual_fallbacks = None if args.allow_fallback else []
+    # In practice qwen3.6-plus can be excellent for text-only event-chain
+    # aggregation but can still timeout on vision calls.  Keep the visual and
+    # aggregate clients separable so Gate-B can use a fast VL model for captions
+    # and qwen3.6-plus for deeper target/distractor synthesis.
+    frame_client = QwenVLClient(model=vision_model, fallback_models=visual_fallbacks, cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=args.max_side, jpeg_quality=args.jpeg_quality, timeout=args.frame_timeout)
+    retry_client = QwenVLClient(model=vision_model, fallback_models=visual_fallbacks, cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=min(args.max_side, 650), jpeg_quality=max(55, min(args.jpeg_quality, 72)), timeout=args.retry_timeout)
+    aggregate_client = QwenVLClient(model=aggregate_model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=args.max_side, jpeg_quality=args.jpeg_quality, timeout=args.aggregate_timeout)
     jpeg_root, _ = homework_roots(args.workspace)
     records: list[dict[str, Any]] = []
     for target in targets:
@@ -407,13 +471,23 @@ def main() -> None:
         for idx in idxs:
             panel_path = args.out_panel_dir / target.video / f"obj{target.obj_id}_f{idx:05d}.jpg"
             meta = render_atlas_panel(args.workspace, target, idx, panel_path, compact=args.panel_mode == "compact")
+            if args.frame_task == "caption":
+                system_prompt = caption_frame_system_prompt()
+                user_prompt = caption_frame_user_prompt(target, idx, hint)
+                schema_name = "sameclass_frame_caption"
+                max_tokens = min(args.frame_max_tokens, 768)
+            else:
+                system_prompt = frame_system_prompt()
+                user_prompt = frame_user_prompt(target, idx, hint, meta)
+                schema_name = "sameclass_frame_atlas"
+                max_tokens = args.frame_max_tokens
             obs = frame_client.call_json(
-                system_prompt=frame_system_prompt(),
-                user_text=frame_user_prompt(target, idx, hint, meta),
+                system_prompt=system_prompt,
+                user_text=user_prompt,
                 image_paths=[panel_path],
-                schema_name="sameclass_frame_atlas",
+                schema_name=schema_name,
                 metadata={"video": target.video, "obj_id": target.obj_id, "frame_idx": idx},
-                max_tokens=args.frame_max_tokens,
+                max_tokens=max_tokens,
             )
             if str(obs.get("status")) in {"api_error", "client_error", "parse_error"}:
                 for attempt in range(1, max(0, int(args.frame_retries)) + 1):
@@ -444,7 +518,7 @@ def main() -> None:
         )
         print(f"atlas aggregate {key} {aggregate.get('status')} {aggregate.get('recommended_action')} conf={aggregate.get('confidence')}", flush=True)
         records.append({"video": target.video, "obj_id": int(target.obj_id), "frames": idxs, "hint": hint, "frame_atlases": observations, "aggregate": aggregate})
-    payload = {"model": args.model, "dry_run": bool(args.dry_run), "records": records}
+    payload = {"model": args.model, "vision_model": vision_model, "aggregate_model": aggregate_model, "dry_run": bool(args.dry_run), "records": records}
     args.out_json.parent.mkdir(parents=True, exist_ok=True)
     args.out_json.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_doc(args.out_doc, payload)

@@ -111,6 +111,1110 @@
         "hard_negative",
         "same_class"
       ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        207,
+        60,
+        330,
+        123
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "prominent foreground slice, visually indistinguishable from target"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        453,
+        60,
+        568,
+        123
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "prominent foreground slice, visually indistinguishable from target"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f34_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        538,
+        108,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar slice near hypothesized target location"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        207,
+        60,
+        330,
+        123
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        453,
+        60,
+        568,
+        123
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f1_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        0,
+        207,
+        246,
+        346
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f1_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        246,
+        0,
+        492,
+        138
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f2_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        246,
+        276,
+        492,
+        415
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f7_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        307,
+        52,
+        384,
+        86
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f20_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        317,
+        192,
+        455,
+        225
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f34_7",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        0,
+        378,
+        192,
+        540
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f34_8",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        576,
+        108,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f44_9",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        44
+      ],
+      "bbox": [
+        71,
+        225,
+        192,
+        320
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f44_10",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        44
+      ],
+      "bbox": [
+        480,
+        121,
+        614,
+        207
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        207,
+        60,
+        330,
+        123
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        453,
+        60,
+        568,
+        123
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        0,
+        199,
+        123,
+        261
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f1_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        246,
+        138,
+        492,
+        276
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f2_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        246,
+        276,
+        492,
+        415
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f2_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        0,
+        276,
+        246,
+        415
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f2_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        492,
+        138,
+        737,
+        276
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f7_7",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        61,
+        214,
+        230,
+        298
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f7_8",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        492,
+        91,
+        614,
+        156
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f7_9",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        307,
+        52,
+        384,
+        86
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f20_10",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        67,
+        235,
+        282,
+        334
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f20_11",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        509,
+        117,
+        647,
+        181
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f20_12",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        317,
+        192,
+        455,
+        225
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f34_13",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        538,
+        108,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f44_14",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        44
+      ],
+      "bbox": [
+        71,
+        225,
+        192,
+        320
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f44_15",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        44
+      ],
+      "bbox": [
+        480,
+        121,
+        614,
+        207
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        207,
+        60,
+        330,
+        123
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "foreground slice, identical class"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        453,
+        60,
+        568,
+        123
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "foreground slice, identical class"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        0,
+        199,
+        123,
+        261
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "edge slice, identical class"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f1_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        246,
+        138,
+        492,
+        276
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "occluded region slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f2_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        246,
+        276,
+        492,
+        415
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "mid-ground slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f2_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        0,
+        276,
+        246,
+        415
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "left slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f2_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        492,
+        138,
+        737,
+        276
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f7_7",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        61,
+        214,
+        230,
+        298
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "left cluster slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f7_8",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        492,
+        91,
+        614,
+        156
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "top-right slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f7_9",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        7
+      ],
+      "bbox": [
+        307,
+        52,
+        384,
+        86
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "top-center slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f20_10",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        67,
+        235,
+        282,
+        334
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "left slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f20_11",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        509,
+        117,
+        647,
+        181
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f20_12",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        317,
+        192,
+        455,
+        225
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "center slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f34_13",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        538,
+        108,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right slice near target"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f44_14",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        44
+      ],
+      "bbox": [
+        71,
+        225,
+        192,
+        320
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "left slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f44_15",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        44
+      ],
+      "bbox": [
+        480,
+        121,
+        614,
+        207
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right slice"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
     }
   ],
   "candidate_anchors": [
@@ -171,5 +1275,7 @@
     "Same-class dense candidates require delayed confirmation before promotion.",
     "If a candidate is closer to hard-negative memory than positive memory, reject it."
   ],
-  "notes": []
+  "notes": [
+    "Gate-B atlas integrated from gateb_records.json: 0 candidates, 46 distractors. All MLLM positives remain needs_more_evidence."
+  ]
 }

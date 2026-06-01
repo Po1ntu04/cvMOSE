@@ -256,3 +256,15 @@ cvMOSE/
 - User-reported hidden scores: M15 safe `43.44`, M15 balanced `43.44`, M15 aggressive `43.38`.
 - Latest safe detail log is preserved in `docs/test_latest_metric_memory.md`; decisive row is `amfdu83t:obj1` rising to `J&F_new=84.84`, explaining about `+0.10` global over M13/zofficial-balanced.
 - Current best recommendation: **submit M15 safe first** (`/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m15_layered_safe.zip`). Balanced ties but has extra 8js risk; aggressive is rejected as final.
+
+## M18 — object-centric temporal ledger and Gate-B MLLM atlas
+
+- System report: `docs/m18_system_reanchor_report.md`
+- Gate-B atlas report: `docs/m18_sameclass_atlas.md`
+- Core tools:
+  - `tools/build_m18_temporal_ledger.py` creates durable per-object event/positive/distractor ledgers.
+  - `tools/mllm_sameclass_atlas.py` now supports split MLLM routing: fast per-frame visual captions (`--vision-model qwen-vl-plus`) plus text-only `qwen3.6-plus` aggregation.
+  - `tools/apply_m18_atlas_to_ledger.py` writes MLLM target boxes as `needs_more_evidence` anchors and hard negatives as distractor memory.
+  - `tools/build_m18_candidate_retrieval.py` now scores ledger atlas boxes as candidate masks against positive/negative memory.
+- Gate-B finding: `8jsm23a7`, `r13u5z4y`, `4vznweiu`, and `1qlssuz2` gained reviewable candidate/negative memory, but no candidate is safe for final promotion yet. This is useful because it converts MLLM reasoning into negative-bank pressure rather than risky direct replacement.
+- Maintenance: if base ledgers are regenerated, rerun `tools/apply_m18_atlas_to_ledger.py` before candidate retrieval.

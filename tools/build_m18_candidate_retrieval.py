@@ -368,6 +368,104 @@ def main() -> None:
         init_area = int((ann == int(obj_id)).sum())
         object_candidates: list[dict[str, Any]] = []
         seen_masks: dict[int, list[np.ndarray]] = {}
+
+        def consider_mask(
+            *,
+            idx: int,
+            rgb: np.ndarray,
+            root_name: str,
+            mask_kind: str,
+            mask: np.ndarray,
+            temporal_votes: int = 0,
+            extra_risk_tags: list[str] | None = None,
+            extra_evidence_tags: list[str] | None = None,
+        ) -> None:
+            area = int(mask.sum())
+            if area < args.component_min_area:
+                return
+            old = seen_masks.setdefault(idx, [])
+            if any(mask_iou(mask, prev) > 0.985 for prev in old):
+                return
+            old.append(mask.copy())
+            desc = descriptor(rgb, mask)
+            if desc is None:
+                return
+            stats = mask_stats(mask)
+            story_score, story_tags = cheap_story_compatibility(idx, ledger.get("event_story", []))
+            area_ratio_init = area / max(1.0, float(init_area))
+            composite_risk, risk_tags = risk_from_area_ratio(area_ratio_init)
+            risk_tags = risk_tags + list(extra_risk_tags or [])
+            evidence_tags = (story_tags if story_score > 0.25 else []) + list(extra_evidence_tags or [])
+            signals = CandidateSignals(
+                candidate_id=f"{key}:{idx}:{root_name}:{mask_kind}",
+                vector=[float(x) for x in desc.tolist()],
+                source=f"{root_name}:{mask_kind}",
+                frame_idx=idx,
+                temporal_story_compatibility=story_score,
+                source_independence_bonus=0.08 if root_name not in {ledger.get("current_best_source"), "m15_safe"} else 0.0,
+                composite_background_risk=composite_risk,
+                temporal_consistency_votes=temporal_votes,
+                qwen_tracklet_support=False,
+                independent_source_agreement=temporal_votes >= 2,
+                same_class_dense=bool(ledger.get("target_profile", {}).get("same_class_dense")),
+                state=str(ledger.get("current_state", "AMBIGUOUS")),
+                hard_negative_hit=False,
+                risk_tags=risk_tags + story_tags,
+                evidence_tags=evidence_tags,
+            )
+            scored = score_candidate(signals, memory, policy)
+            current_name = str(ledger.get("current_best_source", ""))
+            is_current_reference = (
+                root_name == current_name
+                or root_name in current_name
+                or current_name in root_name
+                or root_name == "m15_safe"
+            )
+            if is_current_reference and scored.decision == "promote":
+                scored.decision = "output_only"
+                scored.reasons.append("current_best_reference_not_new_anchor")
+            if ledger.get("review_status") != "approved" and scored.decision == "promote":
+                scored.decision = "output_only"
+                scored.reasons.append("ledger_not_review_approved_no_auto_promote")
+            rec = {
+                "video": video,
+                "obj_id": int(obj_id),
+                "frame_idx": int(idx),
+                "source": root_name,
+                "mask_kind": mask_kind,
+                "area": area,
+                "bbox": stats.bbox,
+                "centroid": stats.centroid,
+                "area_ratio_init": round(float(area_ratio_init), 5),
+                "story_tags": story_tags,
+                "risk_tags": risk_tags,
+                "temporal_votes": temporal_votes,
+                "score_card": scored.to_json(),
+                "promotion_card": {
+                    "video": video,
+                    "obj_id": int(obj_id),
+                    "frame_idx": int(idx),
+                    "candidate_source": f"{root_name}:{mask_kind}",
+                    "positive_evidence": ["cheap_descriptor_positive_pool", *signals.evidence_tags],
+                    "negative_evidence": ["distractor_pool_checked", *risk_tags],
+                    "temporal_story_compatibility": round(float(story_score), 5),
+                    "descriptor_margin": round(float(scored.margin), 5),
+                    "risk_tags": risk_tags + story_tags,
+                    "decision": scored.decision,
+                    "decision_reason": "; ".join(scored.reasons),
+                    "review_status": "needs_more_evidence" if scored.decision != "reject" else "rejected",
+                },
+            }
+            object_candidates.append(rec)
+
+        ledger_anchors_by_frame: dict[int, list[dict[str, Any]]] = {}
+        for anchor in ledger.get("candidate_anchors", []):
+            if anchor.get("decision") == "reject" or not anchor.get("bbox"):
+                continue
+            idx = int(anchor.get("frame_idx") or 0)
+            if 0 <= idx < len(frames):
+                ledger_anchors_by_frame.setdefault(idx, []).append(anchor)
+
         for idx in idxs:
             rgb = load_rgb(frames[idx])
             for root_name, seq in labels.items():
@@ -380,88 +478,27 @@ def main() -> None:
                     component_min_area=args.component_min_area,
                     component_max_count=args.component_max_count,
                 ):
-                    area = int(mask.sum())
-                    if area < args.component_min_area:
-                        continue
-                    # Deduplicate per frame across roots; keep distinct components if IoU is low.
-                    old = seen_masks.setdefault(idx, [])
-                    if any(mask_iou(mask, prev) > 0.985 for prev in old):
-                        continue
-                    old.append(mask.copy())
-                    desc = descriptor(rgb, mask)
-                    if desc is None:
-                        continue
-                    stats = mask_stats(mask)
-                    story_score, story_tags = cheap_story_compatibility(idx, ledger.get("event_story", []))
-                    area_ratio_init = area / max(1.0, float(init_area))
-                    composite_risk, risk_tags = risk_from_area_ratio(area_ratio_init)
                     temporal_votes = 0
                     for j in (idx - 1, idx + 1, idx + 2):
                         if 0 <= j < len(frames) and root_name in labels and labels[root_name][j] is not None:
                             near = labels[root_name][j] == int(obj_id)
                             if int(near.sum()) >= args.component_min_area:
                                 temporal_votes += 1
-                    signals = CandidateSignals(
-                        candidate_id=f"{key}:{idx}:{root_name}:{mask_kind}",
-                        vector=[float(x) for x in desc.tolist()],
-                        source=f"{root_name}:{mask_kind}",
-                        frame_idx=idx,
-                        temporal_story_compatibility=story_score,
-                        source_independence_bonus=0.08 if root_name not in {ledger.get("current_best_source"), "m15_safe"} else 0.0,
-                        composite_background_risk=composite_risk,
-                        temporal_consistency_votes=temporal_votes,
-                        qwen_tracklet_support=False,
-                        independent_source_agreement=temporal_votes >= 2,
-                        same_class_dense=bool(ledger.get("target_profile", {}).get("same_class_dense")),
-                        state=str(ledger.get("current_state", "AMBIGUOUS")),
-                        hard_negative_hit=False,
-                        risk_tags=risk_tags + story_tags,
-                        evidence_tags=story_tags if story_score > 0.25 else [],
-                    )
-                    scored = score_candidate(signals, memory, policy)
-                    current_name = str(ledger.get("current_best_source", ""))
-                    is_current_reference = (
-                        root_name == current_name
-                        or root_name in current_name
-                        or current_name in root_name
-                        or root_name == "m15_safe"
-                    )
-                    if is_current_reference and scored.decision == "promote":
-                        scored.decision = "output_only"
-                        scored.reasons.append("current_best_reference_not_new_anchor")
-                    if ledger.get("review_status") != "approved" and scored.decision == "promote":
-                        scored.decision = "output_only"
-                        scored.reasons.append("ledger_not_review_approved_no_auto_promote")
-                    rec = {
-                        "video": video,
-                        "obj_id": int(obj_id),
-                        "frame_idx": int(idx),
-                        "source": root_name,
-                        "mask_kind": mask_kind,
-                        "area": area,
-                        "bbox": stats.bbox,
-                        "centroid": stats.centroid,
-                        "area_ratio_init": round(float(area_ratio_init), 5),
-                        "story_tags": story_tags,
-                        "risk_tags": risk_tags,
-                        "temporal_votes": temporal_votes,
-                        "score_card": scored.to_json(),
-                        "promotion_card": {
-                            "video": video,
-                            "obj_id": int(obj_id),
-                            "frame_idx": int(idx),
-                            "candidate_source": f"{root_name}:{mask_kind}",
-                            "positive_evidence": ["cheap_descriptor_positive_pool", *signals.evidence_tags],
-                            "negative_evidence": ["distractor_pool_checked", *risk_tags],
-                            "temporal_story_compatibility": round(float(story_score), 5),
-                            "descriptor_margin": round(float(scored.margin), 5),
-                            "risk_tags": risk_tags + story_tags,
-                            "decision": scored.decision,
-                            "decision_reason": "; ".join(scored.reasons),
-                            "review_status": "needs_more_evidence" if scored.decision != "reject" else "rejected",
-                        },
-                    }
-                    object_candidates.append(rec)
+                    consider_mask(idx=idx, rgb=rgb, root_name=root_name, mask_kind=mask_kind, mask=mask, temporal_votes=temporal_votes)
+            for anchor in ledger_anchors_by_frame.get(idx, []):
+                mask = box_to_mask(anchor.get("bbox"), shape)
+                if mask is None:
+                    continue
+                consider_mask(
+                    idx=idx,
+                    rgb=rgb,
+                    root_name="ledger_anchor",
+                    mask_kind=str(anchor.get("anchor_id", "candidate")),
+                    mask=mask,
+                    temporal_votes=0,
+                    extra_risk_tags=list(anchor.get("risk_tags") or []) + ["ledger_box_candidate"],
+                    extra_evidence_tags=["ledger_candidate_anchor"],
+                )
         object_candidates.sort(
             key=lambda r: (
                 r["score_card"]["decision"] == "promote",

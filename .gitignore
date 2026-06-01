@@ -40,6 +40,11 @@ artifacts/*
 !artifacts/m18_candidate_retrieval/
 !artifacts/m18_candidate_retrieval/*.json
 !artifacts/m18_candidate_retrieval/*.csv
+!artifacts/m18_sameclass_atlas/
+artifacts/m18_sameclass_atlas/*
+!artifacts/m18_sameclass_atlas/gateb_records.json
+!artifacts/m18_sameclass_atlas/gateb_frames.json
+!artifacts/m18_sameclass_atlas/gateb_hints.json
 # Versioned documentation figures
 !docs/assets/
 !docs/assets/**

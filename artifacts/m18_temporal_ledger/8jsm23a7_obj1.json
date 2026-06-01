@@ -133,6 +133,678 @@
         "old_position_distractor",
         "temporally_impossible"
       ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        378,
+        461,
+        486,
+        576
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Similar tile in adjacent position, no hand interaction"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        324,
+        288,
+        432,
+        384
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Stationary tile in top row, visually similar"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f2_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        324,
+        288,
+        432,
+        480
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Adjacent tile, lacks hand grasp cue"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f20_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        540,
+        288,
+        648,
+        576
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Right-side tile, far from left-row interaction"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f26_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        26
+      ],
+      "bbox": [
+        216,
+        384,
+        324,
+        576
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Middle-row tile, not targeted by hand"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f36_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        36
+      ],
+      "bbox": [
+        108,
+        192,
+        162,
+        288
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Top-left tile, static during center-right movement"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f48_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        48
+      ],
+      "bbox": [
+        324,
+        1344,
+        432,
+        1536
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Bottom-center tile, visually similar but not manipulated"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        108,
+        384,
+        216,
+        480
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        0,
+        384,
+        108,
+        480
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f2_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        54,
+        192,
+        162,
+        384
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f20_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        216,
+        346,
+        378,
+        672
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f26_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        26
+      ],
+      "bbox": [
+        108,
+        384,
+        216,
+        576
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f36_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        36
+      ],
+      "bbox": [
+        216,
+        288,
+        270,
+        384
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f48_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        48
+      ],
+      "bbox": [
+        216,
+        1382,
+        324,
+        1574
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_temporally_impossible_f36_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        36
+      ],
+      "bbox": [
+        378,
+        384,
+        432,
+        480
+      ],
+      "mask_ref": null,
+      "description": "same_category_temporally_impossible",
+      "evidence": [
+        "temporal story contradiction: abrupt spatial jump from F26 leftmost position to center-right without continuous hand trajectory; likely identity switch or distractor"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "temporally_impossible"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        378,
+        461,
+        486,
+        576
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        324,
+        288,
+        432,
+        384
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f26_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        26
+      ],
+      "bbox": [
+        216,
+        384,
+        324,
+        576
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f36_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        36
+      ],
+      "bbox": [
+        378,
+        384,
+        432,
+        480
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check: spatial discontinuity candidate"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f48_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        48
+      ],
+      "bbox": [
+        324,
+        1344,
+        432,
+        1536
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_composite_background_f20_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        108,
+        384,
+        324,
+        768
+      ],
+      "mask_ref": null,
+      "description": "candidate_likely_composite_background",
+      "evidence": [
+        "box/mask covers multiple entities or background: large bounding box likely encompasses target tile plus adjacent stationary tiles and table surface"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "composite_background"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        378,
+        461,
+        486,
+        576
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Adjacent stationary tile"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        324,
+        288,
+        432,
+        384
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Top row distractor"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f2_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        324,
+        288,
+        432,
+        480
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Mid-row similar tile"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f20_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        540,
+        288,
+        648,
+        576
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Right-side tile"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f26_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        26
+      ],
+      "bbox": [
+        216,
+        384,
+        324,
+        576
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Center tile, not grasped"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f36_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        36
+      ],
+      "bbox": [
+        378,
+        384,
+        432,
+        480
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Temporally inconsistent jump candidate"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f48_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        48
+      ],
+      "bbox": [
+        324,
+        1344,
+        432,
+        1536
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "Bottom-center similar tile"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
     }
   ],
   "candidate_anchors": [
@@ -189,6 +861,240 @@
       "decision": "needs_more_evidence",
       "decision_reason": "Requires same-class atlas with at least two hard distractors before promotion.",
       "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f2_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 2,
+      "bbox": [
+        162,
+        384,
+        270,
+        576
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Hand moving tile, left area, partial number visible"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.7,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f20_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 20,
+      "bbox": [
+        108,
+        384,
+        324,
+        768
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Hand moving, left row position, partial number"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.7,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f26_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 26,
+      "bbox": [
+        0,
+        480,
+        108,
+        672
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Hand grasp targeting leftmost tile, high consistency"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f48_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 48,
+      "bbox": [
+        0,
+        1440,
+        108,
+        1632
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Hand moving, 7 Bamboo face confirmed, leftmost position"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.9,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f26_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 26,
+      "bbox": [
+        0,
+        480,
+        108,
+        672
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Two consistent cues: explicit hand grasp action + leftmost row position alignment with human hypothesis"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f48_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 48,
+      "bbox": [
+        0,
+        1440,
+        108,
+        1632
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Two consistent cues: hand movement + confirmed 7 Bamboo face at leftmost position; highest confidence frame"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.9,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_prompt_f26",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 26,
+      "bbox": [
+        0,
+        480,
+        108,
+        672
+      ],
+      "mask_ref": null,
+      "description": "Leftmost tile in front row, actively grasped by hand",
+      "positive_evidence": [
+        "Strong hand interaction + positional cue alignment; safe for SAM2 initialization"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense",
+        "prompt_plan"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_prompt_f48",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 48,
+      "bbox": [
+        0,
+        1440,
+        108,
+        1632
+      ],
+      "mask_ref": null,
+      "description": "Leftmost position, 7 Bamboo face visible, hand placing/adjusting",
+      "positive_evidence": [
+        "Highest confidence, explicit face confirmation; ideal for bounded propagation anchor"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.9,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense",
+        "prompt_plan"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
     }
   ],
   "score_history": [
@@ -229,5 +1135,7 @@
     "Same-class dense candidates require delayed confirmation before promotion.",
     "If a candidate is closer to hard-negative memory than positive memory, reject it."
   ],
-  "notes": []
+  "notes": [
+    "Gate-B atlas integrated from gateb_records.json: 8 candidates, 28 distractors. All MLLM positives remain needs_more_evidence."
+  ]
 }

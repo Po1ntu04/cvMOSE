@@ -112,6 +112,654 @@
         "rejected_aggressive",
         "composite_background"
       ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        422,
+        311,
+        465,
+        330
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle shape in mid-right lane, lacks blue cue"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        653,
+        92,
+        691,
+        103
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle in right lane, distinct lane position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f2_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        672,
+        162,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle right side, road context overlap"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f13_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        13
+      ],
+      "bbox": [
+        576,
+        76,
+        653,
+        97
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle right lane, bridge shadow interference"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f14_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        14
+      ],
+      "bbox": [
+        576,
+        108,
+        653,
+        130
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle right lane, partial occlusion"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f37_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        37
+      ],
+      "bbox": [
+        576,
+        205,
+        672,
+        238
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle right lane, distance scaling"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f39_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        39
+      ],
+      "bbox": [
+        576,
+        194,
+        653,
+        216
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "similar vehicle right lane, consistent distractor pattern"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f1_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        346,
+        297,
+        384,
+        319
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f2_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        192,
+        86,
+        288,
+        130
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f13_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        13
+      ],
+      "bbox": [
+        384,
+        54,
+        461,
+        76
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f14_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        14
+      ],
+      "bbox": [
+        480,
+        76,
+        557,
+        97
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f37_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        37
+      ],
+      "bbox": [
+        307,
+        259,
+        384,
+        292
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f39_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        39
+      ],
+      "bbox": [
+        384,
+        238,
+        461,
+        270
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "target cannot still be here after event"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        422,
+        311,
+        465,
+        330
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        653,
+        92,
+        691,
+        103
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f2_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        672,
+        162,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f13_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        13
+      ],
+      "bbox": [
+        576,
+        76,
+        653,
+        97
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f14_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        14
+      ],
+      "bbox": [
+        576,
+        108,
+        653,
+        130
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f37_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        37
+      ],
+      "bbox": [
+        576,
+        205,
+        672,
+        238
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f39_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        39
+      ],
+      "bbox": [
+        576,
+        194,
+        653,
+        216
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "hard negative for descriptor/visual check"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        422,
+        311,
+        465,
+        330
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "mid-right lane vehicle, similar scale"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        653,
+        92,
+        691,
+        103
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right lane vehicle, distinct position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f2_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        672,
+        162,
+        768,
+        216
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right side vehicle, road context overlap"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f13_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        13
+      ],
+      "bbox": [
+        576,
+        76,
+        653,
+        97
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right lane under bridge, shadow interference"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f14_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        14
+      ],
+      "bbox": [
+        576,
+        108,
+        653,
+        130
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right lane partial occlusion"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f37_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        37
+      ],
+      "bbox": [
+        576,
+        205,
+        672,
+        238
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right lane distance scaling"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f39_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        39
+      ],
+      "bbox": [
+        576,
+        194,
+        653,
+        216
+      ],
+      "mask_ref": null,
+      "description": "hard negative",
+      "evidence": [
+        "right lane consistent distractor"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
     }
   ],
   "candidate_anchors": [
@@ -141,6 +789,473 @@
       "decision": "reject",
       "decision_reason": "Aggressive package regressed and visual review found overlarge masks.",
       "review_status": "rejected"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f0_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 0,
+      "bbox": [
+        159,
+        82,
+        202,
+        102
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "clear blue car on left lane, high confidence"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.95,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f1_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 1,
+      "bbox": [
+        159,
+        81,
+        196,
+        104
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "consistent position and appearance with f0"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.95,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f2_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 2,
+      "bbox": [
+        480,
+        324,
+        576,
+        378
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "partial visibility on lower road, trajectory jump requires verification"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f13_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 13,
+      "bbox": [
+        163,
+        65,
+        230,
+        97
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "partial under bridge, matches left lane trajectory"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f14_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 14,
+      "bbox": [
+        163,
+        97,
+        230,
+        140
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "partial left lane, consistent scale"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f37_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 37,
+      "bbox": [
+        163,
+        51,
+        230,
+        81
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "partial upper left lane, distance scaling observed"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f39_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 39,
+      "bbox": [
+        163,
+        65,
+        230,
+        97
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "partial upper left lane, consistent with f37"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f0_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 0,
+      "bbox": [
+        159,
+        82,
+        202,
+        102
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "blue color + left lane position + clear shape (2+ cues agree)"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.95,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f1_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 1,
+      "bbox": [
+        159,
+        81,
+        196,
+        104
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "blue color + left lane position + clear shape (2+ cues agree)"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.95,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f13_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 13,
+      "bbox": [
+        163,
+        65,
+        230,
+        97
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "blue color + under bridge location + left lane (2+ cues agree)"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f14_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 14,
+      "bbox": [
+        163,
+        97,
+        230,
+        140
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "blue color + lane position + vehicle shape (2+ cues agree)"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f37_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 37,
+      "bbox": [
+        163,
+        51,
+        230,
+        81
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "blue color + vehicle shape + consistent trajectory (2+ cues agree)"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f39_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 39,
+      "bbox": [
+        163,
+        65,
+        230,
+        97
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "blue color + vehicle shape + consistent trajectory (2+ cues agree)"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_prompt_f0",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 0,
+      "bbox": [
+        159,
+        82,
+        202,
+        102
+      ],
+      "mask_ref": null,
+      "description": "left lane, clear view",
+      "positive_evidence": [
+        "high confidence anchor for SAM2 initialization"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.95,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review",
+        "prompt_plan"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_prompt_f13",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 13,
+      "bbox": [
+        163,
+        65,
+        230,
+        97
+      ],
+      "mask_ref": null,
+      "description": "under bridge, left lane",
+      "positive_evidence": [
+        "conservative re-anchor after occlusion"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review",
+        "prompt_plan"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_prompt_f14",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 14,
+      "bbox": [
+        163,
+        97,
+        230,
+        140
+      ],
+      "mask_ref": null,
+      "description": "left lane, partial visibility",
+      "positive_evidence": [
+        "stabilizes propagation through bridge exit"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "mllm_review",
+        "prompt_plan"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
     }
   ],
   "score_history": [
@@ -180,5 +1295,7 @@
     "Same-class dense candidates require delayed confirmation before promotion.",
     "If a candidate is closer to hard-negative memory than positive memory, reject it."
   ],
-  "notes": []
+  "notes": [
+    "Gate-B atlas integrated from gateb_records.json: 16 candidates, 27 distractors. All MLLM positives remain needs_more_evidence."
+  ]
 }
