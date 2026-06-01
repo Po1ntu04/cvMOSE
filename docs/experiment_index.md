@@ -281,3 +281,19 @@ cvMOSE/
   - second: `submission_mosev2_m19_8js_late_1ql.zip`
   - risky isolated 4vz probe: `submission_mosev2_m19_8js_late_4vz.zip`
   - broader/aggressive probes: `submission_mosev2_m19_8js_late_4vz_1ql.zip`, `submission_mosev2_m19_8js_full.zip`, `submission_mosev2_m19_8js_4vz.zip`, `submission_mosev2_m19_8js_4vz_1ql.zip`
+
+## M20 — SAM3 adaptive re-anchor layer
+
+- Report: `docs/m20_sam3_adaptive_reanchor_report.md`
+- New reusable adapter: `src/cvmose/sam3_m20.py`
+- New build/fusion tool: `tools/build_m20_sam3_adaptive_reanchor.py`
+- Artifacts: `artifacts/m20_sam3_adaptive/`
+- Local run used replay mode over `pred_sam31_b101` because this session had no CUDA SAM3 runtime; live SAM3.1 proposal generation is available behind `--run-live-sam3`.
+- Review update: first implementation mixed SAM3 audit with M19 story-root edits; fixed so M20 defaults are now SAM3-candidate gated and story probes require `--include-story-probes`.
+- Strict b101 rerun after fixes: `18` SAM3 replay candidate cards = `14` rejected, `4` needs-more-evidence, `0` promote/output-only.
+- Validated strict zips copied locally:
+  - `submission_mosev2_m20_sam3_strict_safe.zip` — exact M17 base, non-regression/default.
+  - `submission_mosev2_m20_sam3_strict_balanced.zip` — exact M17 base; no SAM3 candidate passed balanced gate.
+  - `submission_mosev2_m20_sam3_strict_aggressive.zip` — 3 frame-level SAM3-gated probes on `8jsm23a7`; score-probe only.
+  - All pass validator with `433` dirs, `66526` PNGs, and `provided_changed_count=0`.
+- Live b101 smoke: `4vznweiu` live candidates all rejected; `8jsm23a7` had one output-only frame that overlapped current M17, so no new verified SAM3 recovery yet.
