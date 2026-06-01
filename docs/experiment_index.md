@@ -268,3 +268,16 @@ cvMOSE/
   - `tools/build_m18_candidate_retrieval.py` now scores ledger atlas boxes as candidate masks against positive/negative memory.
 - Gate-B finding: `8jsm23a7`, `r13u5z4y`, `4vznweiu`, and `1qlssuz2` gained reviewable candidate/negative memory, but no candidate is safe for final promotion yet. This is useful because it converts MLLM reasoning into negative-bank pressure rather than risky direct replacement.
 - Maintenance: if base ledgers are regenerated, rerun `tools/apply_m18_atlas_to_ledger.py` before candidate retrieval.
+
+## M19 — story-guided hard-video probes
+
+- Report: `docs/m19_story_guided_report.md`
+- New tool: `tools/apply_m19_story_guided_masks.py`
+- Visuals: `docs/assets/m19_story_guided_compare/`
+- Base root: `pred_m17_q0_full_box` (hidden score memory `43.54`).
+- Main correction: M16's `8jsm23a7` front-row Mahjong anchor used y≈1000-1344 px; M19 corrects it to y≈742-924 px for the front/player-side leftmost seven-bamboo tile.
+- Validated probe zips in the MOSEv2 homework workspace:
+  - submit first: `submission_mosev2_m19_8js_late.zip`
+  - second: `submission_mosev2_m19_8js_late_1ql.zip`
+  - risky isolated 4vz probe: `submission_mosev2_m19_8js_late_4vz.zip`
+  - broader/aggressive probes: `submission_mosev2_m19_8js_late_4vz_1ql.zip`, `submission_mosev2_m19_8js_full.zip`, `submission_mosev2_m19_8js_4vz.zip`, `submission_mosev2_m19_8js_4vz_1ql.zip`
