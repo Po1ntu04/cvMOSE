@@ -129,3 +129,7 @@ Compared with the confirmed 43.30 M7 family (`J&F_new≈43.29597`), this is abou
 | `q0sizv6m` rows | `74.48/12.34` | `74.48/12.34` | `0.00` | q0 remains unchanged because the unsafe reverse-anchor/composite candidate was correctly excluded from this fusion. |
 
 Conclusion: `43.34` is a **real small leaderboard improvement** and the first non-flat gain above the 43.30 family, but it is **not** the expected 44-level breakthrough. It validates that carefully selected per-object interval fusion can move hidden score, while the MLLM reverse-anchor path still lacks hidden-metric proof.
+
+### Correction on `8jsm23a7` qualitative interpretation
+
+A later manual overlap check showed that the M13 reverse-anchor for `8jsm23a7` was not a correct seven-bamboo recovery. It appears to select a left-side two-bamboo tile in the farther/upper row. This explains why the detailed hidden row remained `2.13` despite the earlier visual sheet looking plausible. The prior note saying `8jsm23a7` was a local visual improvement should be treated as a false positive caused by an explicit video-specific hint plus coarse box geometry.

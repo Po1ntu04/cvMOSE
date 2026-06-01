@@ -58,3 +58,16 @@ The latest full-test log for `submission_mosev2_m13_8rev_zofficial_balanced.zip`
 - `q0sizv6m`: unchanged, as expected because the unsafe reverse-anchor was excluded.
 
 Interpretation: this is a valid incremental improvement and confirms the fusion infrastructure is useful, but it is not a structural MLLM breakthrough. The next high-value step is to understand why `8jsm23a7` remains at 2.13 despite the plausible visual event fix, then pursue stronger bbox/identity sources rather than more Qwen box geometry alone.
+
+## Correction: 8jsm23a7 reverse-anchor was not a real visual success
+
+User re-inspection found that the M13 reverse-anchor for `8jsm23a7` did **not** actually localize the intended seven-bamboo tile. The overlap appears to land on a left-side two-bamboo tile in the farther/upper row, not the tile that was picked up and placed as the intended left-side seven-bamboo in the player's front row.
+
+Root cause:
+
+- The split harness had an explicit video-specific human hint for `8jsm23a7`: the target is picked up and should end as the leftmost seven-bamboo tile in the player's row.
+- Qwen's frame-48 caption repeated that hint and produced a high-confidence frame-48 box `[120,420,260,650]` in normalized coordinates.
+- That box was too coarse/ambiguous and apparently captured the wrong similar tile after SAM2 propagation.
+- The hidden metric already warned us: `8jsm23a7` stayed at `2.13` after the M13 fusion despite the earlier qualitative sheet being judged as visually plausible.
+
+Updated conclusion: do **not** treat `8jsm23a7` M13 reverse-anchor as evidence of MLLM re-anchor success. It is evidence that video-specific semantic hints can over-bias the MLLM and produce a plausible narrative with wrong geometry. Future MLLM usage on this sample must require coordinate verification against the actual tile row and preferably a local high-resolution crop with candidate letters for every similar tile.
