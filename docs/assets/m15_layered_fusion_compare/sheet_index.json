@@ -1,0 +1,244 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m13_8rev_zofficial_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "m15_safe": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "m15_bal": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_balanced",
+    "m15_agg": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_aggressive"
+  },
+  "sheets": [
+    {
+      "video": "8jsm23a7",
+      "frames": 49,
+      "selected_frames": [
+        0,
+        13,
+        21,
+        24,
+        27,
+        30,
+        33,
+        36,
+        39,
+        42,
+        45,
+        48
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/8jsm23a7_m6_compare.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        3,
+        7,
+        11,
+        14,
+        18,
+        22,
+        26,
+        29,
+        33,
+        37,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "amfdu83t",
+      "frames": 24,
+      "selected_frames": [
+        0,
+        4,
+        6,
+        9,
+        11,
+        13,
+        14,
+        16,
+        18,
+        20,
+        21,
+        23
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/amfdu83t_m6_compare.jpg"
+    },
+    {
+      "video": "r13u5z4y",
+      "frames": 45,
+      "selected_frames": [
+        0,
+        4,
+        8,
+        12,
+        16,
+        20,
+        24,
+        28,
+        32,
+        36,
+        40,
+        44
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/r13u5z4y_m6_compare.jpg"
+    },
+    {
+      "video": "4vznweiu",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        3,
+        9,
+        12,
+        18,
+        21,
+        27,
+        28,
+        30,
+        31,
+        33,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/4vznweiu_m6_compare.jpg"
+    },
+    {
+      "video": "1qlssuz2",
+      "frames": 40,
+      "selected_frames": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        17,
+        24,
+        31,
+        39
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/1qlssuz2_m6_compare.jpg"
+    },
+    {
+      "video": "lcgc29va",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        3,
+        6,
+        9,
+        12,
+        15,
+        18,
+        21,
+        24,
+        27,
+        30,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/lcgc29va_m6_compare.jpg"
+    },
+    {
+      "video": "4f98052b",
+      "frames": 179,
+      "selected_frames": [
+        0,
+        16,
+        32,
+        48,
+        64,
+        80,
+        97,
+        113,
+        129,
+        145,
+        161,
+        178
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_safe",
+        "m15_bal",
+        "m15_agg",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_layered_fusion_compare/4f98052b_m6_compare.jpg"
+    }
+  ]
+}
