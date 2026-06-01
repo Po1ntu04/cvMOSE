@@ -225,3 +225,9 @@ cvMOSE/
 - Main candidates: `submission_mosev2_m15_layered_safe.zip`, `submission_mosev2_m15_layered_balanced.zip`, `submission_mosev2_m15_layered_aggressive.zip`
 - Key assets: `docs/assets/m15_layered_fusion_compare/`
 - Summary: safe candidate adds only `amfdu83t` same-class kangaroo continuation; balanced/aggressive additionally probe risky `8jsm23a7`, `1qlssuz2`, `4vznweiu` reanchors.
+
+### M15 hidden feedback update
+
+- User-reported hidden scores: M15 safe `43.44`, M15 balanced `43.44`, M15 aggressive `43.38`.
+- Latest safe detail log is preserved in `docs/test_latest_metric_memory.md`; decisive row is `amfdu83t:obj1` rising to `J&F_new=84.84`, explaining about `+0.10` global over M13/zofficial-balanced.
+- Current best recommendation: **submit M15 safe first** (`/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m15_layered_safe.zip`). Balanced ties but has extra 8js risk; aggressive is rejected as final.

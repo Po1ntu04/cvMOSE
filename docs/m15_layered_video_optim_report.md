@@ -152,3 +152,27 @@ Build a true **candidate atlas + tracker bridge** for same-class/tiny cases:
 - inject only verified candidate boxes/masks into SAM2 with delayed commit.
 
 This is specifically needed for `8jsm23a7`, `q0sizv6m:obj2`, `r13u5z4y`, and `4vznweiu`.
+
+## Hidden feedback update: M15 safe/balanced 43.44, aggressive 43.38
+
+User-submitted hidden feedback:
+
+- M15 safe: `43.44`
+- M15 balanced: `43.44`
+- M15 aggressive: `43.38`
+
+The safe detail log in `test_latest.log` shows `J&F_new=43.44`, `J=41.70`, `F_new=45.18`, `reappear_J&F_new=20.79`. The decisive row is:
+
+| row | previous M13/zofficial-family J&F_new | M15 safe J&F_new | delta | global effect |
+| --- | ---: | ---: | ---: | ---: |
+| `amfdu83t:obj1` | ~`28.44` | `84.84` | `+56.40` | ~`+0.098` over 575 rows |
+
+This accounts for almost all gain from the prior `43.34` zofficial-balanced score to `43.44`. Therefore the useful M15 contribution is specifically the `amfdu83t` same-class reappearance correction, not a broad parameter effect.
+
+Balanced tying safe means the extra `8jsm23a7` frame-20 reanchor did not improve the hidden row. This is consistent with the later manual interpretation that the mask still likely targets the wrong Mahjong tile or is too misaligned with the annotation. Aggressive dropping to `43.38` confirms the visual concerns for `1qlssuz2` and/or `4vznweiu`: the extra windows are not safe and should not be used in final fusion.
+
+Updated recommendation:
+
+1. **Submit M15 safe first.** It has the same hidden score as balanced with fewer risky edits.
+2. Do not submit aggressive as final.
+3. Treat the M15 `amfdu83t` path as the template for future improvements: high-recall candidate/reappearance discovery, physical-event consistency, SAM2 re-injection, bounded propagation, and conservative fusion. Do not treat Qwen boxes or single-frame visual plausibility as sufficient.

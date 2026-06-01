@@ -133,3 +133,44 @@ Conclusion: `43.34` is a **real small leaderboard improvement** and the first no
 ### Correction on `8jsm23a7` qualitative interpretation
 
 A later manual overlap check showed that the M13 reverse-anchor for `8jsm23a7` was not a correct seven-bamboo recovery. It appears to select a left-side two-bamboo tile in the farther/upper row. This explains why the detailed hidden row remained `2.13` despite the earlier visual sheet looking plausible. The prior note saying `8jsm23a7` was a local visual improvement should be treated as a false positive caused by an explicit video-specific hint plus coarse box geometry.
+
+## M15 layered hidden feedback: safe/balanced 43.44, aggressive 43.38
+
+User feedback after submitting the M15 zips:
+
+| candidate | hidden J&F_new | interpretation |
+| --- | ---: | --- |
+| `submission_mosev2_m15_layered_safe.zip` | `43.44` | New best known score. Only intentional target edit over M13/zofficial-balanced is `amfdu83t:obj1` from the M14/M15 kangaroo recovery path. |
+| `submission_mosev2_m15_layered_balanced.zip` | `43.44` | Metric-tied with safe. The extra `8jsm23a7` frame-20 reanchor did not create measurable hidden-score gain. Prefer safe because it has fewer risky edits. |
+| `submission_mosev2_m15_layered_aggressive.zip` | `43.38` | Worse than safe/balanced. The extra aggressive `1qlssuz2` and/or `4vznweiu` windows are harmful overall, matching the visual concern that they over-expanded or shifted to adjacent objects. |
+
+The latest `test_latest.log` pasted by the user is the safe run. It prints:
+
+- J&F_new: `43.44`
+- J: `41.70`
+- F_new: `45.18`
+- disappear J&F_new: `60.43`
+- reappear J&F_new: `20.79`
+- F: `47.38`
+- J&F: `44.54`
+- Copy-Paste: `43.4,41.7,45.2,60.4,20.8,47.4,44.5`
+
+Key rows from the safe log:
+
+| video/object rows | safe J&F_new | safe J | safe F_new | note |
+| --- | ---: | ---: | ---: | --- |
+| `amfdu83t` obj1 | `84.84` | `91.39` | `97.94` | The decisive gain. Previous M13/zofficial family row was about `28.44`, so this single-row lift is `+56.40`, i.e. roughly `+56.40 / 575 = +0.098` global J&F_new. This explains almost all movement from `43.34` to `43.44`. |
+| `z6dx46qr` obj1 | `65.14` | `61.77` | `79.12` | Carries over the earlier M13/zofficial official-large gain; unchanged by M15. |
+| `8jsm23a7` obj1 | `2.13` | `2.13` | `2.13` | Still unsolved in safe. Balanced tying safe indicates the added 8js edit did not help the hidden row. |
+| `q0sizv6m` obj1/obj2 | `74.48 / 12.34` | `75.85 / 12.50` | `75.85 / 12.50` | q0 obj2 remains the main same-class failure. |
+| `r13u5z4y` obj1 | `38.84` | `39.53` | `39.53` | Strawberry reappearance remains unsolved. |
+| `1qlssuz2` obj1 | `36.88` | `40.36` | `42.11` | Unchanged in safe; aggressive replacement likely not reliable. |
+| `4vznweiu` obj1 | `33.50` | `36.38` | `37.64` | Unchanged in safe; aggressive replacement likely not reliable. |
+
+Revised conclusion:
+
+- M15 confirms that **true same-class reappearance recovery can move the hidden metric** when it injects a physically plausible later anchor and SAM2 propagation follows the target (`amfdu83t`).
+- It also confirms that **visually plausible but identity-ambiguous single-video patches do not necessarily help** (`8jsm23a7`) and can hurt when applied aggressively (`1qlssuz2`, `4vznweiu`).
+- Current best recommendation is **submit M15 safe first**. Balanced has the same hidden score but more risk and no measured upside; aggressive should not be final.
+
+Next-score implication: after M15 safe, reaching 44 still needs about `+0.56` global J&F_new. Since `amfdu83t` alone delivered about `+0.10`, the next meaningful path is not broad threshold sweeping; it is replicating the `amfdu` pattern on other low rows: candidate atlas -> physically consistent reappearance identity -> SAM2 re-injection -> bounded propagation -> conservative fusion. The highest-value remaining rows are `8jsm23a7`, `q0sizv6m:obj2`, `r13u5z4y`, `1qlssuz2`, and `4vznweiu`, but each must pass stricter instance-ID validation before entering safe/balanced.
