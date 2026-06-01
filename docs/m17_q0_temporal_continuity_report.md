@@ -96,3 +96,73 @@ first-frame instance
 ```
 
 For q0, the decisive missing cue is **motion toward camera + bottom-edge reappearance**, not mask quality.
+
+## Hidden feedback after `m17_q0_full_box`
+
+User-reported score:
+
+- `submission_mosev2_m17_q0_early_box.zip`: `43.47`
+- `submission_mosev2_m17_q0_full_box.zip`: `43.54`
+
+The updated `test_latest.log` for `full_box` shows:
+
+| row | J&F_new | J | F_new | disappear J&F_new | reappear J&F_new |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `q0sizv6m` obj1 | `74.48` | `75.85` | `75.85` | N/A | N/A |
+| `q0sizv6m` obj2 | `68.29` | `66.96` | `67.43` | `50.03` | `76.04` |
+
+Compared with M15 safe (`q0sizv6m:obj2 = 12.34`), fullbox lifts the row by about `+55.95`, which is roughly `+0.097` global J&F_new if averaged over the 575 object rows. This explains almost all movement from `43.44` to `43.54`.
+
+## Remaining q0 error after fullbox
+
+The score confirms the physical-story direction, but the visual trajectory is still not fully correct:
+
+- around `00027`, the bottom/foreground white-ish individual is the only plausible continuation;
+- around `00031`, only a rump/edge remains near the lower/right foreground;
+- around `00034`, the target should begin/finish disappearing;
+- fullbox still has false late masks around frames `36`, `39-41`, and no mask around `31-33`.
+
+Therefore the remaining q0 space is not “better frame thresholding”; it is the **visible / partially-visible / absent state schedule** along the physical event chain.
+
+## Follow-up story-state probes
+
+New tool:
+
+```text
+tools/apply_m17_q0_story_fusion.py
+```
+
+It creates q0 obj2 fusions over the proven `full_box` root:
+
+| zip | policy | intent |
+| --- | --- | --- |
+| `submission_mosev2_m17_q0_story_trim_after34.zip` | fullbox frames `6-29`, empty `30-41` | isolate whether fullbox's late false positives after disappearance hurt. |
+| `submission_mosev2_m17_q0_story_rump_31_33.zip` | fullbox `6-29`, color/ROI rump `31-33`, empty `34-41` | tests user claim that only a rump/edge remains around `31`, then disappears. |
+| `submission_mosev2_m17_q0_story_rump_30_33.zip` | fullbox `6-29`, color/ROI `30-33`, empty `34-41` | slightly broader rump interval; more aggressive than `31_33`. |
+
+All three validate with `provided_changed_count=0`, `video_dirs=433`, `pngs=66526`, `predicted_error_count=0`.
+
+Visual sheet:
+
+```text
+docs/assets/m17_q0_story_compare/q0sizv6m_m6_compare.jpg
+```
+
+Recommended next test order:
+
+1. `submission_mosev2_m17_q0_story_trim_after34.zip` — directly tests the disappearance-state correction.
+2. `submission_mosev2_m17_q0_story_rump_31_33.zip` — adds the plausible rump interval without reviving late false masks.
+3. `submission_mosev2_m17_q0_story_rump_30_33.zip` — broader and riskier rump interval.
+
+## Where the large remaining improvement space is
+
+For q0 alone, the row is now `68.29`; perfect q0 would add at most about `(100-68.29)/575 ≈ +0.055` global J&F_new. This is meaningful but not enough alone for the next large jump.
+
+The larger space is applying the same principle to other still-low rows:
+
+1. **`8jsm23a7`**: still around `2.13`, so a true seven-bamboo physical-trajectory recovery could be worth roughly `+0.15~0.17` global.
+2. **`r13u5z4y`**: strawberry slice reappearance remains wrong/empty; potential is smaller than 8js but still nontrivial.
+3. **`1qlssuz2` / `4vznweiu`**: previous aggressive attempts hurt because they lacked a stable event-state model.
+4. **Generic method gap**: current SAM/DINO/Qwen harnesses verify crops or boxes, but they do not maintain an object-centric scene ledger: who is the target, who are distractors, where did each go, when is target absent, and which later evidence is physically compatible. q0 improved only when we manually encoded that ledger.
+
+So the next substantive architecture step should be an **object-centric temporal ledger** per video/object, not a better per-frame prompt.

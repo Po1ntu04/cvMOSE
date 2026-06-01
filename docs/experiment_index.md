@@ -202,7 +202,7 @@ cvMOSE/
   - `submission_mosev2_m17_q0_full_box.zip`
   - `submission_mosev2_m17_q0_early_color.zip`
   - `submission_mosev2_m17_q0_color_{conservative,balanced,wide}.zip`
-- Recommendation: test `q0_early_box` first, then `q0_full_box`; old late M16 q0 anchors are considered wrong-instance and should not be trusted.
+- Hidden feedback: `q0_early_box=43.47`, `q0_full_box=43.54`; q0 obj2 row rises to `68.29`. Follow-up story-state probes trim late false positives and optionally add a 31-33 rump interval: `submission_mosev2_m17_q0_story_trim_after34.zip`, `submission_mosev2_m17_q0_story_rump_31_33.zip`, `submission_mosev2_m17_q0_story_rump_30_33.zip`.
 
 ## Final/current stance
 
