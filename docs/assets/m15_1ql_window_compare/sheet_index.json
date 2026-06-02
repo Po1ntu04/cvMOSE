@@ -1,0 +1,37 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m13_8rev_zofficial_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "m15_1ql": "/home/yu/projects/cv/cvMOSE/artifacts/m15_layered/remote_downloads/pred_m15_1ql_window"
+  },
+  "sheets": [
+    {
+      "video": "1qlssuz2",
+      "frames": 40,
+      "selected_frames": [
+        0,
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        17,
+        24,
+        31,
+        39
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m15_1ql",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m15_1ql_window_compare/1qlssuz2_m6_compare.jpg"
+    }
+  ]
+}

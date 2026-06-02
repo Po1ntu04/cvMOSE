@@ -218,3 +218,16 @@ cvMOSE/
 - SAM2 teach-box update: `tools/infer_mosev2_sam2_teach_boxes.py --clip-mode nearest`
 - Visuals: `docs/assets/m14_amfdu83t_sources_a/`, `docs/assets/m14_amfdu83t_sources_b/`, `docs/assets/m14_amfdu83t_box_probes/`, `docs/assets/m14_amfdu83t_tight_probes_a/`, `docs/assets/m14_amfdu83t_tight_probes_b/`, `docs/assets/m14_amfdu83t_temporal_8_11_large/`, `docs/assets/m14_amfdu83t_post11_probe_large/`, `docs/assets/m14_amfdu83t_post11_compare/`
 - Validated probe zips: `submission_mosev2_m14_zofficial_amfdu_temporal811.zip` (frames 8-11 only, now known truncated) and `submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip` (frames 8-23 post-anchor propagation); MOSE workspace copy `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip`.
+
+## M15 layered video optimization
+
+- Report: `docs/m15_layered_video_optim_report.md`
+- Main candidates: `submission_mosev2_m15_layered_safe.zip`, `submission_mosev2_m15_layered_balanced.zip`, `submission_mosev2_m15_layered_aggressive.zip`
+- Key assets: `docs/assets/m15_layered_fusion_compare/`
+- Summary: safe candidate adds only `amfdu83t` same-class kangaroo continuation; balanced/aggressive additionally probe risky `8jsm23a7`, `1qlssuz2`, `4vznweiu` reanchors.
+
+### M15 hidden feedback update
+
+- User-reported hidden scores: M15 safe `43.44`, M15 balanced `43.44`, M15 aggressive `43.38`.
+- Latest safe detail log is preserved in `docs/test_latest_metric_memory.md`; decisive row is `amfdu83t:obj1` rising to `J&F_new=84.84`, explaining about `+0.10` global over M13/zofficial-balanced.
+- Current best recommendation: **submit M15 safe first** (`/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m15_layered_safe.zip`). Balanced ties but has extra 8js risk; aggressive is rejected as final.

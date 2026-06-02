@@ -168,7 +168,13 @@ def norm_box_1000(box: list[int] | None, size: tuple[int, int]) -> list[int] | N
     return [round(1000 * x1 / max(1, w)), round(1000 * y1 / max(1, h)), round(1000 * x2 / max(1, w)), round(1000 * y2 / max(1, h))]
 
 
-def render_atlas_panel(workspace: Path, target: Target, frame_idx: int, out_path: Path) -> dict[str, Any]:
+def paste_fit(canvas: Image.Image, img: Image.Image, box: tuple[int, int, int, int]) -> None:
+    x1, y1, x2, y2 = box
+    fitted = fit(img, box)
+    canvas.paste(fitted, (x1, y1))
+
+
+def render_atlas_panel(workspace: Path, target: Target, frame_idx: int, out_path: Path, compact: bool = False) -> dict[str, Any]:
     jpeg_root, ann_root = homework_roots(workspace)
     frames = list_frames(jpeg_root, target.video)
     _, ann = first_annotation(ann_root, target.video)
@@ -184,17 +190,28 @@ def render_atlas_panel(workspace: Path, target: Target, frame_idx: int, out_path
     local_box = expand_box(ref_box, (rgb.height, rgb.width), pad=6.0, square=True, min_side=360)
     local = draw_grid(crop_pil(rgb, local_box), step=100)
 
-    canvas = Image.new("RGB", (1120, 760), "white")
-    cells = [
-        (add_caption(ref_crop, "REF crop: exact first-frame target"), (0, 0, 300, 250)),
-        (add_caption(full_ref, "frame0 full context; blue=target mask"), (300, 0, 560, 250)),
-        (add_caption(cur_grid, f"current frame {frame_idx:05d}; red coordinate grid"), (560, 0, 1120, 500)),
-        (add_caption(local, "current local left/REF-neighborhood crop + grid"), (0, 250, 560, 700)),
-    ]
+    if compact:
+        canvas = Image.new("RGB", (760, 520), "white")
+        cells = [
+            (add_caption(ref_crop, "REF exact target"), (0, 0, 230, 230)),
+            (add_caption(full_ref, "frame0 target context"), (230, 0, 420, 230)),
+            (add_caption(cur_grid, f"current {frame_idx:05d} full grid"), (420, 0, 760, 330)),
+            (add_caption(local, "current local crop grid"), (0, 230, 420, 500)),
+        ]
+        footer_y = 500
+    else:
+        canvas = Image.new("RGB", (1120, 760), "white")
+        cells = [
+            (add_caption(ref_crop, "REF crop: exact first-frame target"), (0, 0, 300, 250)),
+            (add_caption(full_ref, "frame0 full context; blue=target mask"), (300, 0, 560, 250)),
+            (add_caption(cur_grid, f"current frame {frame_idx:05d}; red coordinate grid"), (560, 0, 1120, 500)),
+            (add_caption(local, "current local left/REF-neighborhood crop + grid"), (0, 250, 560, 700)),
+        ]
+        footer_y = 720
     for im, box in cells:
-        canvas.paste(fit(im, box), (box[0], box[1]))
+        paste_fit(canvas, im, box)
     d = ImageDraw.Draw(canvas)
-    d.text((8, 720), "Task: enumerate same/near-class candidates and hard negatives; boxes use normalized [x1,y1,x2,y2] /1000 from full current frame.", fill=(0, 0, 0), font=font(14))
+    d.text((8, footer_y), "Task: enumerate same/near-class candidates and hard negatives; boxes use normalized [x1,y1,x2,y2] /1000 from full current frame.", fill=(0, 0, 0), font=font(14))
     out_path.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(out_path, quality=88)
     return {
@@ -234,6 +251,26 @@ Return strict JSON:
   "candidates":[
     {{"candidate_id":"A", "bbox_norm_1000":[0,0,0,0], "description":"where/pose", "role":"same_instance_candidate|hard_negative|uncertain", "motion_clue":"short", "confidence":0.0}}
   ],
+  "positive_box_norm_1000":[0,0,0,0] | null,
+  "hard_negative_boxes":[[0,0,0,0]],
+  "identity_cues_seen":["..."],
+  "confidence":0.0
+}}
+""".strip()
+
+
+def retry_user_prompt(target: Target, frame_idx: int, hint: str) -> str:
+    return f"""
+video={target.video}, obj_id={target.obj_id}, frame={frame_idx}.
+The image is a compact candidate-atlas panel with REF and current frame/crop grids.
+Human hypothesis is not ground truth: {hint or 'none'}
+
+Return strict JSON only, with at most 4 candidates. If unsure, prefer uncertain:
+{{
+  "status":"ok|uncertain",
+  "target_visible":"yes|no|partial|uncertain",
+  "frame_summary":"short",
+  "candidates":[{{"candidate_id":"A","bbox_norm_1000":[0,0,0,0],"description":"short","role":"same_instance_candidate|hard_negative|uncertain","motion_clue":"short","confidence":0.0}}],
   "positive_box_norm_1000":[0,0,0,0] | null,
   "hard_negative_boxes":[[0,0,0,0]],
   "identity_cues_seen":["..."],
@@ -295,9 +332,12 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-side", type=int, default=900)
     p.add_argument("--jpeg-quality", type=int, default=78)
     p.add_argument("--frame-timeout", type=float, default=45)
+    p.add_argument("--retry-timeout", type=float, default=90)
+    p.add_argument("--frame-retries", type=int, default=1)
     p.add_argument("--aggregate-timeout", type=float, default=180)
     p.add_argument("--frame-max-tokens", type=int, default=1536)
     p.add_argument("--aggregate-max-tokens", type=int, default=2048)
+    p.add_argument("--panel-mode", choices=["compact", "standard"], default="compact")
     return p.parse_args()
 
 
@@ -337,6 +377,7 @@ def main() -> None:
     frame_overrides = load_json_map(args.frames_json)
     targets = discover_targets(args.workspace, args.videos, parse_targets(args.targets))[: max(0, int(args.max_calls))]
     frame_client = QwenVLClient(model=args.model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=args.max_side, jpeg_quality=args.jpeg_quality, timeout=args.frame_timeout)
+    retry_client = QwenVLClient(model=args.model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=min(args.max_side, 650), jpeg_quality=max(55, min(args.jpeg_quality, 72)), timeout=args.retry_timeout)
     aggregate_client = QwenVLClient(model=args.model, fallback_models=[], cache_dir=args.cache_dir, dry_run=args.dry_run, max_side=args.max_side, jpeg_quality=args.jpeg_quality, timeout=args.aggregate_timeout)
     jpeg_root, _ = homework_roots(args.workspace)
     records: list[dict[str, Any]] = []
@@ -348,7 +389,7 @@ def main() -> None:
         observations: list[dict[str, Any]] = []
         for idx in idxs:
             panel_path = args.out_panel_dir / target.video / f"obj{target.obj_id}_f{idx:05d}.jpg"
-            meta = render_atlas_panel(args.workspace, target, idx, panel_path)
+            meta = render_atlas_panel(args.workspace, target, idx, panel_path, compact=args.panel_mode == "compact")
             obs = frame_client.call_json(
                 system_prompt=frame_system_prompt(),
                 user_text=frame_user_prompt(target, idx, hint, meta),
@@ -357,6 +398,22 @@ def main() -> None:
                 metadata={"video": target.video, "obj_id": target.obj_id, "frame_idx": idx},
                 max_tokens=args.frame_max_tokens,
             )
+            if str(obs.get("status")) in {"api_error", "client_error", "parse_error"}:
+                for attempt in range(1, max(0, int(args.frame_retries)) + 1):
+                    retry_panel = panel_path.with_name(f"{panel_path.stem}_retry{attempt}.jpg")
+                    retry_meta = render_atlas_panel(args.workspace, target, idx, retry_panel, compact=True)
+                    obs = retry_client.call_json(
+                        system_prompt=frame_system_prompt(),
+                        user_text=retry_user_prompt(target, idx, hint),
+                        image_paths=[retry_panel],
+                        schema_name="sameclass_frame_atlas_retry",
+                        metadata={"video": target.video, "obj_id": target.obj_id, "frame_idx": idx, "attempt": attempt},
+                        max_tokens=min(args.frame_max_tokens, 768),
+                    )
+                    obs.setdefault("retry_panel_meta", retry_meta)
+                    if str(obs.get("status")) not in {"api_error", "client_error", "parse_error"}:
+                        obs["recovered_by_retry"] = True
+                        break
             obs_record = {"frame_idx": idx, "panel_path": str(panel_path), "panel_meta": meta, "observation": obs}
             observations.append(obs_record)
             print(f"atlas frame {key}@{idx} {obs.get('status')} conf={obs.get('confidence')}", flush=True)
