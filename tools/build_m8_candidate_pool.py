@@ -64,8 +64,9 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-def qwen_records(paths: list[Path]) -> dict[tuple[str, int, int, str], dict[str, Any]]:
+def qwen_records(paths: list[Path]) -> tuple[dict[tuple[str, int, int, str], dict[str, Any]], dict[tuple[str, int, int], dict[str, Any]]]:
     out: dict[tuple[str, int, int, str], dict[str, Any]] = {}
+    frame_veto: dict[tuple[str, int, int], dict[str, Any]] = {}
     for path in paths:
         if not path.is_file():
             continue
@@ -81,11 +82,24 @@ def qwen_records(paths: list[Path]) -> dict[tuple[str, int, int, str], dict[str,
             if not src and best == "keep_baseline":
                 src = "baseline"
             try:
-                key = (str(rec["video"]), int(rec["obj_id"]), int(rec["frame_idx"]), str(src or ""))
+                frame_key = (str(rec["video"]), int(rec["obj_id"]), int(rec["frame_idx"]))
+                key = (*frame_key, str(src or ""))
             except Exception:
                 continue
-            out[key] = rec
-    return out
+            # Preserve explicit frame-level rejections such as EMPTY / reject_all;
+            # otherwise the veto disappears because there is no candidate source
+            # to match against.
+            if (
+                (
+                    bool(j.get("should_veto_anchor"))
+                    and str(j.get("best_candidate", "")) in {"empty", "none", "uncertain"}
+                )
+                or str(j.get("recommended_action", "")) in {"reject_all", "keep_empty"}
+            ):
+                frame_veto[frame_key] = rec
+            if src:
+                out[key] = rec
+    return out, frame_veto
 
 
 def source_match(candidate_source: str, qwen_source: str) -> bool:
@@ -183,7 +197,17 @@ def build_banks(video: str, frames: list[Path], ann: np.ndarray, obj_id: int, la
     return pos, neg, audit
 
 
-def add_qwen(c: CandidateRecord, qwen: dict[tuple[str, int, int, str], dict[str, Any]]) -> None:
+def add_qwen(c: CandidateRecord, qwen: dict[tuple[str, int, int, str], dict[str, Any]], frame_veto: dict[tuple[str, int, int], dict[str, Any]]) -> None:
+    fv = frame_veto.get((c.video, int(c.obj_id), int(c.frame_idx)))
+    if fv is not None:
+        j = fv.get("judgment", fv)
+        conf = float(j.get("confidence") or 0.0)
+        if conf >= 0.55:
+            c.qwen_confidence = conf
+            c.qwen_reason = j.get("reason_short")
+            c.qwen_panel = fv.get("panel_path")
+            c.qwen_veto = True
+            return
     for (v, o, f, src), rec in qwen.items():
         if v == c.video and o == c.obj_id and f == c.frame_idx and source_match(c.source, src):
             j = rec.get("judgment", rec)
@@ -208,7 +232,7 @@ def main() -> None:
         b = ws / "homework" / "pred_sam2_b101"
         if b.is_dir():
             roots.append(parse_source_roots([f"baseline={b}"])[0])
-    qwen = qwen_records(args.judgments_json)
+    qwen, frame_veto = qwen_records(args.judgments_json)
     videos = args.videos or sorted(p.name for p in jpeg_root.iterdir() if p.is_dir())
     aggregate: dict[str, Any] = {"method": "m8_candidate_pool_audit", "workspace": str(ws), "default_root": str(default_root), "source_roots": {s.name: str(s.root) for s in roots}, "videos": {}}
     csv_rows: list[dict[str, Any]] = []
@@ -273,7 +297,7 @@ def main() -> None:
                                 nm = labels[name][j] == obj_id
                                 if int(nm.sum()) >= args.min_area:
                                     rec.temporal_support += 1
-                        add_qwen(rec, qwen)
+                        add_qwen(rec, qwen, frame_veto)
                         rec.score = rec.margin + 0.015 * min(12.0, math.log1p(area)) + 0.03 * rec.temporal_support + (0.06 if rec.qwen_support else 0.0) - (0.20 if rec.qwen_veto else 0.0)
                         if rec.area_ratio_init > args.max_area_ratio_init:
                             rec.rejected.append("area_too_large_vs_init")

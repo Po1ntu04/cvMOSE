@@ -1,0 +1,151 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_m11_cycle",
+    "m7bal": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "m10q36confirm": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m10_qwen36_reanchor_rgb_confirm_key"
+  },
+  "sheets": [
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        4,
+        7,
+        11,
+        15,
+        19,
+        22,
+        26,
+        30,
+        34,
+        37,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m7bal",
+        "m10q36confirm",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m10_qwen36/confirm_compare/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "msinig6m",
+      "frames": 134,
+      "selected_frames": [
+        0,
+        8,
+        15,
+        23,
+        48,
+        60,
+        74,
+        94,
+        102,
+        110,
+        119,
+        133
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m7bal",
+        "m10q36confirm",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m10_qwen36/confirm_compare/msinig6m_m6_compare.jpg"
+    },
+    {
+      "video": "4vznweiu",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        3,
+        6,
+        9,
+        12,
+        16,
+        19,
+        22,
+        25,
+        28,
+        31,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m7bal",
+        "m10q36confirm",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m10_qwen36/confirm_compare/4vznweiu_m6_compare.jpg"
+    },
+    {
+      "video": "2smf7uq9",
+      "frames": 43,
+      "selected_frames": [
+        0,
+        3,
+        6,
+        15,
+        21,
+        24,
+        27,
+        30,
+        33,
+        36,
+        39,
+        42
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m7bal",
+        "m10q36confirm",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m10_qwen36/confirm_compare/2smf7uq9_m6_compare.jpg"
+    },
+    {
+      "video": "8jsm23a7",
+      "frames": 49,
+      "selected_frames": [
+        0,
+        5,
+        10,
+        14,
+        18,
+        22,
+        27,
+        31,
+        35,
+        39,
+        44,
+        48
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m7bal",
+        "m10q36confirm",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m10_qwen36/confirm_compare/8jsm23a7_m6_compare.jpg"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/m11",
+    "m9clip1": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m9_qwen_box_clip_rank1",
+    "m9clip2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m9_qwen_box_clip_rank2",
+    "m9clip3": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m9_qwen_box_clip_rank3"
+  },
+  "sheets": [
+    {
+      "video": "r13u5z4y",
+      "frames": 45,
+      "selected_frames": [
+        0,
+        21,
+        24,
+        28,
+        32,
+        36,
+        40,
+        44
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m9clip1",
+        "m9clip2",
+        "m9clip3",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m9_qwen_boxes/compare_box_clip_roots/r13u5z4y_m6_compare.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        5,
+        11,
+        17,
+        23,
+        29,
+        35,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m9clip1",
+        "m9clip2",
+        "m9clip3",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m9_qwen_boxes/compare_box_clip_roots/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "msinig6m",
+      "frames": 134,
+      "selected_frames": [
+        0,
+        51,
+        57,
+        70,
+        74,
+        78,
+        97,
+        133
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m9clip1",
+        "m9clip2",
+        "m9clip3",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m9_qwen_boxes/compare_box_clip_roots/msinig6m_m6_compare.jpg"
+    },
+    {
+      "video": "lcgc29va",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        4,
+        8,
+        9,
+        19,
+        24,
+        29,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m9clip1",
+        "m9clip2",
+        "m9clip3",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m9_qwen_boxes/compare_box_clip_roots/lcgc29va_m6_compare.jpg"
+    }
+  ]
+}

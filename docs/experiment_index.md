@@ -190,3 +190,31 @@ cvMOSE/
 ## M7 overlay/source-select follow-up
 
 - `docs/m7_overlay_source_select_report.md` records the filled-overlay hallucination bug, the outline-panel fix, guarded source-select ablation, validated zips, and visual evidence paths.
+
+## M9 — Qwen-box recovery smoke
+
+- Report: `docs/m9_qwen_box_recovery_report.md`
+- Proposal summary: `docs/m9_qwen_box_proposals_smoke.md`
+- Visuals: `docs/assets/m9_qwen_boxes/`
+- Core result: Qwen is useful for absence/veto reasoning, but direct coordinate-box output plus SAM2 box prompt is not final-quality; clipping prevents leakage but does not solve identity.
+
+## M10 — Qwen3.6 verifier-to-anchor coupling fix
+
+- Report: `docs/m10_qwen36_reanchor_report.md`
+- Setup: `docs/m9_qwen36_setup.md`
+- Summaries: `docs/m10_qwen36_target_profile_summary.md`, `docs/m10_qwen36_candidate_judge_key_summary.md`, `docs/m10_qwen36_tracklet_judge_key_full_summary.md`
+- Visuals: `docs/assets/m10_qwen36/confirm_compare/`
+- Core result: fixed the main implementation bottleneck where Qwen-judged frames were not prioritized in candidate generation and verified tracklets were still rejected by duplicate delayed-confirm logic. This enables real anchor insertion for `q0sizv6m:obj2`, `msinig6m:obj1`, and `4vznweiu:obj1`; after bounded rollback, only `q0sizv6m:obj2` remains a visually plausible probe over `m7part-balanced`.
+- Validated zips in local MOSEv2 workspace:
+  - submit first: `submission_mosev2_m7_part_balanced.zip` / repo copy `submission_mosev2_m7_part_balanced_submit.zip`
+  - probe: `submission_mosev2_m10_qwen36_q0only.zip`
+  - aggressive probe: `submission_mosev2_m10_qwen36_q0_4v.zip`
+
+## M14 — same-class kangaroo re-ID probe
+
+- Report: `docs/m14_amfdu83t_kangaroo_reid.md`
+- Qwen split note: `docs/m14_amfdu83t_qwen36_split.md`
+- New tool: `tools/mllm_sameclass_atlas.py`
+- SAM2 teach-box update: `tools/infer_mosev2_sam2_teach_boxes.py --clip-mode nearest`
+- Visuals: `docs/assets/m14_amfdu83t_sources_a/`, `docs/assets/m14_amfdu83t_sources_b/`, `docs/assets/m14_amfdu83t_box_probes/`, `docs/assets/m14_amfdu83t_tight_probes_a/`, `docs/assets/m14_amfdu83t_tight_probes_b/`, `docs/assets/m14_amfdu83t_temporal_8_11_large/`, `docs/assets/m14_amfdu83t_post11_probe_large/`, `docs/assets/m14_amfdu83t_post11_compare/`
+- Validated probe zips: `submission_mosev2_m14_zofficial_amfdu_temporal811.zip` (frames 8-11 only, now known truncated) and `submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip` (frames 8-23 post-anchor propagation); MOSE workspace copy `/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m14_zofficial_amfdu_from8_noclip.zip`.

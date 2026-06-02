@@ -1,0 +1,83 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "safe": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m13_key3_safe_fusion",
+    "balanced": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m13_key3_balanced_zofficial"
+  },
+  "sheets": [
+    {
+      "video": "8jsm23a7",
+      "frames": 49,
+      "selected_frames": [
+        0,
+        6,
+        13,
+        20,
+        27,
+        34,
+        41,
+        48
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "safe",
+        "balanced",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m13_candidate_fusions/8jsm23a7_m6_compare.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        5,
+        11,
+        17,
+        23,
+        29,
+        35,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "safe",
+        "balanced",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m13_candidate_fusions/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "z6dx46qr",
+      "frames": 38,
+      "selected_frames": [
+        0,
+        9,
+        12,
+        15,
+        18,
+        21,
+        24,
+        37
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "safe",
+        "balanced",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m13_candidate_fusions/z6dx46qr_m6_compare.jpg"
+    }
+  ]
+}

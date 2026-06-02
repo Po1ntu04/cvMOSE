@@ -1,0 +1,45 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_conservative",
+    "nearfront": "/home/yu/projects/cv/cvMOSE/artifacts/m14_amfdu_candidates/nearfront/pred_m14_amfdu_nearfront_boxes",
+    "jump": "/home/yu/projects/cv/cvMOSE/artifacts/m14_amfdu_candidates/jump/pred_m14_amfdu_jump_boxes",
+    "official_l": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_official_large_mosev2"
+  },
+  "sheets": [
+    {
+      "video": "amfdu83t",
+      "frames": 24,
+      "selected_frames": [
+        0,
+        1,
+        3,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        15,
+        18,
+        19,
+        21,
+        23
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "nearfront",
+        "jump",
+        "official_l",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m14_amfdu83t_box_probes/amfdu83t_m6_compare.jpg"
+    }
+  ]
+}

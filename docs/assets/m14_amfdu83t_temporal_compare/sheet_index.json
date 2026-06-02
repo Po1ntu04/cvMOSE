@@ -1,0 +1,41 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m7_part_balanced",
+    "temporal_8_11": "/home/yu/projects/cv/cvMOSE/artifacts/m14_amfdu_candidates/temporal_8_11/pred_m14_amfdu_temporal_8_11_boxes",
+    "tight_jump": "/home/yu/projects/cv/cvMOSE/artifacts/m14_amfdu_candidates/tight_jump/pred_m14_amfdu_tight_jump_boxes",
+    "f8_f10_only": "/home/yu/projects/cv/cvMOSE/artifacts/m14_amfdu_candidates/f8_f10_only/pred_m14_amfdu_f8_f10_only_boxes"
+  },
+  "sheets": [
+    {
+      "video": "amfdu83t",
+      "frames": 24,
+      "selected_frames": [
+        0,
+        2,
+        6,
+        7,
+        8,
+        9,
+        11,
+        12,
+        14,
+        16,
+        20,
+        23
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "temporal_8_11",
+        "tight_jump",
+        "f8_f10_only",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m14_amfdu83t_temporal_compare/amfdu83t_m6_compare.jpg"
+    }
+  ]
+}
