@@ -1,0 +1,121 @@
+{
+  "videos": {
+    "r13u5z4y": {
+      "selected_frames": [
+        0,
+        1,
+        23,
+        44
+      ],
+      "accepted_anchor_count": 0,
+      "changed_vs_baseline": 0,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/r13u5z4y_m5r_compare.jpg"
+    },
+    "q0sizv6m": {
+      "selected_frames": [
+        0,
+        7,
+        9,
+        11,
+        17,
+        26,
+        34,
+        36,
+        41
+      ],
+      "accepted_anchor_count": 2,
+      "changed_vs_baseline": 38,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/q0sizv6m_m5r_compare.jpg"
+    },
+    "msinig6m": {
+      "selected_frames": [
+        0,
+        16,
+        20,
+        25,
+        30,
+        38,
+        46,
+        76,
+        133
+      ],
+      "accepted_anchor_count": 2,
+      "changed_vs_baseline": 37,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/msinig6m_m5r_compare.jpg"
+    },
+    "1qlssuz2": {
+      "selected_frames": [
+        0,
+        9,
+        17,
+        20,
+        28,
+        32,
+        34,
+        36,
+        39
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 17,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/1qlssuz2_m5r_compare.jpg"
+    },
+    "2smf7uq9": {
+      "selected_frames": [
+        0,
+        3,
+        18,
+        19,
+        28,
+        31,
+        32,
+        38,
+        42
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 24,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/2smf7uq9_m5r_compare.jpg"
+    },
+    "8jsm23a7": {
+      "selected_frames": [
+        0,
+        1,
+        4,
+        6,
+        8,
+        11,
+        14,
+        20
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 20,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/8jsm23a7_m5r_compare.jpg"
+    },
+    "lcgc29va": {
+      "selected_frames": [
+        0,
+        1,
+        17,
+        32
+      ],
+      "accepted_anchor_count": 0,
+      "changed_vs_baseline": 0,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/lcgc29va_m5r_compare.jpg"
+    },
+    "4vznweiu": {
+      "selected_frames": [
+        0,
+        2,
+        8,
+        15,
+        16,
+        17,
+        21,
+        24,
+        30
+      ],
+      "accepted_anchor_count": 1,
+      "changed_vs_baseline": 27,
+      "sheet": "docs/assets/m5r_reanchor/key_compare/4vznweiu_m5r_compare.jpg"
+    }
+  }
+}

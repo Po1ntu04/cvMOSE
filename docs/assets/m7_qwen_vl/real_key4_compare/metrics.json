@@ -1,0 +1,56 @@
+{
+  "videos": {
+    "r13u5z4y": {
+      "selected_frames": [
+        0,
+        1,
+        3,
+        4,
+        20,
+        21,
+        29,
+        44
+      ],
+      "sheet": "docs/assets/m7_qwen_vl/real_key4_compare/r13u5z4y_m7_qwen_compare.jpg"
+    },
+    "q0sizv6m": {
+      "selected_frames": [
+        0,
+        10,
+        15,
+        17,
+        33,
+        35,
+        39,
+        41
+      ],
+      "sheet": "docs/assets/m7_qwen_vl/real_key4_compare/q0sizv6m_m7_qwen_compare.jpg"
+    },
+    "msinig6m": {
+      "selected_frames": [
+        0,
+        24,
+        26,
+        27,
+        28,
+        29,
+        71,
+        133
+      ],
+      "sheet": "docs/assets/m7_qwen_vl/real_key4_compare/msinig6m_m7_qwen_compare.jpg"
+    },
+    "1qlssuz2": {
+      "selected_frames": [
+        0,
+        8,
+        10,
+        15,
+        17,
+        32,
+        34,
+        36
+      ],
+      "sheet": "docs/assets/m7_qwen_vl/real_key4_compare/1qlssuz2_m7_qwen_compare.jpg"
+    }
+  }
+}
