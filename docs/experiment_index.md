@@ -46,6 +46,7 @@ They are documented and validated in `docs/m6_fusion_report.md`, but not committ
 | M6 Phase 5 DINO-reanchor | Replace weak descriptors with frozen DINOv2 masked object descriptor + hard-negative margin + delayed promotion/rollback. | `src/cvmose/dino_descriptors.py`, `tools/precompute_dino_features.py`, updated `tools/infer_mosev2_sam2_reanchor.py`, `docs/m6_dino_reanchor_report.md`, `docs/assets/m6_dino/smoke/` | Best training-free identity verifier so far; prevents accepting obvious wrong anchors and plausibly improves `2smf7uq9`. | Candidate generation is still the bottleneck; not a standalone final root. |
 | M6 Phase 6 safe fusion | Per-video conservative policy over M11, official ceiling, and DINO-reanchor candidates. | `tools/apply_m6_safe_fusion.py`, `docs/m6_fusion_report.md`, `docs/assets/m6_fusion/summary/` | Produces three validated candidate zips while preserving all 418 provided outputs unchanged. | Safe remains M11-dominated; balanced only accepts DINO for two videos; aggressive is rule-dependent. |
 | M7 Qwen-VL verifier | Use Qwen-VL / Aliyun Bailian as cached target profiler, candidate verifier, and delayed-promotion judge for M5R-C. | `src/cvmose/qwen_vl_client.py`, `src/cvmose/mllm_panels.py`, `tools/mllm_target_profile.py`, `tools/mllm_candidate_judge.py`, `tools/mllm_tracklet_judge.py`, `docs/m7_qwen_vl_verifier.md`, `docs/m7_qwen_fusion_report.md` | Real `qwen3.5-plus` works; 16 target profiles + 24 merged key-video candidate judgments; strict veto is safe/no-change, and `1qlssuz2` support is visually low-risk. | Safe fusion is M11-equivalent; balanced fusion replaces only `1qlssuz2` and validates. Expected gain is small; M7 is a verifier, not the missing high-recall reappearance generator. |
+| M8 retrieval re-anchor | High-recall candidate-pool audit + conservative source fusion + DINO/M5R re-anchor with M11 fallback safety. | `src/cvmose/candidate_pool.py`, `tools/build_m8_candidate_pool.py`, `tools/apply_m8_candidate_fusion.py`, updated `tools/infer_mosev2_sam2_reanchor.py`, `docs/m8_retrieval_reanchor_report.md`, `docs/assets/m8_reanchor/` | Fixes a key structural issue: failed re-anchor now fails closed to M11 via `--fallback-root`; produces safe/balanced/aggressive validated M8 zips. | Still does not solve true reappearance recall on r13/q0/msi; balanced/aggressive are score probes, not safe finals. |
 
 ## Next primary direction
 
@@ -88,6 +89,7 @@ cvMOSE/
 │   ├── m6_fusion_report.md                  # safe/balanced/aggressive fusion candidates
 │   ├── m7_qwen_vl_verifier.md               # Qwen-VL verifier design and real API evidence
 │   ├── m7_qwen_fusion_report.md             # validated M7 safe/balanced fusion candidates
+│   ├── m8_retrieval_reanchor_report.md      # M8 candidate-pool, fallback-safe reanchor, and fusion report
 │   ├── m7_qwen_vl_setup.md                  # Bailian/OpenAI-compatible smoke setup result
 │   ├── m7_target_profile_summary.md         # target profiler dry-run route table
 │   ├── m7_candidate_judge_summary.md        # candidate judge dry-run panel summary
@@ -135,6 +137,7 @@ cvMOSE/
 │   ├── run_b101_rar.sh                      # M5R/RAR RCMS-lite and state-machine launcher
 │   ├── run_b101_m5r_reanchor.sh             # M5R-C candidate retrieval re-anchor launcher
 │   ├── make_m7_qwen_compare.py              # M7 Qwen verifier visual sheet generator
+│   ├── make_m6_compare.py                   # reusable M6/M8 multi-root visual sheet generator
 │   ├── run_b101_official_ckpt.sh            # FudanCVL MOSEv2 checkpoint launcher
 │   ├── run_b101_dam4sam_adapter.sh          # external DAM4SAM/d4sm adapter launcher
 │   ├── run_b101_sam2long_adapter.sh         # external SAM2Long adapter launcher
@@ -146,7 +149,9 @@ cvMOSE/
 │   ├── infer_mosev2_sam2_m2_memory_gate.py  # M2 memory-write gate
 │   ├── infer_mosev2_sam2_tiny_crop.py       # M4 tiny-crop candidate generator
 │   ├── infer_mosev2_sam2_rar.py             # M5R/RAR SAM2 entrypoint
-│   ├── infer_mosev2_sam2_reanchor.py        # M5R-C candidate retrieval + add_new_mask repropagation + M7 MLLM gate
+│   ├── infer_mosev2_sam2_reanchor.py        # M5R-C/M8 candidate retrieval + add_new_mask repropagation + M7 MLLM gate + fallback root
+│   ├── build_m8_candidate_pool.py           # M8 high-recall candidate-pool audit
+│   ├── apply_m8_candidate_fusion.py         # M8 conservative source-fusion builder
 │   ├── test_qwen_vl_bailian.py              # Qwen-VL / Bailian OpenAI-compatible smoke test
 │   ├── mllm_target_profile.py               # M7 target profile panel + JSON generation
 │   ├── mllm_candidate_judge.py              # M7 candidate judge panel + JSON generation
@@ -169,15 +174,16 @@ cvMOSE/
 │   ├── reanchor.py                          # RAR state/anchor/commit primitives
 │   ├── dino_descriptors.py                  # frozen DINOv2 masked object descriptors
 │   ├── qwen_vl_client.py                    # cached Bailian/OpenAI-compatible Qwen-VL JSON client
+│   ├── candidate_pool.py                    # M8 training-free candidate-pool utilities
 │   └── mllm_panels.py                       # standardized panels for target/candidate/tracklet verification
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 
 ## Final/current stance
 
-- Safest current submission: `submission_mosev2_m6_safe.zip` in the MOSEv2 homework workspace; it is M11-equivalent and validated.
-- Best training-free probe: `submission_mosev2_m6_balanced.zip`; it keeps M11 by default and only accepts DINO-reanchor on `1qlssuz2`/`2smf7uq9`.
-- Aggressive/rule-dependent probe: `submission_mosev2_m6_aggressive.zip` or official MOSEv2 submission-checkpoint zips if public MOSEv2-finetuned resources are allowed.
+- Safest current submission: `submission_mosev2_m8_candidate_pool_key7_safe_v2.zip` in the MOSEv2 homework workspace; it is M11-dominated, validates 418 provided outputs unchanged, and only imports the Qwen-supported `lcgc29va` tiny recovery.
+- Best training-free probe: `submission_mosev2_m8_balanced_reanchor_probe.zip`; it keeps M11 by default, keeps the safe tiny recovery, and probes DINO-reanchor only on visually non-catastrophic videos.
+- Aggressive/rule-dependent probe: `submission_mosev2_m8_aggressive_dino_probe.zip`; it additionally tests the later-window `lcgc29va` DINO anchor and should be treated as score probing only.
 - Next experiment should still avoid raw threshold sweep; the real missing capability is higher-recall global later-frame proposal generation plus DINO/SAM identity verification, MLLM semantic veto/support, and delayed prompt injection.
 
 

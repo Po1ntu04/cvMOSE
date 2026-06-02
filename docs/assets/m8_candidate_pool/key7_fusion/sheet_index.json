@@ -1,0 +1,87 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/m11",
+    "m8_candidate": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m8_candidate_pool_key7",
+    "sam2long": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m6_sam2long_np2_iou03_u1_smoke",
+    "official_bplus": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_official_submission_bplus_15only"
+  },
+  "sheets": [
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        6,
+        12,
+        18,
+        23,
+        29,
+        35,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_candidate",
+        "sam2long",
+        "official_bplus",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_candidate_pool/key7_fusion/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "lcgc29va",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        4,
+        12,
+        16,
+        20,
+        24,
+        30,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_candidate",
+        "sam2long",
+        "official_bplus",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_candidate_pool/key7_fusion/lcgc29va_m6_compare.jpg"
+    },
+    {
+      "video": "1qlssuz2",
+      "frames": 40,
+      "selected_frames": [
+        0,
+        5,
+        10,
+        17,
+        22,
+        27,
+        32,
+        39
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_candidate",
+        "sam2long",
+        "official_bplus",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_candidate_pool/key7_fusion/1qlssuz2_m6_compare.jpg"
+    }
+  ]
+}

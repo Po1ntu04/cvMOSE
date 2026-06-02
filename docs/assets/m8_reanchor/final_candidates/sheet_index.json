@@ -1,0 +1,187 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_sam2_b101",
+    "M11": "/home/yu/projects/cv/cvMOSE/artifacts/m5r_reanchor/source_preds/m11",
+    "m8_safe": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m8_candidate_pool_key7_safe_v2",
+    "m8_bal": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m8_balanced_reanchor_probe",
+    "m8_aggr": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m8_aggressive_dino_probe"
+  },
+  "sheets": [
+    {
+      "video": "lcgc29va",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        9,
+        20,
+        23,
+        25,
+        28,
+        31,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/lcgc29va_m6_compare.jpg"
+    },
+    {
+      "video": "1qlssuz2",
+      "frames": 40,
+      "selected_frames": [
+        0,
+        16,
+        24,
+        27,
+        29,
+        32,
+        34,
+        39
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/1qlssuz2_m6_compare.jpg"
+    },
+    {
+      "video": "2smf7uq9",
+      "frames": 43,
+      "selected_frames": [
+        0,
+        18,
+        28,
+        31,
+        33,
+        36,
+        38,
+        42
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/2smf7uq9_m6_compare.jpg"
+    },
+    {
+      "video": "4vznweiu",
+      "frames": 35,
+      "selected_frames": [
+        0,
+        5,
+        7,
+        9,
+        10,
+        14,
+        24,
+        34
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/4vznweiu_m6_compare.jpg"
+    },
+    {
+      "video": "r13u5z4y",
+      "frames": 45,
+      "selected_frames": [
+        0,
+        21,
+        24,
+        28,
+        32,
+        36,
+        40,
+        44
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/r13u5z4y_m6_compare.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        5,
+        11,
+        17,
+        23,
+        29,
+        35,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "msinig6m",
+      "frames": 134,
+      "selected_frames": [
+        0,
+        51,
+        57,
+        70,
+        74,
+        78,
+        97,
+        133
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m8_safe",
+        "m8_bal",
+        "m8_aggr",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m8_reanchor/final_candidates/msinig6m_m6_compare.jpg"
+    }
+  ]
+}

@@ -154,6 +154,16 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--no-zip", action="store_true")
 
     p.add_argument("--baseline-root", type=Path, default=None)
+    p.add_argument(
+        "--fallback-root",
+        type=Path,
+        default=None,
+        help=(
+            "Output-level default prediction root used when no verified anchor is "
+            "available and as the rollback base during bounded repropagation. "
+            "Use M11 here to keep safety gates while probing re-anchors."
+        ),
+    )
     p.add_argument("--m11-root", type=Path, default=None)
     p.add_argument("--m2-light-root", type=Path, default=None)
     p.add_argument("--tiny-crop-root", type=Path, default=None)
@@ -241,6 +251,8 @@ def complete_paths(args: argparse.Namespace) -> argparse.Namespace:
         dest = f"{key}_root"
         current = getattr(args, dest, None)
         setattr(args, dest, (current or ws / "homework" / sub).resolve())
+    if args.fallback_root is not None:
+        args.fallback_root = args.fallback_root.resolve()
     args.rar_audit_json = (args.rar_audit_json or ws / "homework" / "logs" / "rar_state_latest.json").resolve()
     args.audit_json = (args.audit_json or ws / "homework" / "logs" / "m5r_reanchor_latest.json").resolve()
     args.audit_dir = (args.audit_dir or ws / "homework" / "logs" / "m5r_reanchor_by_video").resolve()
@@ -909,6 +921,15 @@ def read_labels_for_video(roots: dict[str, Path], video: str, frames: list[Path]
     return out
 
 
+def read_complete_root(root: Path | None, video: str, frames: list[Path], shape: tuple[int, int]) -> list[np.ndarray] | None:
+    if root is None or not root.is_dir():
+        return None
+    labels = [load_label(label_path(root, video, frame), shape) for frame in frames]
+    if any(x is None for x in labels):
+        return None
+    return [x.copy() for x in labels if x is not None]
+
+
 def collect_candidates(
     video: str,
     frames: list[Path],
@@ -1300,6 +1321,11 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
     if "baseline" not in labels_by_source or any(x is None for x in labels_by_source["baseline"]):
         raise FileNotFoundError(f"baseline predictions missing for {video}: {roots.get('baseline')}")
     baseline_labels = [x.copy() for x in labels_by_source["baseline"] if x is not None]
+    fallback_labels = read_complete_root(args.fallback_root, video, frames, shape)
+    if args.fallback_root is not None and fallback_labels is None:
+        raise FileNotFoundError(f"fallback predictions incomplete for {video}: {args.fallback_root}")
+    output_base_labels = fallback_labels or baseline_labels
+    output_base_name = "fallback" if fallback_labels is not None else "baseline"
     rar_states = load_rar_states(args.rar_audit_json, video)
 
     # A descriptor-only state; later repropagation uses a fresh state so prompt outputs are clean.
@@ -1329,6 +1355,7 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
         "frames": len(frames),
         "objects": obj_ids,
         "sources": {k: str(v) for k, v in roots.items()},
+        "output_base": {"name": output_base_name, "root": str(args.fallback_root) if fallback_labels is not None else str(roots.get("baseline"))},
         "descriptor": args.descriptor,
         "dino": {
             "variant": args.dino_variant if args.descriptor.startswith("dino") else None,
@@ -1376,25 +1403,35 @@ def run_video(predictor: Any, args: argparse.Namespace, video: str, roots: dict[
 
     if any(anchors_by_obj.values()):
         final_labels, reprop_audit = repropagate_with_anchors(
-            predictor, args, video, frames, ann, palette, anchors_by_obj, baseline_labels
+            predictor, args, video, frames, ann, palette, anchors_by_obj, output_base_labels
         )
     else:
-        final_labels = [x.copy() for x in baseline_labels]
+        final_labels = [x.copy() for x in output_base_labels]
         final_labels[0] = ann.copy()
-        reprop_audit = {"reprop_frames": 0, "merge_policy": "baseline_copy_no_anchor", "merge_radius": args.merge_radius, "anchor_windows": {}}
+        reprop_audit = {
+            "reprop_frames": 0,
+            "merge_policy": f"{output_base_name}_copy_no_anchor",
+            "merge_radius": args.merge_radius,
+            "anchor_windows": {},
+        }
 
-    changed = 0
+    changed_vs_baseline = 0
+    changed_vs_output_base = 0
     for idx, frame in enumerate(frames):
         label = final_labels[idx]
         if idx == 0:
             label = ann.copy()
         if not np.array_equal(label, baseline_labels[idx]):
-            changed += 1
+            changed_vs_baseline += 1
+        if not np.array_equal(label, output_base_labels[idx]):
+            changed_vs_output_base += 1
         save_label_png(out_dir / f"{frame.stem}.png", label, palette)
 
     video_audit["summary"] = {
         "accepted_anchor_count": sum(len(v) for v in anchors_by_obj.values()),
-        "changed_vs_baseline": changed,
+        "changed_vs_baseline": changed_vs_baseline,
+        "changed_vs_output_base": changed_vs_output_base,
+        "output_base": output_base_name,
         "reprop": reprop_audit,
     }
     args.audit_dir.mkdir(parents=True, exist_ok=True)
@@ -1418,6 +1455,7 @@ def collect_provenance(args: argparse.Namespace) -> dict[str, Any]:
         "dino_root": str(args.dino_root) if str(args.descriptor).startswith("dino") else None,
         "dino_weights": str(args.dino_weights) if str(args.descriptor).startswith("dino") else None,
         "pred_root": str(args.pred_root),
+        "fallback_root": str(args.fallback_root) if args.fallback_root else None,
     }
 
 
@@ -1493,6 +1531,7 @@ def main() -> None:
         "frames": sum(int(r.get("frames", 0)) for r in results),
         "accepted_anchor_count": sum(int(r.get("accepted_anchor_count", 0)) for r in results),
         "changed_vs_baseline": sum(int(r.get("changed_vs_baseline", 0)) for r in results),
+        "changed_vs_output_base": sum(int(r.get("changed_vs_output_base", 0)) for r in results),
     }
     runtime = {
         "seconds": elapsed,
