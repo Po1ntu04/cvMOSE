@@ -1,0 +1,29 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "provided_output_root": "/home/yu/projects/cv/from fdu/MOSEv2/homework/output",
+  "jpeg_root": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages",
+  "target_ann_root": "/home/yu/projects/cv/from fdu/MOSEv2/homework/Annotations",
+  "expected_videos": 433,
+  "expected_pngs": 66526,
+  "expected_pred_videos": 15,
+  "checks": [
+    {
+      "kind": "zip",
+      "path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m19_8js_4vz_1ql.zip",
+      "size": 71352574,
+      "video_dirs": 433,
+      "pngs": 66526,
+      "testzip_bad_member": null,
+      "provided_videos": 418,
+      "provided_changed_count": 0,
+      "provided_changed_samples": [],
+      "provided_array_equal_only_count": 0,
+      "predicted_videos": 15,
+      "predicted_error_count": 0,
+      "predicted_error_samples": [],
+      "ok": true,
+      "errors": []
+    }
+  ],
+  "ok": true
+}

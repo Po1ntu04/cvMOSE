@@ -1,0 +1,39 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m13_8rev_zofficial_balanced",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "m13rev": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m13_8rev_safe",
+    "m15safe": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe"
+  },
+  "sheets": [
+    {
+      "video": "8jsm23a7",
+      "frames": 49,
+      "selected_frames": [
+        0,
+        4,
+        8,
+        13,
+        17,
+        21,
+        26,
+        30,
+        34,
+        39,
+        43,
+        48
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m13rev",
+        "m15safe",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m16_review_existing/8jsm23a7_m6_compare.jpg"
+    }
+  ]
+}

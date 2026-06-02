@@ -179,6 +179,31 @@ cvMOSE/
 └── submission_mosev2_final_m11_cycle.zip    # final zip retained in this local workspace only
 ```
 
+
+## M16 — remaining-object mask-box re-anchor probes
+
+- Report: `docs/m16_remaining_reanchor_report.md`
+- Core code change: `tools/infer_mosev2_sam2_teach_boxes.py` supports `prompt_type=mask_box` / `mask_from_box` so a box can be injected as a rectangular pseudo-mask via SAM2 `add_new_mask`.
+- Visuals: `docs/assets/m16_remaining_maskbox_compare/` and `docs/assets/m16_remaining_fusion_compare/`
+- Validated probe zips in the MOSEv2 homework workspace and repo convenience copies:
+  - `submission_mosev2_m16_8js_only.zip`
+  - `submission_mosev2_m16_8js_q0.zip`
+  - `submission_mosev2_m16_8js_q0_r13.zip`
+- Recommendation: keep M15 safe as proven best until hidden feedback arrives; test M16 in the order 8js-only, 8js+q0, then 8js+q0+r13.
+
+
+## M17 — q0sizv6m temporal-continuity repair
+
+- Report: `docs/m17_q0_temporal_continuity_report.md`
+- New tool: `tools/apply_m17_q0_temporal_color_fix.py` for a narrow training-free q0 obj2 target-color + spatiotemporal ROI probe.
+- Visuals: `docs/assets/m17_q0_analysis/`, `docs/assets/m17_q0_box_compare/`, `docs/assets/m17_q0_color_compare/`, `docs/assets/m17_q0_early_compare/`
+- Validated q0-specific probe zips:
+  - `submission_mosev2_m17_q0_early_box.zip`
+  - `submission_mosev2_m17_q0_full_box.zip`
+  - `submission_mosev2_m17_q0_early_color.zip`
+  - `submission_mosev2_m17_q0_color_{conservative,balanced,wide}.zip`
+- Hidden feedback: `q0_early_box=43.47`, `q0_full_box=43.54`; q0 obj2 row rises to `68.29`. Follow-up story-state probes trim late false positives and optionally add a 31-33 rump interval: `submission_mosev2_m17_q0_story_trim_after34.zip`, `submission_mosev2_m17_q0_story_rump_31_33.zip`, `submission_mosev2_m17_q0_story_rump_30_33.zip`.
+
 ## Final/current stance
 
 - Safest current submission: `submission_mosev2_m8_candidate_pool_key7_safe_v2.zip` in the MOSEv2 homework workspace; it is M11-dominated, validates 418 provided outputs unchanged, and only imports the Qwen-supported `lcgc29va` tiny recovery.
@@ -231,3 +256,44 @@ cvMOSE/
 - User-reported hidden scores: M15 safe `43.44`, M15 balanced `43.44`, M15 aggressive `43.38`.
 - Latest safe detail log is preserved in `docs/test_latest_metric_memory.md`; decisive row is `amfdu83t:obj1` rising to `J&F_new=84.84`, explaining about `+0.10` global over M13/zofficial-balanced.
 - Current best recommendation: **submit M15 safe first** (`/home/yu/projects/cv/from fdu/MOSEv2/homework/submission_mosev2_m15_layered_safe.zip`). Balanced ties but has extra 8js risk; aggressive is rejected as final.
+
+## M18 — object-centric temporal ledger and Gate-B MLLM atlas
+
+- System report: `docs/m18_system_reanchor_report.md`
+- Gate-B atlas report: `docs/m18_sameclass_atlas.md`
+- Core tools:
+  - `tools/build_m18_temporal_ledger.py` creates durable per-object event/positive/distractor ledgers.
+  - `tools/mllm_sameclass_atlas.py` now supports split MLLM routing: fast per-frame visual captions (`--vision-model qwen-vl-plus`) plus text-only `qwen3.6-plus` aggregation.
+  - `tools/apply_m18_atlas_to_ledger.py` writes MLLM target boxes as `needs_more_evidence` anchors and hard negatives as distractor memory.
+  - `tools/build_m18_candidate_retrieval.py` now scores ledger atlas boxes as candidate masks against positive/negative memory.
+- Gate-B finding: `8jsm23a7`, `r13u5z4y`, `4vznweiu`, and `1qlssuz2` gained reviewable candidate/negative memory, but no candidate is safe for final promotion yet. This is useful because it converts MLLM reasoning into negative-bank pressure rather than risky direct replacement.
+- Maintenance: if base ledgers are regenerated, rerun `tools/apply_m18_atlas_to_ledger.py` before candidate retrieval.
+
+## M19 — story-guided hard-video probes
+
+- Report: `docs/m19_story_guided_report.md`
+- New tool: `tools/apply_m19_story_guided_masks.py`
+- Visuals: `docs/assets/m19_story_guided_compare/`
+- Base root: `pred_m17_q0_full_box` (hidden score memory `43.54`).
+- Main correction: M16's `8jsm23a7` front-row Mahjong anchor used y≈1000-1344 px; M19 corrects it to y≈742-924 px for the front/player-side leftmost seven-bamboo tile.
+- Validated probe zips in the MOSEv2 homework workspace:
+  - submit first: `submission_mosev2_m19_8js_late.zip`
+  - second: `submission_mosev2_m19_8js_late_1ql.zip`
+  - risky isolated 4vz probe: `submission_mosev2_m19_8js_late_4vz.zip`
+  - broader/aggressive probes: `submission_mosev2_m19_8js_late_4vz_1ql.zip`, `submission_mosev2_m19_8js_full.zip`, `submission_mosev2_m19_8js_4vz.zip`, `submission_mosev2_m19_8js_4vz_1ql.zip`
+
+## M20 — SAM3 adaptive re-anchor layer
+
+- Report: `docs/m20_sam3_adaptive_reanchor_report.md`
+- New reusable adapter: `src/cvmose/sam3_m20.py`
+- New build/fusion tool: `tools/build_m20_sam3_adaptive_reanchor.py`
+- Artifacts: `artifacts/m20_sam3_adaptive/`
+- Local run used replay mode over `pred_sam31_b101` because this session had no CUDA SAM3 runtime; live SAM3.1 proposal generation is available behind `--run-live-sam3`.
+- Review update: first implementation mixed SAM3 audit with M19 story-root edits; fixed so M20 defaults are now SAM3-candidate gated and story probes require `--include-story-probes`.
+- Strict b101 rerun after fixes: `18` SAM3 replay candidate cards = `14` rejected, `4` needs-more-evidence, `0` promote/output-only.
+- Validated strict zips copied locally:
+  - `submission_mosev2_m20_sam3_strict_safe.zip` — exact M17 base, non-regression/default.
+  - `submission_mosev2_m20_sam3_strict_balanced.zip` — exact M17 base; no SAM3 candidate passed balanced gate.
+  - `submission_mosev2_m20_sam3_strict_aggressive.zip` — 3 frame-level SAM3-gated probes on `8jsm23a7`; score-probe only.
+  - All pass validator with `433` dirs, `66526` PNGs, and `provided_changed_count=0`.
+- Live b101 smoke: `4vznweiu` live candidates all rejected; `8jsm23a7` had one output-only frame that overlapped current M17, so no new verified SAM3 recovery yet.

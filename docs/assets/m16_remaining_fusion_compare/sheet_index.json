@@ -1,0 +1,105 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "m16_8js": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m16_8js_only",
+    "m16_q0": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m16_8js_q0",
+    "m16_r13": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m16_8js_q0_r13"
+  },
+  "sheets": [
+    {
+      "video": "8jsm23a7",
+      "frames": 49,
+      "selected_frames": [
+        0,
+        7,
+        18,
+        25,
+        27,
+        30,
+        32,
+        34,
+        36,
+        39,
+        41,
+        43,
+        46,
+        48
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m16_8js",
+        "m16_q0",
+        "m16_r13",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m16_remaining_fusion_compare/8jsm23a7_m6_compare.jpg"
+    },
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        6,
+        12,
+        18,
+        24,
+        26,
+        28,
+        29,
+        31,
+        33,
+        35,
+        37,
+        39,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m16_8js",
+        "m16_q0",
+        "m16_r13",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m16_remaining_fusion_compare/q0sizv6m_m6_compare.jpg"
+    },
+    {
+      "video": "r13u5z4y",
+      "frames": 45,
+      "selected_frames": [
+        0,
+        6,
+        13,
+        22,
+        24,
+        26,
+        28,
+        31,
+        33,
+        35,
+        37,
+        40,
+        42,
+        44
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "m16_8js",
+        "m16_q0",
+        "m16_r13",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m16_remaining_fusion_compare/r13u5z4y_m6_compare.jpg"
+    }
+  ]
+}

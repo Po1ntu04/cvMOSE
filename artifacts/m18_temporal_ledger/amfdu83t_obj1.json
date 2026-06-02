@@ -1,0 +1,211 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "amfdu83t:obj1",
+  "video": "amfdu83t",
+  "obj_id": 1,
+  "current_best_source": "m15_safe_m14_from8_noclip",
+  "current_state": "RECONFIRMED",
+  "review_status": "approved",
+  "target_profile": {
+    "first_frame_description": "far-left edge kangaroo, only head/neck/front-foot visible before leaving view",
+    "tiny": true,
+    "same_class_dense": true,
+    "edge_partial": true,
+    "category": "kangaroo",
+    "identity_cues": [
+      "far-left edge start",
+      "bottom-left near-camera reappearance",
+      "overtaking path",
+      "single kangaroo continuation after frame 11"
+    ],
+    "first_frame_stats": {
+      "frame_count": 24,
+      "image_size": [
+        1920,
+        1080
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 1077,
+      "area_frac": 0.00051939,
+      "bbox": [
+        0,
+        470,
+        34,
+        540
+      ],
+      "edge_touch": true
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        2
+      ],
+      "state": "visible_then_exits",
+      "summary": "target starts at far-left edge then likely leaves view",
+      "evidence": [
+        "docs/m14_amfdu83t_kangaroo_reid.md"
+      ],
+      "allowed_output": "keep_current"
+    },
+    {
+      "frames": [
+        3,
+        7
+      ],
+      "state": "absent_or_occluded",
+      "summary": "do not write strong distractor as target",
+      "evidence": [
+        "docs/m14_amfdu83t_kangaroo_reid.md"
+      ],
+      "allowed_output": "empty"
+    },
+    {
+      "frames": [
+        8,
+        23
+      ],
+      "state": "reappears_bottom_left_nearcamera",
+      "summary": "M14 from8 no-clip continuation is hidden-confirmed and safe in M15",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md"
+      ],
+      "allowed_output": "candidate"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "amf_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "far-left edge kangaroo",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "edge_partial"
+      ]
+    },
+    {
+      "memory_id": "amf_from8_hidden_good",
+      "kind": "positive",
+      "source": "m14_from8_noclip",
+      "frames": [
+        8,
+        23
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "hidden-confirmed near-camera reappearance/continuation",
+      "evidence": [],
+      "confidence": 0.9,
+      "tags": [
+        "hidden_win",
+        "same_class_recovery"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "amf_left_side_strong_distractor",
+      "kind": "distractor",
+      "source": "visual_review",
+      "frames": [
+        3,
+        11
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "strong left-side kangaroo after disappearance not necessarily original target",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "same_class",
+        "hard_negative"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "amf_from8_noclip",
+      "source": "m14_from8_noclip",
+      "frame_idx": 8,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "bottom-left near-camera kangaroo reanchor and continuation",
+      "positive_evidence": [
+        "row lift 28.44 -> 84.84",
+        "single plausible track frames 8-23"
+      ],
+      "negative_evidence": [
+        "identity risk after frame 11, but hidden confirms net win"
+      ],
+      "temporal_story_compatibility": 0.9,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "visual_story",
+        "SAM2_box",
+        "hidden_feedback"
+      ],
+      "risk_tags": [
+        "same_class_dense_but_confirmed"
+      ],
+      "decision": "promote",
+      "decision_reason": "Hidden-confirmed same-class recovery; use as positive memory template.",
+      "review_status": "approved"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m13_zofficial_family",
+      "hidden_jf_new": 43.34,
+      "row_jf_new": 28.44,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "before amfdu recovery"
+    },
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 84.84,
+      "row_j": 91.39,
+      "row_f_new": 97.94,
+      "delta_vs_previous_row_jf_new": 56.4,
+      "note": "decisive M15 gain"
+    }
+  ],
+  "source_table": [
+    {
+      "frames": [
+        8,
+        23
+      ],
+      "source": "m14_from8_noclip",
+      "status": "approved safe/balanced"
+    }
+  ],
+  "next_review_windows": [
+    {
+      "frames": [
+        12,
+        23
+      ],
+      "question": "monitor continuation; if regression appears, trim but keep positive memory"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": []
+}

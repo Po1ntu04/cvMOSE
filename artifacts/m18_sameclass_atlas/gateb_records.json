@@ -1,0 +1,4197 @@
+{
+  "model": "qwen3.6-plus",
+  "vision_model": "qwen-vl-plus",
+  "aggregate_model": "qwen3.6-plus",
+  "dry_run": false,
+  "records": [
+    {
+      "video": "8jsm23a7",
+      "obj_id": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        20,
+        26,
+        36,
+        48
+      ],
+      "hint": "目标是一张被手拿起并移动的麻将。请不要被旧位置或更清晰的同类麻将误导；需要区分被移动实体、旧位置干扰、前/后排相似牌。用户怀疑真正目标最终是面前牌列最左侧七条，但这只是待视觉验证的假设，不可直接当 GT。",
+      "frame_atlases": [
+        {
+          "frame_idx": 0,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00000.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 0,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00000.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00000.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "uncertain",
+            "target_visible": "partial",
+            "caption": "REF shows a hand holding a麻将 near the top-left; in current frame, similar hands and麻将 are visible but no clear match to REF's exact position.",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                350,
+                240,
+                450,
+                300
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                100,
+                200,
+                200,
+                250
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "hand movement",
+              "麻将 shape"
+            ],
+            "confidence": 0.1,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "17b91cc5d375de5b170b98182b77207e4080dfbd44ee5a6d5a8ad1053e20b8ad"
+          }
+        },
+        {
+          "frame_idx": 1,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00001.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 1,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00001.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00001.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "uncertain",
+            "target_visible": "partial",
+            "caption": "REF-like evidence: a hand is lifting a麻将 from the top row, near the leftmost position.",
+            "possible_target_box_norm_1000": [
+              0,
+              0,
+              200,
+              100
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                150,
+                400,
+                200
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                0,
+                200,
+                100,
+                250
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "hand movement",
+              "top row placement"
+            ],
+            "confidence": 0.3,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "8e4c86aff3dd8053b30b6667c49cd25108ec5581507b1c4e02a182b0fa30fe9f"
+          }
+        },
+        {
+          "frame_idx": 2,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00002.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 2,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00002.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00002.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "手部正在移动一张麻将，牌面可见部分数字，位于牌列左侧区域。",
+            "possible_target_box_norm_1000": [
+              150,
+              200,
+              250,
+              300
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                150,
+                400,
+                250
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                50,
+                100,
+                150,
+                200
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "手部动作",
+              "牌面数字局部可见"
+            ],
+            "confidence": 0.7,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "4fc7e3328954b805423417abaeb4e23319bea294cf8dc75297d0051a9bddbdfd"
+          }
+        },
+        {
+          "frame_idx": 20,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00020.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 20,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00020.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00020.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "手部正在移动一张麻将牌，牌面可见部分数字，位于牌列左侧区域。",
+            "possible_target_box_norm_1000": [
+              100,
+              200,
+              300,
+              400
+            ],
+            "hard_negative_boxes": [
+              [
+                500,
+                150,
+                600,
+                300
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                200,
+                180,
+                350,
+                350
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "手部动作",
+              "牌面数字局部可见",
+              "左侧牌列位置"
+            ],
+            "confidence": 0.7,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "ccc56e36c4062ebedfa0355c189b83fa769617aff6186c554a5f2f0fbbc0494c"
+          }
+        },
+        {
+          "frame_idx": 26,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00026.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 26,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00026.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00026.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "手部抓取动作指向牌列最左侧七条，该牌部分露出且位置与参考帧中目标相似。",
+            "possible_target_box_norm_1000": [
+              0,
+              250,
+              100,
+              350
+            ],
+            "hard_negative_boxes": [
+              [
+                200,
+                200,
+                300,
+                300
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                100,
+                200,
+                200,
+                300
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "手部抓取",
+              "牌列左侧"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "d4e7ff203b93213ca131e51f5b12f2a7b64f2cd899a09cea22d2dcf7485473f5"
+          }
+        },
+        {
+          "frame_idx": 36,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00036.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 36,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00036.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00036.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like evidence: a hand is actively moving a green-bordered tile from the center-right area of the frame.",
+            "possible_target_box_norm_1000": [
+              350,
+              200,
+              400,
+              250
+            ],
+            "hard_negative_boxes": [
+              [
+                100,
+                100,
+                150,
+                150
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                200,
+                150,
+                250,
+                200
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "hand movement",
+              "green border"
+            ],
+            "confidence": 0.7,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "69dc2ef46127302a8c9b3e1d70d49019a6b77038f3a0c85983d5283647531f82"
+          }
+        },
+        {
+          "frame_idx": 48,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00048.jpg",
+          "panel_meta": {
+            "video": "8jsm23a7",
+            "obj_id": 1,
+            "frame_idx": 48,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/8jsm23a7/obj1_f00048.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/8jsm23a7/00048.jpg",
+            "ref_box_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              883,
+              655
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "手部正在移动一张麻将牌，牌面为七条，位于牌列最左侧。",
+            "possible_target_box_norm_1000": [
+              0,
+              750,
+              100,
+              850
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                700,
+                400,
+                800
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                200,
+                720,
+                300,
+                820
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "手部动作",
+              "牌面数字"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "d2a3fba1d88503c16ddf64507929e5c99bb2cfee19ba9bde2fe4cfa8bfe80e22"
+          }
+        }
+      ],
+      "aggregate": {
+        "video": "8jsm23a7",
+        "obj_id": 1,
+        "status": "manual_review",
+        "target_summary": "A mahjong tile (suspected 7 Bamboo) initially lifted by a hand from the top-left area, tracked along the left side of the tile array, and finally confirmed at the leftmost front position. High interference from dense same-class tiles and hand occlusion.",
+        "same_class_problem": "Dense row layout of visually identical mahjong tiles causes severe same-class confusion. Hand occlusion and partial visibility make it difficult to isolate the moving tile from stationary neighbors. Old positions remain occupied by similar tiles, and spatial jumps (e.g., F36) indicate potential identity switches or tracking drift.",
+        "same_class_entity_table": [
+          {
+            "entity_id": "E1",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              20,
+              26,
+              48
+            ],
+            "description": "Hand-manipulated mahjong tile, suspected 7 Bamboo",
+            "role": "target_candidate",
+            "evidence": [
+              "hand grasp/movement",
+              "leftmost row position",
+              "7 Bamboo face visible at F48"
+            ]
+          },
+          {
+            "entity_id": "D1",
+            "frames_seen": [
+              36
+            ],
+            "description": "Center-right tile with green border",
+            "role": "hard_distractor",
+            "evidence": [
+              "spatial discontinuity from F26",
+              "green border cue",
+              "no continuous hand path"
+            ]
+          },
+          {
+            "entity_id": "D2",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              20,
+              26,
+              36,
+              48
+            ],
+            "description": "Stationary tiles in adjacent/old positions",
+            "role": "background_composite",
+            "evidence": [
+              "dense array layout",
+              "persistent old position boxes",
+              "lack of hand interaction"
+            ]
+          }
+        ],
+        "target_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "entity_id": "E1",
+            "reason": "REF position, hand interaction nearby, low confidence",
+            "confidence": 0.1
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              0,
+              0,
+              200,
+              100
+            ],
+            "entity_id": "E1",
+            "reason": "Hand lifting from top row, partial visibility",
+            "confidence": 0.3
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              150,
+              200,
+              250,
+              300
+            ],
+            "entity_id": "E1",
+            "reason": "Hand moving tile, left area, partial number visible",
+            "confidence": 0.7
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              100,
+              200,
+              300,
+              400
+            ],
+            "entity_id": "E1",
+            "reason": "Hand moving, left row position, partial number",
+            "confidence": 0.7
+          },
+          {
+            "frame_idx": 26,
+            "bbox_norm_1000": [
+              0,
+              250,
+              100,
+              350
+            ],
+            "entity_id": "E1",
+            "reason": "Hand grasp targeting leftmost tile, high consistency",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 36,
+            "bbox_norm_1000": [
+              350,
+              200,
+              400,
+              250
+            ],
+            "entity_id": "D1",
+            "reason": "Spatial jump, likely distractor or tracking error",
+            "confidence": 0.4
+          },
+          {
+            "frame_idx": 48,
+            "bbox_norm_1000": [
+              0,
+              750,
+              100,
+              850
+            ],
+            "entity_id": "E1",
+            "reason": "Hand moving, 7 Bamboo face confirmed, leftmost position",
+            "confidence": 0.9
+          }
+        ],
+        "distractor_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              350,
+              240,
+              450,
+              300
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Similar tile in adjacent position, no hand interaction"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              300,
+              150,
+              400,
+              200
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Stationary tile in top row, visually similar"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              300,
+              150,
+              400,
+              250
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Adjacent tile, lacks hand grasp cue"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              500,
+              150,
+              600,
+              300
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Right-side tile, far from left-row interaction"
+          },
+          {
+            "frame_idx": 26,
+            "bbox_norm_1000": [
+              200,
+              200,
+              300,
+              300
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Middle-row tile, not targeted by hand"
+          },
+          {
+            "frame_idx": 36,
+            "bbox_norm_1000": [
+              100,
+              100,
+              150,
+              150
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Top-left tile, static during center-right movement"
+          },
+          {
+            "frame_idx": 48,
+            "bbox_norm_1000": [
+              300,
+              700,
+              400,
+              800
+            ],
+            "entity_id": "D2",
+            "description": "hard negative",
+            "reason": "Bottom-center tile, visually similar but not manipulated"
+          }
+        ],
+        "old_position_distractors": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              100,
+              200,
+              200,
+              250
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              0,
+              200,
+              100,
+              250
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              50,
+              100,
+              150,
+              200
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              200,
+              180,
+              350,
+              350
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 26,
+            "bbox_norm_1000": [
+              100,
+              200,
+              200,
+              300
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 36,
+            "bbox_norm_1000": [
+              200,
+              150,
+              250,
+              200
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 48,
+            "bbox_norm_1000": [
+              200,
+              720,
+              300,
+              820
+            ],
+            "reason": "target cannot still be here after event"
+          }
+        ],
+        "same_category_temporally_impossible": [
+          {
+            "frame_idx": 36,
+            "bbox_norm_1000": [
+              350,
+              200,
+              400,
+              250
+            ],
+            "reason": "temporal story contradiction: abrupt spatial jump from F26 leftmost position to center-right without continuous hand trajectory; likely identity switch or distractor"
+          }
+        ],
+        "candidate_likely_composite_background": [
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              100,
+              200,
+              300,
+              400
+            ],
+            "reason": "box/mask covers multiple entities or background: large bounding box likely encompasses target tile plus adjacent stationary tiles and table surface"
+          }
+        ],
+        "recommended_reanchor_frames": [
+          {
+            "frame_idx": 26,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              0,
+              250,
+              100,
+              350
+            ],
+            "confidence": 0.85,
+            "rationale": "Two consistent cues: explicit hand grasp action + leftmost row position alignment with human hypothesis"
+          },
+          {
+            "frame_idx": 48,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              0,
+              750,
+              100,
+              850
+            ],
+            "confidence": 0.9,
+            "rationale": "Two consistent cues: hand movement + confirmed 7 Bamboo face at leftmost position; highest confidence frame"
+          }
+        ],
+        "negative_boxes_for_verification": [
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              350,
+              240,
+              450,
+              300
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 1,
+            "box_norm_1000": [
+              300,
+              150,
+              400,
+              200
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 26,
+            "box_norm_1000": [
+              200,
+              200,
+              300,
+              300
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 36,
+            "box_norm_1000": [
+              350,
+              200,
+              400,
+              250
+            ],
+            "reason": "hard negative for descriptor/visual check: spatial discontinuity candidate"
+          },
+          {
+            "frame_idx": 48,
+            "box_norm_1000": [
+              300,
+              700,
+              400,
+              800
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          }
+        ],
+        "positive_track_hypothesis": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              139,
+              243,
+              228,
+              279
+            ],
+            "reason": "Initial reference, hand nearby",
+            "confidence": 0.1
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              0,
+              0,
+              200,
+              100
+            ],
+            "reason": "Lifting phase, top-left",
+            "confidence": 0.3
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              150,
+              200,
+              250,
+              300
+            ],
+            "reason": "Transition to left row",
+            "confidence": 0.7
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              100,
+              200,
+              300,
+              400
+            ],
+            "reason": "Left row manipulation",
+            "confidence": 0.7
+          },
+          {
+            "frame_idx": 26,
+            "bbox_norm_1000": [
+              0,
+              250,
+              100,
+              350
+            ],
+            "reason": "Grasp at leftmost position",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 48,
+            "bbox_norm_1000": [
+              0,
+              750,
+              100,
+              850
+            ],
+            "reason": "Final placement/confirmation as 7 Bamboo",
+            "confidence": 0.9
+          }
+        ],
+        "negative_memory_bank": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              350,
+              240,
+              450,
+              300
+            ],
+            "description": "hard negative",
+            "reason": "Adjacent stationary tile"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              300,
+              150,
+              400,
+              200
+            ],
+            "description": "hard negative",
+            "reason": "Top row distractor"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              300,
+              150,
+              400,
+              250
+            ],
+            "description": "hard negative",
+            "reason": "Mid-row similar tile"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              500,
+              150,
+              600,
+              300
+            ],
+            "description": "hard negative",
+            "reason": "Right-side tile"
+          },
+          {
+            "frame_idx": 26,
+            "bbox_norm_1000": [
+              200,
+              200,
+              300,
+              300
+            ],
+            "description": "hard negative",
+            "reason": "Center tile, not grasped"
+          },
+          {
+            "frame_idx": 36,
+            "bbox_norm_1000": [
+              350,
+              200,
+              400,
+              250
+            ],
+            "description": "hard negative",
+            "reason": "Temporally inconsistent jump candidate"
+          },
+          {
+            "frame_idx": 48,
+            "bbox_norm_1000": [
+              300,
+              700,
+              400,
+              800
+            ],
+            "description": "hard negative",
+            "reason": "Bottom-center similar tile"
+          }
+        ],
+        "positive_prompt_plan": [
+          {
+            "frame_idx": 26,
+            "location_description": "Leftmost tile in front row, actively grasped by hand",
+            "box_norm_1000": [
+              0,
+              250,
+              100,
+              350
+            ],
+            "prompt_type": "box",
+            "confidence": 0.85,
+            "rationale": "Strong hand interaction + positional cue alignment; safe for SAM2 initialization"
+          },
+          {
+            "frame_idx": 48,
+            "location_description": "Leftmost position, 7 Bamboo face visible, hand placing/adjusting",
+            "box_norm_1000": [
+              0,
+              750,
+              100,
+              850
+            ],
+            "prompt_type": "box",
+            "confidence": 0.9,
+            "rationale": "Highest confidence, explicit face confirmation; ideal for bounded propagation anchor"
+          }
+        ],
+        "promotion_preconditions": [
+          "descriptor positive-negative margin > 0.3 on 7 Bamboo face vs adjacent tiles",
+          "story compatibility: continuous hand trajectory from F26 to F48, excluding F36 jump",
+          "2-of-3 temporal consistency or independent source agreement: hand grasp + leftmost position + face pattern match"
+        ],
+        "commit_policy": {
+          "merge_mode": "window",
+          "merge_radius": 5,
+          "clip_mode": "nearest",
+          "needs_delayed_confirmation": true,
+          "unsafe_frames": [
+            0,
+            1,
+            36
+          ]
+        },
+        "recommended_action": "manual_review",
+        "final_allowable": false,
+        "confidence": 0.65,
+        "failure_if_wrong": "Tracking drift to adjacent stationary tile or old position due to dense same-class layout and hand occlusion, especially around F36 spatial discontinuity; false positive on center-right green-bordered tile.",
+        "model_used": "qwen3.6-plus",
+        "mllm_cache_key": "b35e69e185ca41d774034eefb3d8a551b1ac1365e1e677c1121743eeb96737f4"
+      }
+    },
+    {
+      "video": "r13u5z4y",
+      "obj_id": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        7,
+        20,
+        34,
+        44
+      ],
+      "hint": "首帧目标是被遮挡的靠后草莓切片局部，之后被手遮挡/移动，重现时周围有多个极相似草莓切片。请优先枚举每个草莓切片作为物理实体和 hard negative；无法区分时应 uncertain/empty，而不是选更显眼切片。",
+      "frame_atlases": [
+        {
+          "frame_idx": 0,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00000.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 0,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00000.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00000.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "uncertain",
+            "target_visible": "no",
+            "caption": "首帧目标被遮挡，当前帧可见多个相似草莓切片，无法确定具体哪个是目标。",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                108,
+                56,
+                172,
+                114
+              ],
+              [
+                236,
+                56,
+                296,
+                114
+              ],
+              [
+                0,
+                184,
+                64,
+                242
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                108,
+                56,
+                172,
+                114
+              ],
+              [
+                236,
+                56,
+                296,
+                114
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "形状: 草莓切片",
+              "颜色: 红色"
+            ],
+            "confidence": 0.0,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "c0ec93af89c71b218e58e8ef15ba3f81c6328e14a5c3f2d7534c0e4f9cbfb977"
+          }
+        },
+        {
+          "frame_idx": 1,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00001.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 1,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00001.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00001.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "no",
+            "caption": "首帧目标被手完全遮挡，无法在当前帧中直接观察到。",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                128,
+                128,
+                256,
+                256
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                0,
+                192,
+                128,
+                320
+              ],
+              [
+                128,
+                0,
+                256,
+                128
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "形状: 草莓切片",
+              "颜色: 红色"
+            ],
+            "confidence": 0.0,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "05d944e80f40302845c70d9bacaffc8f72909fef5c2049493a75110280ee17de"
+          }
+        },
+        {
+          "frame_idx": 2,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00002.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 2,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00002.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00002.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "no",
+            "caption": "首帧目标被手完全遮挡，当前帧中可见多个相似草莓切片，但无明确对应。",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                128,
+                256,
+                256,
+                384
+              ],
+              [
+                0,
+                256,
+                128,
+                384
+              ],
+              [
+                256,
+                128,
+                384,
+                256
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                128,
+                256,
+                256,
+                384
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "形状: 草莓切片",
+              "颜色: 红色"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "f4f72262ff08bc8f8d5385163ad3f08b0a161d7ca87b3dda3e79180ac4d2ebcb"
+          }
+        },
+        {
+          "frame_idx": 7,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00007.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 7,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00007.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00007.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "no",
+            "caption": "首帧目标被手完全遮挡，无法在当前帧中观察到。",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                32,
+                198,
+                120,
+                276
+              ],
+              [
+                256,
+                84,
+                320,
+                144
+              ],
+              [
+                160,
+                48,
+                200,
+                80
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                160,
+                48,
+                200,
+                80
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [],
+            "confidence": 0.0,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "beb6d17297f6807d6f7729df0bd088b0b1d7a85b1f0535e57cdc1b53be67dc4e"
+          }
+        },
+        {
+          "frame_idx": 20,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00020.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 20,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00020.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00020.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "no",
+            "caption": "首帧目标被手完全遮挡，当前帧中无可见证据。",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                35,
+                218,
+                147,
+                309
+              ],
+              [
+                265,
+                108,
+                337,
+                168
+              ],
+              [
+                165,
+                178,
+                237,
+                208
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                165,
+                178,
+                237,
+                208
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "形状: 切片, 颜色: 红色"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "d51f90c883c291b41882a4dfeac65e23a480d2824315bf8be54d798d545da375"
+          }
+        },
+        {
+          "frame_idx": 34,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00034.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 34,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00034.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00034.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "首帧目标被手遮挡，当前可见其部分切片位于画面左侧，周围有多个相似切片。",
+            "possible_target_box_norm_1000": [
+              0,
+              350,
+              100,
+              500
+            ],
+            "hard_negative_boxes": [
+              [
+                280,
+                100,
+                400,
+                200
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                0,
+                350,
+                100,
+                500
+              ],
+              [
+                300,
+                100,
+                400,
+                200
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "形状: 草莓切片",
+              "颜色: 红色"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "24e6a62ad810d43aa20de4a06e4aaaa74ee02c263184746a2dc79afb999b9cd1"
+          }
+        },
+        {
+          "frame_idx": 44,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00044.jpg",
+          "panel_meta": {
+            "video": "r13u5z4y",
+            "obj_id": 1,
+            "frame_idx": 44,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/r13u5z4y/obj1_f00044.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/r13u5z4y/00044.jpg",
+            "ref_box_norm_1000": [
+              416,
+              313,
+              679,
+              502
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              1000,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "no",
+            "caption": "首帧目标被手完全遮挡，当前帧中未见其踪影。",
+            "possible_target_box_norm_1000": null,
+            "hard_negative_boxes": [
+              [
+                37,
+                208,
+                100,
+                296
+              ],
+              [
+                250,
+                112,
+                320,
+                192
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                37,
+                208,
+                100,
+                296
+              ],
+              [
+                250,
+                112,
+                320,
+                192
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "形状: 草莓切片",
+              "颜色: 红色"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "db5499a651c5b221687cf14b1caa5565ed81d502037d9ed9a31e7e62a709e989"
+          }
+        }
+      ],
+      "aggregate": {
+        "video": "r13u5z4y",
+        "obj_id": 1,
+        "status": "manual_review",
+        "target_summary": "First-frame target is a partially occluded, rear-positioned strawberry slice. Identity is lost due to prolonged hand occlusion and subsequent spatial rearrangement among multiple visually identical slices.",
+        "same_class_problem": "Extreme intra-class similarity (uniform shape, color, and texture of strawberry slices), heavy and prolonged occlusion by a hand, lack of unique discriminative features (e.g., distinct seed patterns or edge damage), and dynamic spatial mixing make reliable re-identification impossible without external cues.",
+        "same_class_entity_table": [
+          {
+            "entity_id": "E1",
+            "frames_seen": [
+              0,
+              34
+            ],
+            "description": "Hypothesized rear strawberry slice, initially occluded, partially visible at f34",
+            "role": "target_candidate",
+            "evidence": [
+              "human hypothesis: rear slice",
+              "partial visibility at f34 left region"
+            ]
+          },
+          {
+            "entity_id": "D1",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              7,
+              20,
+              34,
+              44
+            ],
+            "description": "Foreground/mid strawberry slices with identical visual properties",
+            "role": "hard_distractor",
+            "evidence": [
+              "identical shape/color",
+              "frequent occlusion overlap",
+              "no unique markers"
+            ]
+          },
+          {
+            "entity_id": "D2",
+            "frames_seen": [
+              0,
+              20,
+              44
+            ],
+            "description": "Clustered slice regions",
+            "role": "background_composite",
+            "evidence": [
+              "multiple overlapping instances in single bounding boxes"
+            ]
+          }
+        ],
+        "target_candidate_list": [],
+        "distractor_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              108,
+              56,
+              172,
+              114
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "prominent foreground slice, visually indistinguishable from target"
+          },
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              236,
+              56,
+              296,
+              114
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "prominent foreground slice, visually indistinguishable from target"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              280,
+              100,
+              400,
+              200
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar slice near hypothesized target location"
+          }
+        ],
+        "old_position_distractors": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              108,
+              56,
+              172,
+              114
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              236,
+              56,
+              296,
+              114
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              0,
+              192,
+              128,
+              320
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              128,
+              0,
+              256,
+              128
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              128,
+              256,
+              256,
+              384
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 7,
+            "bbox_norm_1000": [
+              160,
+              48,
+              200,
+              80
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              165,
+              178,
+              237,
+              208
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              0,
+              350,
+              100,
+              500
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              300,
+              100,
+              400,
+              200
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 44,
+            "bbox_norm_1000": [
+              37,
+              208,
+              100,
+              296
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 44,
+            "bbox_norm_1000": [
+              250,
+              112,
+              320,
+              192
+            ],
+            "reason": "target cannot still be here after event"
+          }
+        ],
+        "same_category_temporally_impossible": [],
+        "candidate_likely_composite_background": [],
+        "recommended_reanchor_frames": [],
+        "negative_boxes_for_verification": [
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              108,
+              56,
+              172,
+              114
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              236,
+              56,
+              296,
+              114
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              0,
+              184,
+              64,
+              242
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 1,
+            "box_norm_1000": [
+              128,
+              128,
+              256,
+              256
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 2,
+            "box_norm_1000": [
+              128,
+              256,
+              256,
+              384
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 2,
+            "box_norm_1000": [
+              0,
+              256,
+              128,
+              384
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 2,
+            "box_norm_1000": [
+              256,
+              128,
+              384,
+              256
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 7,
+            "box_norm_1000": [
+              32,
+              198,
+              120,
+              276
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 7,
+            "box_norm_1000": [
+              256,
+              84,
+              320,
+              144
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 7,
+            "box_norm_1000": [
+              160,
+              48,
+              200,
+              80
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 20,
+            "box_norm_1000": [
+              35,
+              218,
+              147,
+              309
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 20,
+            "box_norm_1000": [
+              265,
+              108,
+              337,
+              168
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 20,
+            "box_norm_1000": [
+              165,
+              178,
+              237,
+              208
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 34,
+            "box_norm_1000": [
+              280,
+              100,
+              400,
+              200
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 44,
+            "box_norm_1000": [
+              37,
+              208,
+              100,
+              296
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 44,
+            "box_norm_1000": [
+              250,
+              112,
+              320,
+              192
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          }
+        ],
+        "positive_track_hypothesis": [],
+        "negative_memory_bank": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              108,
+              56,
+              172,
+              114
+            ],
+            "description": "hard negative",
+            "reason": "foreground slice, identical class"
+          },
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              236,
+              56,
+              296,
+              114
+            ],
+            "description": "hard negative",
+            "reason": "foreground slice, identical class"
+          },
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              0,
+              184,
+              64,
+              242
+            ],
+            "description": "hard negative",
+            "reason": "edge slice, identical class"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              128,
+              128,
+              256,
+              256
+            ],
+            "description": "hard negative",
+            "reason": "occluded region slice"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              128,
+              256,
+              256,
+              384
+            ],
+            "description": "hard negative",
+            "reason": "mid-ground slice"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              0,
+              256,
+              128,
+              384
+            ],
+            "description": "hard negative",
+            "reason": "left slice"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              256,
+              128,
+              384,
+              256
+            ],
+            "description": "hard negative",
+            "reason": "right slice"
+          },
+          {
+            "frame_idx": 7,
+            "bbox_norm_1000": [
+              32,
+              198,
+              120,
+              276
+            ],
+            "description": "hard negative",
+            "reason": "left cluster slice"
+          },
+          {
+            "frame_idx": 7,
+            "bbox_norm_1000": [
+              256,
+              84,
+              320,
+              144
+            ],
+            "description": "hard negative",
+            "reason": "top-right slice"
+          },
+          {
+            "frame_idx": 7,
+            "bbox_norm_1000": [
+              160,
+              48,
+              200,
+              80
+            ],
+            "description": "hard negative",
+            "reason": "top-center slice"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              35,
+              218,
+              147,
+              309
+            ],
+            "description": "hard negative",
+            "reason": "left slice"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              265,
+              108,
+              337,
+              168
+            ],
+            "description": "hard negative",
+            "reason": "right slice"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              165,
+              178,
+              237,
+              208
+            ],
+            "description": "hard negative",
+            "reason": "center slice"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              280,
+              100,
+              400,
+              200
+            ],
+            "description": "hard negative",
+            "reason": "right slice near target"
+          },
+          {
+            "frame_idx": 44,
+            "bbox_norm_1000": [
+              37,
+              208,
+              100,
+              296
+            ],
+            "description": "hard negative",
+            "reason": "left slice"
+          },
+          {
+            "frame_idx": 44,
+            "bbox_norm_1000": [
+              250,
+              112,
+              320,
+              192
+            ],
+            "description": "hard negative",
+            "reason": "right slice"
+          }
+        ],
+        "positive_prompt_plan": [],
+        "promotion_preconditions": [
+          "descriptor positive-negative margin > threshold",
+          "story compatibility with hand occlusion trajectory",
+          "2-of-3 temporal consistency or independent source agreement"
+        ],
+        "commit_policy": {
+          "merge_mode": "window",
+          "merge_radius": 0,
+          "clip_mode": "nearest",
+          "needs_delayed_confirmation": true,
+          "unsafe_frames": [
+            0,
+            1,
+            2,
+            7,
+            20,
+            34,
+            44
+          ]
+        },
+        "recommended_action": "manual_review",
+        "final_allowable": false,
+        "confidence": 0.0,
+        "failure_if_wrong": "False positive tracking of a visually identical distractor slice after prolonged hand occlusion, causing irreversible identity swap and trajectory corruption.",
+        "model_used": "qwen3.6-plus",
+        "mllm_cache_key": "67fb8341fcf1c119cbd8f6b4e1524fca1292f57dea5ef54a7acf904e986f42af"
+      }
+    },
+    {
+      "video": "4vznweiu",
+      "obj_id": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        10,
+        20,
+        34
+      ],
+      "hint": "目标是极小的语义/图案/珠子类实例，容易和花、字母、相邻小物混淆。请枚举候选小物及负例，不要因为颜色/类别相似直接确认。",
+      "frame_atlases": [
+        {
+          "frame_idx": 0,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00000.jpg",
+          "panel_meta": {
+            "video": "4vznweiu",
+            "obj_id": 1,
+            "frame_idx": 0,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00000.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/4vznweiu/00000.jpg",
+            "ref_box_norm_1000": [
+              261,
+              240,
+              306,
+              271
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              778,
+              533
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "yes",
+            "caption": "REF is a small 'T' letter on a white cube, located in the top-left quadrant of the grid. Similar candidates include other letter cubes and nearby floral elements.",
+            "possible_target_box_norm_1000": [
+              120,
+              60,
+              150,
+              90
+            ],
+            "hard_negative_boxes": [
+              [
+                280,
+                120,
+                310,
+                150
+              ],
+              [
+                370,
+                40,
+                400,
+                70
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                180,
+                220,
+                210,
+                250
+              ],
+              [
+                240,
+                180,
+                270,
+                210
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "letter shape",
+              "cube texture"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "146f97546fdb26f08f97ce0a6d3999db26b41df55e17fae190db50ae3205f979"
+          }
+        },
+        {
+          "frame_idx": 1,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00001.jpg",
+          "panel_meta": {
+            "video": "4vznweiu",
+            "obj_id": 1,
+            "frame_idx": 1,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00001.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/4vznweiu/00001.jpg",
+            "ref_box_norm_1000": [
+              261,
+              240,
+              306,
+              271
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              778,
+              533
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "yes",
+            "caption": "REF shows a blue-outlined 'T' on a white cube at top-left. In current frame, similar small letter-like cubes are scattered, including a 'T' near center.",
+            "possible_target_box_norm_1000": [
+              120,
+              40,
+              150,
+              70
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                180,
+                330,
+                210
+              ],
+              [
+                200,
+                250,
+                230,
+                280
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                50,
+                60,
+                80,
+                90
+              ],
+              [
+                250,
+                100,
+                280,
+                130
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "cube shape",
+              "letter pattern"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "5aab49d88e2461c8252aecb73c5882e0b40cf8577d4107c60989f659e91f67b2"
+          }
+        },
+        {
+          "frame_idx": 2,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00002.jpg",
+          "panel_meta": {
+            "video": "4vznweiu",
+            "obj_id": 1,
+            "frame_idx": 2,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00002.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/4vznweiu/00002.jpg",
+            "ref_box_norm_1000": [
+              261,
+              240,
+              306,
+              271
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              778,
+              533
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "yes",
+            "caption": "REF-like target is a small white cube with 'T' visible in the top-left grid. Similar candidates appear scattered in the central grid area.",
+            "possible_target_box_norm_1000": [
+              150,
+              50,
+              200,
+              100
+            ],
+            "hard_negative_boxes": [
+              [
+                350,
+                150,
+                400,
+                200
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                250,
+                250,
+                300,
+                300
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "cube shape",
+              "single letter",
+              "white color"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "8facde5fe83d8beed6e7d642931225c5154273078481b8b894aa6c1a19761b0d"
+          }
+        },
+        {
+          "frame_idx": 10,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00010.jpg",
+          "panel_meta": {
+            "video": "4vznweiu",
+            "obj_id": 1,
+            "frame_idx": 10,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00010.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/4vznweiu/00010.jpg",
+            "ref_box_norm_1000": [
+              261,
+              240,
+              306,
+              271
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              778,
+              533
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "yes",
+            "caption": "REF-like small white bead-like object circled in top-left panel; similar candidates scattered in grid layout.",
+            "possible_target_box_norm_1000": [
+              150,
+              60,
+              180,
+              90
+            ],
+            "hard_negative_boxes": [
+              [
+                200,
+                200,
+                230,
+                230
+              ],
+              [
+                300,
+                150,
+                330,
+                180
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                100,
+                100,
+                130,
+                130
+              ],
+              [
+                250,
+                250,
+                280,
+                280
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "small",
+              "white",
+              "bead-like"
+            ],
+            "confidence": 0.9,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "607be5f4d5768186d8783a79d2d70af8cd2c1bbeac97a69c88ce01a1c22b5225"
+          }
+        },
+        {
+          "frame_idx": 20,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00020.jpg",
+          "panel_meta": {
+            "video": "4vznweiu",
+            "obj_id": 1,
+            "frame_idx": 20,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00020.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/4vznweiu/00020.jpg",
+            "ref_box_norm_1000": [
+              261,
+              240,
+              306,
+              271
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              778,
+              533
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like candidate appears as a small, dark 'T' on a white cube near center-left; similar letter-like shapes and small floral elements are scattered nearby.",
+            "possible_target_box_norm_1000": [
+              120,
+              120,
+              160,
+              160
+            ],
+            "hard_negative_boxes": [
+              [
+                200,
+                200,
+                240,
+                240
+              ],
+              [
+                300,
+                300,
+                340,
+                340
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                50,
+                50,
+                90,
+                90
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "small dark letter-like shape",
+              "white cube background"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "c01e5a28a1c23366a5643fb5d60143f6678caa1e0e63a812ce4514bae0fa3ee3"
+          }
+        },
+        {
+          "frame_idx": 34,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00034.jpg",
+          "panel_meta": {
+            "video": "4vznweiu",
+            "obj_id": 1,
+            "frame_idx": 34,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/4vznweiu/obj1_f00034.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/4vznweiu/00034.jpg",
+            "ref_box_norm_1000": [
+              261,
+              240,
+              306,
+              271
+            ],
+            "local_crop_norm_1000": [
+              0,
+              0,
+              778,
+              533
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "极小珠子状目标位于左下角，部分被花瓣遮挡，周围有类似花和字母的近类实例。",
+            "possible_target_box_norm_1000": [
+              120,
+              350,
+              140,
+              370
+            ],
+            "hard_negative_boxes": [
+              [
+                200,
+                200,
+                220,
+                220
+              ],
+              [
+                300,
+                150,
+                320,
+                170
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                50,
+                50,
+                70,
+                70
+              ],
+              [
+                180,
+                180,
+                200,
+                200
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "极小形态",
+              "珠子状外观"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "ef852d784ea86b1af4355691363c1a5e4b281d6a3eff816543518795849701a9"
+          }
+        }
+      ],
+      "aggregate": {
+        "video": "4vznweiu",
+        "obj_id": 1,
+        "status": "uncertain",
+        "target_summary": "Small white cube/bead instance featuring a dark 'T' letter pattern, situated in a dense grid layout. Highly susceptible to confusion with adjacent letter cubes, floral elements, and similarly sized background textures.",
+        "same_class_problem": "Dense spatial arrangement of semantically and visually similar small objects (letter cubes, beads, floral motifs) with overlapping scale, color palette, and subtle inter-frame motion. Identity cues drift from 'letter T on cube' to 'bead-like', increasing ID-switch risk.",
+        "same_class_entity_table": [
+          {
+            "entity_id": "E1",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              10,
+              20,
+              34
+            ],
+            "description": "Primary target candidate: small white cube/bead with dark 'T' marking",
+            "role": "target_candidate",
+            "evidence": [
+              "letter shape",
+              "cube texture",
+              "white background",
+              "consistent top-left to bottom-left trajectory"
+            ]
+          },
+          {
+            "entity_id": "D1",
+            "frames_seen": [
+              0,
+              1,
+              2
+            ],
+            "description": "Adjacent letter cube with similar 'T' or geometric marking",
+            "role": "hard_distractor",
+            "evidence": [
+              "similar scale",
+              "matching white cube base",
+              "proximity in grid"
+            ]
+          },
+          {
+            "entity_id": "D2",
+            "frames_seen": [
+              10,
+              20,
+              34
+            ],
+            "description": "Floral or bead-like small object with comparable size and contrast",
+            "role": "hard_distractor",
+            "evidence": [
+              "bead-like appearance",
+              "scattered grid placement",
+              "partial occlusion similarity"
+            ]
+          },
+          {
+            "entity_id": "D3",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              10,
+              20,
+              34
+            ],
+            "description": "Background grid lines and texture patches",
+            "role": "background_composite",
+            "evidence": [
+              "static layout",
+              "low semantic content",
+              "frequently overlaps candidate bounding boxes"
+            ]
+          }
+        ],
+        "target_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              120,
+              60,
+              150,
+              90
+            ],
+            "entity_id": "E1",
+            "reason": "Clear 'T' letter on white cube, top-left quadrant",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              120,
+              40,
+              150,
+              70
+            ],
+            "entity_id": "E1",
+            "reason": "Blue-outlined 'T' on white cube, consistent with F0",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              150,
+              50,
+              200,
+              100
+            ],
+            "entity_id": "E1",
+            "reason": "White cube with single letter, slight rightward shift",
+            "confidence": 0.8
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              150,
+              60,
+              180,
+              90
+            ],
+            "entity_id": "E1",
+            "reason": "Small white bead-like object, cue drift from letter to bead",
+            "confidence": 0.7
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              120,
+              120,
+              160,
+              160
+            ],
+            "entity_id": "E1",
+            "reason": "Dark letter-like shape on white background, center-left",
+            "confidence": 0.65
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              120,
+              350,
+              140,
+              370
+            ],
+            "entity_id": "E1",
+            "reason": "Partially occluded bead-like object, bottom-left",
+            "confidence": 0.6
+          }
+        ],
+        "distractor_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              280,
+              120,
+              310,
+              150
+            ],
+            "entity_id": "D1",
+            "description": "Adjacent letter cube",
+            "reason": "Similar scale and white base, high risk of ID switch"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              300,
+              180,
+              330,
+              210
+            ],
+            "entity_id": "D1",
+            "description": "Central letter-like cube",
+            "reason": "Matches target size and pattern density"
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              200,
+              200,
+              230,
+              230
+            ],
+            "entity_id": "D2",
+            "description": "Scattered bead/floral element",
+            "reason": "Overlaps with 'bead-like' cue, visually ambiguous"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              200,
+              200,
+              240,
+              240
+            ],
+            "entity_id": "D2",
+            "description": "Small floral/letter hybrid",
+            "reason": "Similar contrast and partial occlusion profile"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              200,
+              200,
+              220,
+              220
+            ],
+            "entity_id": "D2",
+            "description": "Grid-adjacent small object",
+            "reason": "Proximity to target path, similar silhouette"
+          }
+        ],
+        "old_position_distractors": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              180,
+              220,
+              210,
+              250
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              240,
+              180,
+              270,
+              210
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              50,
+              60,
+              80,
+              90
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              250,
+              100,
+              280,
+              130
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              250,
+              250,
+              300,
+              300
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              100,
+              100,
+              130,
+              130
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              250,
+              250,
+              280,
+              280
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              50,
+              50,
+              90,
+              90
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              50,
+              50,
+              70,
+              70
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              180,
+              180,
+              200,
+              200
+            ],
+            "reason": "Target cannot still be here after event; historical position"
+          }
+        ],
+        "same_category_temporally_impossible": [],
+        "candidate_likely_composite_background": [],
+        "recommended_reanchor_frames": [
+          {
+            "frame_idx": 0,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              120,
+              60,
+              150,
+              90
+            ],
+            "confidence": 0.85,
+            "rationale": "Two consistent cues: 'letter shape' and 'cube texture' align with reference. High visual clarity."
+          },
+          {
+            "frame_idx": 1,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              120,
+              40,
+              150,
+              70
+            ],
+            "confidence": 0.85,
+            "rationale": "Two consistent cues: 'cube shape' and 'letter pattern' persist. Minimal displacement from F0 supports continuity."
+          }
+        ],
+        "negative_boxes_for_verification": [
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              280,
+              120,
+              310,
+              150
+            ],
+            "reason": "Hard negative for descriptor/visual check: adjacent letter cube"
+          },
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              370,
+              40,
+              400,
+              70
+            ],
+            "reason": "Hard negative for descriptor/visual check: distant small cube"
+          },
+          {
+            "frame_idx": 1,
+            "box_norm_1000": [
+              300,
+              180,
+              330,
+              210
+            ],
+            "reason": "Hard negative for descriptor/visual check: central letter-like object"
+          },
+          {
+            "frame_idx": 2,
+            "box_norm_1000": [
+              350,
+              150,
+              400,
+              200
+            ],
+            "reason": "Hard negative for descriptor/visual check: grid-scattered cube"
+          },
+          {
+            "frame_idx": 10,
+            "box_norm_1000": [
+              200,
+              200,
+              230,
+              230
+            ],
+            "reason": "Hard negative for descriptor/visual check: bead-like distractor"
+          },
+          {
+            "frame_idx": 20,
+            "box_norm_1000": [
+              200,
+              200,
+              240,
+              240
+            ],
+            "reason": "Hard negative for descriptor/visual check: floral/letter hybrid"
+          },
+          {
+            "frame_idx": 34,
+            "box_norm_1000": [
+              200,
+              200,
+              220,
+              220
+            ],
+            "reason": "Hard negative for descriptor/visual check: occluded small object"
+          }
+        ],
+        "positive_track_hypothesis": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              120,
+              60,
+              150,
+              90
+            ],
+            "reason": "Initial clear observation of 'T' on white cube",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              120,
+              40,
+              150,
+              70
+            ],
+            "reason": "Consistent letter/cube cues, slight upward shift",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              150,
+              50,
+              200,
+              100
+            ],
+            "reason": "Maintains white cube + single letter identity",
+            "confidence": 0.8
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              150,
+              60,
+              180,
+              90
+            ],
+            "reason": "Cue drift to 'bead-like', but spatial continuity plausible",
+            "confidence": 0.7
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              120,
+              120,
+              160,
+              160
+            ],
+            "reason": "Partial visibility, dark letter-like shape on white",
+            "confidence": 0.65
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              120,
+              350,
+              140,
+              370
+            ],
+            "reason": "Bottom-left position, partially occluded, bead-like",
+            "confidence": 0.6
+          }
+        ],
+        "negative_memory_bank": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              280,
+              120,
+              310,
+              150
+            ],
+            "description": "Adjacent letter cube",
+            "reason": "Same class, similar scale, high confusion risk"
+          },
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              370,
+              40,
+              400,
+              70
+            ],
+            "description": "Distant small cube",
+            "reason": "Matches color/size but spatially isolated"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              300,
+              180,
+              330,
+              210
+            ],
+            "description": "Central letter-like cube",
+            "reason": "Pattern density matches target, potential ID switch"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              200,
+              250,
+              230,
+              280
+            ],
+            "description": "Lower grid cube",
+            "reason": "Similar white base, different letter orientation"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              350,
+              150,
+              400,
+              200
+            ],
+            "description": "Scattered grid cube",
+            "reason": "Overlaps with target's potential motion path"
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              200,
+              200,
+              230,
+              230
+            ],
+            "description": "Bead-like distractor",
+            "reason": "Matches 'bead' cue, high visual similarity"
+          },
+          {
+            "frame_idx": 10,
+            "bbox_norm_1000": [
+              300,
+              150,
+              330,
+              180
+            ],
+            "description": "Grid-adjacent small object",
+            "reason": "Similar contrast, static background element"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              200,
+              200,
+              240,
+              240
+            ],
+            "description": "Floral/letter hybrid",
+            "reason": "Partial occlusion mimics target state"
+          },
+          {
+            "frame_idx": 20,
+            "bbox_norm_1000": [
+              300,
+              300,
+              340,
+              340
+            ],
+            "description": "Lower-right small object",
+            "reason": "Similar size, different semantic pattern"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              200,
+              200,
+              220,
+              220
+            ],
+            "description": "Grid-adjacent small object",
+            "reason": "Proximity to target path, similar silhouette"
+          },
+          {
+            "frame_idx": 34,
+            "bbox_norm_1000": [
+              300,
+              150,
+              320,
+              170
+            ],
+            "description": "Upper-right small object",
+            "reason": "Static distractor, matches color/size profile"
+          }
+        ],
+        "positive_prompt_plan": [
+          {
+            "frame_idx": 0,
+            "location_description": "Top-left quadrant, small white cube with dark 'T'",
+            "box_norm_1000": [
+              120,
+              60,
+              150,
+              90
+            ],
+            "prompt_type": "box",
+            "confidence": 0.85,
+            "rationale": "Highest clarity frame with two aligned identity cues. Safe for SAM2 initialization."
+          }
+        ],
+        "promotion_preconditions": [
+          "descriptor positive-negative margin > 0.3 across 3 consecutive frames",
+          "story compatibility: consistent top-left to bottom-left trajectory without abrupt jumps",
+          "2-of-3 temporal consistency or independent source agreement (e.g., optical flow + appearance match)"
+        ],
+        "commit_policy": {
+          "merge_mode": "window",
+          "merge_radius": 2,
+          "clip_mode": "nearest",
+          "needs_delayed_confirmation": true,
+          "unsafe_frames": [
+            10,
+            20,
+            34
+          ]
+        },
+        "recommended_action": "manual_review",
+        "final_allowable": false,
+        "confidence": 0.65,
+        "failure_if_wrong": "ID switch to adjacent same-class letter cube or floral element due to dense grid layout, similar scale/color, subtle inter-frame displacement, and cue drift from 'letter' to 'bead'.",
+        "model_used": "qwen3.6-plus",
+        "mllm_cache_key": "2fbe9f590e3d8c449c084efce49eaaea6005806c959679347b44c3d835f1d154"
+      }
+    },
+    {
+      "video": "1qlssuz2",
+      "obj_id": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        13,
+        14,
+        37,
+        39
+      ],
+      "hint": "目标是小车辆/道路场景中的指定实例；以桥下/遮挡/远近变化为重点审查。请区分同类车辆、背景边缘和过宽 mask。",
+      "frame_atlases": [
+        {
+          "frame_idx": 0,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00000.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 0,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00000.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00000.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "yes",
+            "caption": "REF-like small blue car visible on left lane of highway in top-left panel.",
+            "possible_target_box_norm_1000": [
+              83,
+              76,
+              105,
+              94
+            ],
+            "hard_negative_boxes": [
+              [
+                220,
+                288,
+                242,
+                306
+              ]
+            ],
+            "old_position_distractors": [],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "vehicle shape",
+              "blue color"
+            ],
+            "confidence": 0.95,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "966c97ed8d49bfa0e1a94ae5604a82be0a54ab1a4a31fd151c596e3178fe68ac"
+          }
+        },
+        {
+          "frame_idx": 1,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00001.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 1,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00001.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00001.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "yes",
+            "caption": "REF-like small blue car visible on left lane in top-left panel; similar vehicles present but distinct in other panels.",
+            "possible_target_box_norm_1000": [
+              83,
+              75,
+              102,
+              96
+            ],
+            "hard_negative_boxes": [
+              [
+                340,
+                85,
+                360,
+                95
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                180,
+                275,
+                200,
+                295
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "vehicle shape",
+              "blue color"
+            ],
+            "confidence": 0.95,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "6dabfdb5fc6c27c5ded8a68568c47868fa86c57aba8418258eeeecd1c2f30fac"
+          }
+        },
+        {
+          "frame_idx": 2,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00002.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 2,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00002.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00002.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like vehicle partially visible on lower road segment, likely same instance; other vehicles present but not matching REF.",
+            "possible_target_box_norm_1000": [
+              250,
+              300,
+              300,
+              350
+            ],
+            "hard_negative_boxes": [
+              [
+                350,
+                150,
+                400,
+                200
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                100,
+                80,
+                150,
+                120
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "vehicle shape",
+              "road context",
+              "relative position"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "b844f7b8673eb32ba5f8d12d5842c5d9a0ed4427ab390f9a5e747943202bf402"
+          }
+        },
+        {
+          "frame_idx": 13,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00013.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 13,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00013.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00013.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like vehicle partially visible under bridge in top-left panel; similar vehicles present in other panels.",
+            "possible_target_box_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                70,
+                340,
+                90
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                200,
+                50,
+                240,
+                70
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "blue color",
+              "under bridge location"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "b3823b6b436a63009f0f8a3931006fed334784fe61fbce8e6e10513a2a3b216b"
+          }
+        },
+        {
+          "frame_idx": 14,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00014.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 14,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00014.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00014.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like small blue car partially visible on left lane; similar vehicles in background, some occluded by bridge or distance.",
+            "possible_target_box_norm_1000": [
+              85,
+              90,
+              120,
+              130
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                100,
+                340,
+                120
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                250,
+                70,
+                290,
+                90
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "vehicle shape",
+              "blue color",
+              "lane position"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "64daf6267c196344ab568aec82568aa76e12a6acc0d667f391b1f0b99782f7ba"
+          }
+        },
+        {
+          "frame_idx": 37,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00037.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 37,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00037.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00037.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like small blue car partially visible on upper left lane; similar vehicles present but occluded or distant.",
+            "possible_target_box_norm_1000": [
+              85,
+              47,
+              120,
+              75
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                190,
+                350,
+                220
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                160,
+                240,
+                200,
+                270
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "vehicle shape",
+              "blue color"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "e85e3842a2448cd092f4007cecbeb74ed976d3a6ea5cd26d6e4e6174462d4970"
+          }
+        },
+        {
+          "frame_idx": 39,
+          "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00039.jpg",
+          "panel_meta": {
+            "video": "1qlssuz2",
+            "obj_id": 1,
+            "frame_idx": 39,
+            "panel_path": "artifacts/m18_sameclass_atlas/panels_gateb/1qlssuz2/obj1_f00039.jpg",
+            "frame_path": "/home/yu/projects/cv/from fdu/MOSEv2/homework/JPEGImages/1qlssuz2/00039.jpg",
+            "ref_box_norm_1000": [
+              381,
+              808,
+              406,
+              852
+            ],
+            "local_crop_norm_1000": [
+              150,
+              396,
+              638,
+              1000
+            ]
+          },
+          "observation": {
+            "status": "ok",
+            "target_visible": "partial",
+            "caption": "REF-like small blue car is partially visible on the upper left lane, partially obscured by road markings and bridge structure.",
+            "possible_target_box_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "hard_negative_boxes": [
+              [
+                300,
+                180,
+                340,
+                200
+              ]
+            ],
+            "old_position_distractors": [
+              [
+                200,
+                220,
+                240,
+                250
+              ]
+            ],
+            "temporally_impossible_boxes": [],
+            "identity_cues_seen": [
+              "color",
+              "shape"
+            ],
+            "confidence": 0.85,
+            "model_used": "qwen-vl-plus",
+            "mllm_cache_key": "21f74d9ffc0c1d9e1a83d381a57620752dcc035e789853fcb6d7a01c8989d386"
+          }
+        }
+      ],
+      "aggregate": {
+        "video": "1qlssuz2",
+        "obj_id": 1,
+        "status": "manual_review",
+        "target_summary": "Small blue car initially visible on left lane (frames 0-1), shifts to lower road segment with partial visibility (frame 2), then reappears under bridge/upper left lane with consistent scale and color cues (frames 13, 14, 37, 39). Subject to bridge occlusion, distance scaling, and partial masking.",
+        "same_class_problem": "Multiple same-class vehicles occupy adjacent lanes and background. Bridge structure and road markings cause partial occlusion and lighting changes, degrading color/shape discriminability. Hard negatives share similar scale and road context, increasing drift risk.",
+        "same_class_entity_table": [
+          {
+            "entity_id": "E1",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              13,
+              14,
+              37,
+              39
+            ],
+            "description": "small blue car on left/upper lane",
+            "role": "target_candidate",
+            "evidence": [
+              "blue color",
+              "vehicle shape",
+              "left lane trajectory",
+              "bridge occlusion pattern"
+            ]
+          },
+          {
+            "entity_id": "D1",
+            "frames_seen": [
+              0,
+              1,
+              2,
+              13,
+              14,
+              37,
+              39
+            ],
+            "description": "similar vehicles in mid/right lanes",
+            "role": "hard_distractor",
+            "evidence": [
+              "similar scale",
+              "road context",
+              "lacks consistent blue color cue"
+            ]
+          }
+        ],
+        "target_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              83,
+              76,
+              105,
+              94
+            ],
+            "entity_id": "E1",
+            "reason": "clear blue car on left lane, high confidence",
+            "confidence": 0.95
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              83,
+              75,
+              102,
+              96
+            ],
+            "entity_id": "E1",
+            "reason": "consistent position and appearance with f0",
+            "confidence": 0.95
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              250,
+              300,
+              300,
+              350
+            ],
+            "entity_id": "E1",
+            "reason": "partial visibility on lower road, trajectory jump requires verification",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 13,
+            "bbox_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "entity_id": "E1",
+            "reason": "partial under bridge, matches left lane trajectory",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 14,
+            "bbox_norm_1000": [
+              85,
+              90,
+              120,
+              130
+            ],
+            "entity_id": "E1",
+            "reason": "partial left lane, consistent scale",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 37,
+            "bbox_norm_1000": [
+              85,
+              47,
+              120,
+              75
+            ],
+            "entity_id": "E1",
+            "reason": "partial upper left lane, distance scaling observed",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 39,
+            "bbox_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "entity_id": "E1",
+            "reason": "partial upper left lane, consistent with f37",
+            "confidence": 0.85
+          }
+        ],
+        "distractor_candidate_list": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              220,
+              288,
+              242,
+              306
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle shape in mid-right lane, lacks blue cue"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              340,
+              85,
+              360,
+              95
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle in right lane, distinct lane position"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              350,
+              150,
+              400,
+              200
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle right side, road context overlap"
+          },
+          {
+            "frame_idx": 13,
+            "bbox_norm_1000": [
+              300,
+              70,
+              340,
+              90
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle right lane, bridge shadow interference"
+          },
+          {
+            "frame_idx": 14,
+            "bbox_norm_1000": [
+              300,
+              100,
+              340,
+              120
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle right lane, partial occlusion"
+          },
+          {
+            "frame_idx": 37,
+            "bbox_norm_1000": [
+              300,
+              190,
+              350,
+              220
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle right lane, distance scaling"
+          },
+          {
+            "frame_idx": 39,
+            "bbox_norm_1000": [
+              300,
+              180,
+              340,
+              200
+            ],
+            "entity_id": "D1",
+            "description": "hard negative",
+            "reason": "similar vehicle right lane, consistent distractor pattern"
+          }
+        ],
+        "old_position_distractors": [
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              180,
+              275,
+              200,
+              295
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              100,
+              80,
+              150,
+              120
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 13,
+            "bbox_norm_1000": [
+              200,
+              50,
+              240,
+              70
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 14,
+            "bbox_norm_1000": [
+              250,
+              70,
+              290,
+              90
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 37,
+            "bbox_norm_1000": [
+              160,
+              240,
+              200,
+              270
+            ],
+            "reason": "target cannot still be here after event"
+          },
+          {
+            "frame_idx": 39,
+            "bbox_norm_1000": [
+              200,
+              220,
+              240,
+              250
+            ],
+            "reason": "target cannot still be here after event"
+          }
+        ],
+        "same_category_temporally_impossible": [],
+        "candidate_likely_composite_background": [],
+        "recommended_reanchor_frames": [
+          {
+            "frame_idx": 0,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              83,
+              76,
+              105,
+              94
+            ],
+            "confidence": 0.95,
+            "rationale": "blue color + left lane position + clear shape (2+ cues agree)"
+          },
+          {
+            "frame_idx": 1,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              83,
+              75,
+              102,
+              96
+            ],
+            "confidence": 0.95,
+            "rationale": "blue color + left lane position + clear shape (2+ cues agree)"
+          },
+          {
+            "frame_idx": 13,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "confidence": 0.85,
+            "rationale": "blue color + under bridge location + left lane (2+ cues agree)"
+          },
+          {
+            "frame_idx": 14,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              85,
+              90,
+              120,
+              130
+            ],
+            "confidence": 0.85,
+            "rationale": "blue color + lane position + vehicle shape (2+ cues agree)"
+          },
+          {
+            "frame_idx": 37,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              85,
+              47,
+              120,
+              75
+            ],
+            "confidence": 0.85,
+            "rationale": "blue color + vehicle shape + consistent trajectory (2+ cues agree)"
+          },
+          {
+            "frame_idx": 39,
+            "entity_id": "E1",
+            "box_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "confidence": 0.85,
+            "rationale": "blue color + vehicle shape + consistent trajectory (2+ cues agree)"
+          }
+        ],
+        "negative_boxes_for_verification": [
+          {
+            "frame_idx": 0,
+            "box_norm_1000": [
+              220,
+              288,
+              242,
+              306
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 1,
+            "box_norm_1000": [
+              340,
+              85,
+              360,
+              95
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 2,
+            "box_norm_1000": [
+              350,
+              150,
+              400,
+              200
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 13,
+            "box_norm_1000": [
+              300,
+              70,
+              340,
+              90
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 14,
+            "box_norm_1000": [
+              300,
+              100,
+              340,
+              120
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 37,
+            "box_norm_1000": [
+              300,
+              190,
+              350,
+              220
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          },
+          {
+            "frame_idx": 39,
+            "box_norm_1000": [
+              300,
+              180,
+              340,
+              200
+            ],
+            "reason": "hard negative for descriptor/visual check"
+          }
+        ],
+        "positive_track_hypothesis": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              83,
+              76,
+              105,
+              94
+            ],
+            "reason": "initial clear detection",
+            "confidence": 0.95
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              83,
+              75,
+              102,
+              96
+            ],
+            "reason": "stable left lane position",
+            "confidence": 0.95
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              250,
+              300,
+              300,
+              350
+            ],
+            "reason": "partial visibility, trajectory shift",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 13,
+            "bbox_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "reason": "reappears under bridge",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 14,
+            "bbox_norm_1000": [
+              85,
+              90,
+              120,
+              130
+            ],
+            "reason": "continues left lane",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 37,
+            "bbox_norm_1000": [
+              85,
+              47,
+              120,
+              75
+            ],
+            "reason": "distance scaling, upper left",
+            "confidence": 0.85
+          },
+          {
+            "frame_idx": 39,
+            "bbox_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "reason": "stable partial visibility",
+            "confidence": 0.85
+          }
+        ],
+        "negative_memory_bank": [
+          {
+            "frame_idx": 0,
+            "bbox_norm_1000": [
+              220,
+              288,
+              242,
+              306
+            ],
+            "description": "hard negative",
+            "reason": "mid-right lane vehicle, similar scale"
+          },
+          {
+            "frame_idx": 1,
+            "bbox_norm_1000": [
+              340,
+              85,
+              360,
+              95
+            ],
+            "description": "hard negative",
+            "reason": "right lane vehicle, distinct position"
+          },
+          {
+            "frame_idx": 2,
+            "bbox_norm_1000": [
+              350,
+              150,
+              400,
+              200
+            ],
+            "description": "hard negative",
+            "reason": "right side vehicle, road context overlap"
+          },
+          {
+            "frame_idx": 13,
+            "bbox_norm_1000": [
+              300,
+              70,
+              340,
+              90
+            ],
+            "description": "hard negative",
+            "reason": "right lane under bridge, shadow interference"
+          },
+          {
+            "frame_idx": 14,
+            "bbox_norm_1000": [
+              300,
+              100,
+              340,
+              120
+            ],
+            "description": "hard negative",
+            "reason": "right lane partial occlusion"
+          },
+          {
+            "frame_idx": 37,
+            "bbox_norm_1000": [
+              300,
+              190,
+              350,
+              220
+            ],
+            "description": "hard negative",
+            "reason": "right lane distance scaling"
+          },
+          {
+            "frame_idx": 39,
+            "bbox_norm_1000": [
+              300,
+              180,
+              340,
+              200
+            ],
+            "description": "hard negative",
+            "reason": "right lane consistent distractor"
+          }
+        ],
+        "positive_prompt_plan": [
+          {
+            "frame_idx": 0,
+            "location_description": "left lane, clear view",
+            "box_norm_1000": [
+              83,
+              76,
+              105,
+              94
+            ],
+            "prompt_type": "box",
+            "confidence": 0.95,
+            "rationale": "high confidence anchor for SAM2 initialization"
+          },
+          {
+            "frame_idx": 13,
+            "location_description": "under bridge, left lane",
+            "box_norm_1000": [
+              85,
+              60,
+              120,
+              90
+            ],
+            "prompt_type": "box",
+            "confidence": 0.85,
+            "rationale": "conservative re-anchor after occlusion"
+          },
+          {
+            "frame_idx": 14,
+            "location_description": "left lane, partial visibility",
+            "box_norm_1000": [
+              85,
+              90,
+              120,
+              130
+            ],
+            "prompt_type": "box",
+            "confidence": 0.85,
+            "rationale": "stabilizes propagation through bridge exit"
+          }
+        ],
+        "promotion_preconditions": [
+          "descriptor positive-negative margin",
+          "story compatibility",
+          "2-of-3 temporal consistency or independent source agreement"
+        ],
+        "commit_policy": {
+          "merge_mode": "window",
+          "merge_radius": 2,
+          "clip_mode": "nearest",
+          "needs_delayed_confirmation": true,
+          "unsafe_frames": [
+            2
+          ]
+        },
+        "recommended_action": "manual_review",
+        "final_allowable": false,
+        "confidence": 0.75,
+        "failure_if_wrong": "Tracker drifts to same-class vehicle in right lane or locks onto bridge shadow/road markings due to partial occlusion, distance scaling, and trajectory jump at frame 2.",
+        "model_used": "qwen3.6-plus",
+        "mllm_cache_key": "e5f5b7b4996e98191a3190a68b45f9cf5ccd7743c1e517556c755b4addf3db81"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1161 @@
+{
+  "schema_version": "m18.temporal-ledger.v1",
+  "key": "4vznweiu:obj1",
+  "video": "4vznweiu",
+  "obj_id": 1,
+  "current_best_source": "m15_safe_current_track",
+  "current_state": "AMBIGUOUS",
+  "review_status": "needs_more_evidence",
+  "target_profile": {
+    "first_frame_description": "tiny semantic bead/letter-like object among adjacent beads/flowers",
+    "tiny": true,
+    "same_class_dense": true,
+    "edge_partial": false,
+    "category": "tiny bead/letter object",
+    "identity_cues": [
+      "T-like/letter bead relation",
+      "adjacent bead cluster",
+      "avoid flowers or neighboring letters"
+    ],
+    "first_frame_stats": {
+      "frame_count": 35,
+      "image_size": [
+        1080,
+        1920
+      ],
+      "object_ids": [
+        1
+      ],
+      "area": 2465,
+      "area_frac": 0.00118875,
+      "bbox": [
+        282,
+        461,
+        331,
+        520
+      ],
+      "edge_touch": false
+    }
+  },
+  "event_story": [
+    {
+      "frames": [
+        0,
+        34
+      ],
+      "state": "tiny_semantic_current_best",
+      "summary": "current path is weak but safer than broad aggressive alternatives",
+      "evidence": [
+        "docs/m15_layered_video_optim_report.md",
+        "docs/m16_remaining_reanchor_report.md"
+      ],
+      "allowed_output": "keep_current"
+    }
+  ],
+  "positive_memory": [
+    {
+      "memory_id": "4v_first_gt",
+      "kind": "positive",
+      "source": "first_frame_gt",
+      "frames": [
+        0
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "tiny target bead/letter reference",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "first_gt",
+        "tiny"
+      ]
+    }
+  ],
+  "distractor_memory": [
+    {
+      "memory_id": "4v_adjacent_letters_flowers",
+      "kind": "distractor",
+      "source": "m15_4v_window",
+      "frames": [
+        1,
+        34
+      ],
+      "bbox": null,
+      "mask_ref": null,
+      "description": "adjacent bead/flower candidates selected by aggressive probe",
+      "evidence": [],
+      "confidence": null,
+      "tags": [
+        "hard_negative",
+        "semantic_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        302,
+        230,
+        335,
+        288
+      ],
+      "mask_ref": null,
+      "description": "Adjacent letter cube",
+      "evidence": [
+        "Similar scale and white base, high risk of ID switch"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f1_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        324,
+        346,
+        356,
+        403
+      ],
+      "mask_ref": null,
+      "description": "Central letter-like cube",
+      "evidence": [
+        "Matches target size and pattern density"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f10_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        10
+      ],
+      "bbox": [
+        216,
+        384,
+        248,
+        442
+      ],
+      "mask_ref": null,
+      "description": "Scattered bead/floral element",
+      "evidence": [
+        "Overlaps with 'bead-like' cue, visually ambiguous"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f20_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        216,
+        384,
+        259,
+        461
+      ],
+      "mask_ref": null,
+      "description": "Small floral/letter hybrid",
+      "evidence": [
+        "Similar contrast and partial occlusion profile"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_hard_distractor_f34_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        216,
+        384,
+        238,
+        422
+      ],
+      "mask_ref": null,
+      "description": "Grid-adjacent small object",
+      "evidence": [
+        "Proximity to target path, similar silhouette"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "hard_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        194,
+        422,
+        227,
+        480
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        259,
+        346,
+        292,
+        403
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f1_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        54,
+        115,
+        86,
+        173
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f1_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        270,
+        192,
+        302,
+        250
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f2_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        270,
+        480,
+        324,
+        576
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f10_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        10
+      ],
+      "bbox": [
+        108,
+        192,
+        140,
+        250
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f10_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        10
+      ],
+      "bbox": [
+        270,
+        480,
+        302,
+        538
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f20_7",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        54,
+        96,
+        97,
+        173
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f34_8",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        54,
+        96,
+        76,
+        134
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_old_position_distractor_f34_9",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        194,
+        346,
+        216,
+        384
+      ],
+      "mask_ref": null,
+      "description": "old_position_distractors",
+      "evidence": [
+        "Target cannot still be here after event; historical position"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "old_position_distractor"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        302,
+        230,
+        335,
+        288
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: adjacent letter cube"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        400,
+        77,
+        432,
+        134
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: distant small cube"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f1_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        324,
+        346,
+        356,
+        403
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: central letter-like object"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f2_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        378,
+        288,
+        432,
+        384
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: grid-scattered cube"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f10_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        10
+      ],
+      "bbox": [
+        216,
+        384,
+        248,
+        442
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: bead-like distractor"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f20_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        216,
+        384,
+        259,
+        461
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: floral/letter hybrid"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_verification_box_f34_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        216,
+        384,
+        238,
+        422
+      ],
+      "mask_ref": null,
+      "description": "negative_boxes_for_verification",
+      "evidence": [
+        "Hard negative for descriptor/visual check: occluded small object"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_verification_box"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_0",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        302,
+        230,
+        335,
+        288
+      ],
+      "mask_ref": null,
+      "description": "Adjacent letter cube",
+      "evidence": [
+        "Same class, similar scale, high confusion risk"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f0_1",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        0
+      ],
+      "bbox": [
+        400,
+        77,
+        432,
+        134
+      ],
+      "mask_ref": null,
+      "description": "Distant small cube",
+      "evidence": [
+        "Matches color/size but spatially isolated"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f1_2",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        324,
+        346,
+        356,
+        403
+      ],
+      "mask_ref": null,
+      "description": "Central letter-like cube",
+      "evidence": [
+        "Pattern density matches target, potential ID switch"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f1_3",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        1
+      ],
+      "bbox": [
+        216,
+        480,
+        248,
+        538
+      ],
+      "mask_ref": null,
+      "description": "Lower grid cube",
+      "evidence": [
+        "Similar white base, different letter orientation"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f2_4",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        2
+      ],
+      "bbox": [
+        378,
+        288,
+        432,
+        384
+      ],
+      "mask_ref": null,
+      "description": "Scattered grid cube",
+      "evidence": [
+        "Overlaps with target's potential motion path"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f10_5",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        10
+      ],
+      "bbox": [
+        216,
+        384,
+        248,
+        442
+      ],
+      "mask_ref": null,
+      "description": "Bead-like distractor",
+      "evidence": [
+        "Matches 'bead' cue, high visual similarity"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f10_6",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        10
+      ],
+      "bbox": [
+        324,
+        288,
+        356,
+        346
+      ],
+      "mask_ref": null,
+      "description": "Grid-adjacent small object",
+      "evidence": [
+        "Similar contrast, static background element"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f20_7",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        216,
+        384,
+        259,
+        461
+      ],
+      "mask_ref": null,
+      "description": "Floral/letter hybrid",
+      "evidence": [
+        "Partial occlusion mimics target state"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f20_8",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        20
+      ],
+      "bbox": [
+        324,
+        576,
+        367,
+        653
+      ],
+      "mask_ref": null,
+      "description": "Lower-right small object",
+      "evidence": [
+        "Similar size, different semantic pattern"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f34_9",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        216,
+        384,
+        238,
+        422
+      ],
+      "mask_ref": null,
+      "description": "Grid-adjacent small object",
+      "evidence": [
+        "Proximity to target path, similar silhouette"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    },
+    {
+      "memory_id": "m18_atlas_negative_bank_f34_10",
+      "kind": "distractor",
+      "source": "m18_sameclass_atlas",
+      "frames": [
+        34
+      ],
+      "bbox": [
+        324,
+        288,
+        346,
+        326
+      ],
+      "mask_ref": null,
+      "description": "Upper-right small object",
+      "evidence": [
+        "Static distractor, matches color/size profile"
+      ],
+      "confidence": null,
+      "tags": [
+        "mllm_atlas",
+        "negative_memory_bank"
+      ]
+    }
+  ],
+  "candidate_anchors": [
+    {
+      "anchor_id": "4v_m15_window",
+      "source": "m15_4v_window",
+      "frame_idx": 1,
+      "bbox": null,
+      "mask_ref": null,
+      "description": "aggressive bead/letter window",
+      "positive_evidence": [
+        "non-empty alternative"
+      ],
+      "negative_evidence": [
+        "shifts between bead cluster and flowers; aggressive regressed"
+      ],
+      "temporal_story_compatibility": 0.1,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "Qwen_event",
+        "SAM2"
+      ],
+      "risk_tags": [
+        "same_class_dense",
+        "semantic_swap",
+        "aggressive_regression"
+      ],
+      "decision": "reject",
+      "decision_reason": "Not final-allowable without high-resolution letter atlas.",
+      "review_status": "rejected"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f0_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 0,
+      "bbox": [
+        130,
+        115,
+        162,
+        173
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Clear 'T' letter on white cube, top-left quadrant"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f1_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 1,
+      "bbox": [
+        130,
+        77,
+        162,
+        134
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Blue-outlined 'T' on white cube, consistent with F0"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f2_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 2,
+      "bbox": [
+        162,
+        96,
+        216,
+        192
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "White cube with single letter, slight rightward shift"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.8,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_target_f10_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 10,
+      "bbox": [
+        162,
+        115,
+        194,
+        173
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Small white bead-like object, cue drift from letter to bead"
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.7,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f0_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 0,
+      "bbox": [
+        130,
+        115,
+        162,
+        173
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Two consistent cues: 'letter shape' and 'cube texture' align with reference. High visual clarity."
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_reanchor_f1_E1",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 1,
+      "bbox": [
+        130,
+        77,
+        162,
+        134
+      ],
+      "mask_ref": null,
+      "description": "E1",
+      "positive_evidence": [
+        "Two consistent cues: 'cube shape' and 'letter pattern' persist. Minimal displacement from F0 supports continuity."
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    },
+    {
+      "anchor_id": "m18_atlas_prompt_f0",
+      "source": "m18_sameclass_atlas",
+      "frame_idx": 0,
+      "bbox": [
+        130,
+        115,
+        162,
+        173
+      ],
+      "mask_ref": null,
+      "description": "Top-left quadrant, small white cube with dark 'T'",
+      "positive_evidence": [
+        "Highest clarity frame with two aligned identity cues. Safe for SAM2 initialization."
+      ],
+      "negative_evidence": [],
+      "temporal_story_compatibility": 0.85,
+      "descriptor_margin": null,
+      "independent_sources": [
+        "m18_sameclass_atlas"
+      ],
+      "risk_tags": [
+        "mllm_atlas",
+        "same_class_dense",
+        "prompt_plan"
+      ],
+      "decision": "needs_more_evidence",
+      "decision_reason": "MLLM atlas candidate requires descriptor margin, hard-negative check, and delayed confirmation before promotion.",
+      "review_status": "needs_more_evidence"
+    }
+  ],
+  "score_history": [
+    {
+      "source": "m15_safe",
+      "hidden_jf_new": 43.44,
+      "row_jf_new": 33.5,
+      "row_j": 36.38,
+      "row_f_new": 37.64,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "unchanged safe row"
+    },
+    {
+      "source": "m15_aggressive",
+      "hidden_jf_new": 43.38,
+      "row_jf_new": null,
+      "row_j": null,
+      "row_f_new": null,
+      "delta_vs_previous_row_jf_new": null,
+      "note": "aggressive package with 1ql/4v additions regressed globally"
+    }
+  ],
+  "source_table": [],
+  "next_review_windows": [
+    {
+      "frames": [
+        0,
+        1,
+        10,
+        20,
+        34
+      ],
+      "question": "build high-resolution bead/letter atlas before any replacement"
+    }
+  ],
+  "hard_rules": [
+    "MLLM coordinates are review evidence, not mask truth.",
+    "Same-class dense candidates require delayed confirmation before promotion.",
+    "If a candidate is closer to hard-negative memory than positive memory, reject it."
+  ],
+  "notes": [
+    "Gate-B atlas integrated from gateb_records.json: 7 candidates, 33 distractors. All MLLM positives remain needs_more_evidence."
+  ]
+}

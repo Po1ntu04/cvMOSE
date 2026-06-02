@@ -1,0 +1,50 @@
+{
+  "workspace": "/home/yu/projects/cv/from fdu/MOSEv2",
+  "roots": {
+    "SAM2": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m17_q0_full_box",
+    "M11": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m15_layered_safe",
+    "trim": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m17_q0_story_trim_after34",
+    "rump30": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m17_q0_story_rump_30_33",
+    "rump31": "/home/yu/projects/cv/from fdu/MOSEv2/homework/pred_m17_q0_story_rump_31_33"
+  },
+  "sheets": [
+    {
+      "video": "q0sizv6m",
+      "frames": 42,
+      "selected_frames": [
+        0,
+        4,
+        7,
+        9,
+        11,
+        13,
+        14,
+        16,
+        18,
+        20,
+        22,
+        24,
+        26,
+        28,
+        30,
+        31,
+        33,
+        35,
+        37,
+        39,
+        41
+      ],
+      "columns": [
+        "RGB",
+        "SAM2",
+        "M11",
+        "trim",
+        "rump30",
+        "rump31",
+        "delta last vs SAM2",
+        "zoom"
+      ],
+      "path": "docs/assets/m17_q0_story_compare/q0sizv6m_m6_compare.jpg"
+    }
+  ]
+}
