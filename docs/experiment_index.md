@@ -297,3 +297,9 @@ cvMOSE/
   - `submission_mosev2_m20_sam3_strict_aggressive.zip` — 3 frame-level SAM3-gated probes on `8jsm23a7`; score-probe only.
   - All pass validator with `433` dirs, `66526` PNGs, and `provided_changed_count=0`.
 - Live b101 smoke: `4vznweiu` live candidates all rejected; `8jsm23a7` had one output-only frame that overlapped current M17, so no new verified SAM3 recovery yet.
+# Formal paper report
+
+- Source: `paper/main.tex`
+- Reproducible figure generator: `paper/make_figures.py`
+- Submission-ready PDF: `paper/MOSEv2_training_free_reanchor_report.pdf`
+- Scope: problem formulation, SAM2/SAM3 mechanism, failure taxonomy, training-free re-anchor architecture, hidden-score ablations, qualitative successes/failures, limitations, and reproducibility invariants.
