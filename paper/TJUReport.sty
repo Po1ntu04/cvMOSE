@@ -1,0 +1,93 @@
+\ProvidesPackage{TJUReport}
+
+%% --- 1. 基础宏包 ---
+\RequirePackage{latexsym,amssymb,amsmath,amsbsy,amsopn,amstext,amsthm,amsxtra,color,bm,calc,ifpdf}
+\RequirePackage{graphicx}
+\RequirePackage{enumerate}
+\RequirePackage{fancyhdr}
+\RequirePackage{listings}
+\RequirePackage{multirow}
+\RequirePackage{makeidx}
+\RequirePackage{xcolor}
+\PassOptionsToPackage{hyphens}{url}
+\RequirePackage{pythonhighlight}
+\RequirePackage{tcolorbox}
+\RequirePackage{fontawesome}
+
+%% --- 2. 摘要样式 ---
+\renewcommand{\abstractname}{\textbf{\large {摘\quad 要}}} 
+
+% 下划线定义
+\makeatletter
+\newcommand\dlmu[2][4cm]{\hskip1pt\underline{\hb@xt@ #1{\hss#2\hss}}\hskip3pt}
+\makeatother
+
+%% --- 3. 中文引用名修改 ---
+\def\equationautorefname{式}
+\def\footnoteautorefname{脚注}
+\def\itemautorefname{项}
+\def\figureautorefname{图}
+\def\tableautorefname{表}
+\def\partautorefname{篇}
+\def\appendixautorefname{附录}
+\def\chapterautorefname{章}
+\def\sectionautorefname{节}
+\def\subsectionautorefname{小小节}
+\def\theoremautorefname{定理}
+
+\newtheorem{Theorem}{定理}[section]
+\newtheorem{Lemma}[Theorem]{引理}
+\newtheorem{Corollary}[Theorem]{推论}
+\newtheorem{Proposition}[Theorem]{命题}
+\newtheorem{Definition}[Theorem]{定义}
+\newtheorem{Example}[Theorem]{例}
+
+%% --- 4. 参考文献设置 ---
+\newcommand{\reference}{
+    \bibliographystyle{unsrt} 
+    \begin{center}
+        \bibliography{reference} 
+    \end{center}
+}
+
+%% --- 5. 文本框设置 ---
+\newcommand{\tbox}[1]{
+    \begin{center}
+    \begin{tcolorbox}[colback=gray!10,
+                      colframe=black,
+                      width=0.9\textwidth, 
+                      arc=1mm, auto outer arc,
+                      boxrule=0.5pt]
+    {#1}
+    \end{tcolorbox}
+    \end{center}
+}
+
+%% --- 6. 页眉设置 (修正：使用图片) ---
+\pagestyle{fancy}
+% 【重要】请确保 figures/tongjilogo.png 存在，这是页眉的小校徽
+% 如果您的文件名不同，请修改下方的大括号内的文件名
+\fancyhead[L]{\includegraphics[height=0.8cm]{figures/tongjilogo.png}} 
+\fancyhead[C]{}
+\fancyhead[R]{}
+
+%% --- 7. 封面命令 (修正：防止分页) ---
+\newcommand{\cover}{
+    \begin{titlepage} % 使用 titlepage 环境确保独占一页
+        \thispagestyle{fancy} % 确保封面也有页眉（根据您的截图需求）
+        
+        \centering
+        \vspace*{1cm} % 顶部留白
+        
+        % 【关键修改】直接插入图片，不要用 figure 环境
+        \includegraphics[width=0.5\textwidth]{figures/tongji.png} 
+        
+        \vspace{-1cm} % 图片和标题之间的距离
+        
+        % 调用标准标题生成，并防止其内部换页
+        {\let\newpage\relax \maketitle}
+        
+        \vfill % 底部填充
+    \end{titlepage}
+    % titlepage 环境结束后会自动换页，所以摘要会自然去下一页
+}
