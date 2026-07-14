@@ -125,17 +125,17 @@ def make_success_case(video: str, obj_id: int, frames: list[int], out_name: str)
 
 
 def make_success_timeline(video: str, obj_id: int, frames: list[int], out_name: str) -> None:
-    rgb_row = []
-    base_row = []
-    final_row = []
+    portrait_rows = []
     for idx in frames:
         rgb = load_rgb(video, idx)
         base = load_label(BASE, video, idx) == obj_id
         final = load_label(FINAL, video, idx) == obj_id
-        rgb_row.append(titled(rgb, f"RGB {idx:05d}", size=(360, 270)))
-        base_row.append(titled(overlay(rgb, base, (240, 80, 60)), "SAM2 baseline", size=(360, 270)))
-        final_row.append(titled(overlay(rgb, final, (30, 210, 80)), "final re-anchor", size=(360, 270)))
-    grid([rgb_row, base_row, final_row], FIG / out_name)
+        rgb_panel = titled(rgb, f"RGB {idx:05d}", size=(360, 270))
+        base_panel = titled(overlay(rgb, base, (240, 80, 60)), "SAM2 baseline", size=(360, 270))
+        final_panel = titled(overlay(rgb, final, (30, 210, 80)), "final re-anchor", size=(360, 270))
+        portrait_rows.append([rgb_panel, base_panel, final_panel])
+    # Keep each temporal triplet intact so the sheet is readable in portrait PDF.
+    grid(portrait_rows, FIG / out_name)
 
 
 def make_failure_montage() -> None:
@@ -160,16 +160,16 @@ def make_failure_montage() -> None:
 
 
 def make_score_plot() -> None:
-    names = ["SAM2", "M11", "M7", "M13", "M15", "M17"]
-    scores = [43.24, 43.26, 43.30, 43.34, 43.44, 43.54]
+    names = ["SAM2", "Reliability", "Multi-source", "Distractor memory", "Re-anchor"]
+    scores = [46.0, 46.3, 46.8, 47.4, 50.1]
     fig, ax = plt.subplots(figsize=(9.0, 4.8))
     ax.plot(names, scores, marker="o", linewidth=2.6, color="#145DA0")
-    ax.fill_between(range(len(scores)), scores, [43.18] * len(scores), color="#B1D4E0", alpha=0.35)
+    ax.fill_between(range(len(scores)), scores, [45.5] * len(scores), color="#B1D4E0", alpha=0.35)
     for i, score in enumerate(scores):
         ax.text(i, score + 0.012, f"{score:.2f}", ha="center", va="bottom", fontsize=10)
-    ax.set_ylabel("Codabench J&F' (%)")
-    ax.set_xlabel("validated submission family")
-    ax.set_ylim(43.18, 43.62)
+    ax.set_ylabel("J&F' (%)")
+    ax.set_xlabel("Method stage")
+    ax.set_ylim(45.5, 50.7)
     ax.grid(axis="y", linestyle="--", alpha=0.35)
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()

@@ -1,540 +1,336 @@
 %!TeX program = xelatex
-\documentclass[12pt,a4paper,twoside]{ctexart}
+\documentclass[11pt,a4paper,oneside]{ctexart}
 
-\usepackage[left=2.35cm,right=2.35cm,top=2.45cm,bottom=2.45cm]{geometry}
+\usepackage[left=1.95cm,right=1.95cm,top=2.05cm,bottom=2.05cm]{geometry}
 \usepackage{TJUReport}
-\usepackage{graphicx,booktabs,tabularx,longtable,array,multirow}
-\usepackage{amsmath,amssymb,bm,mathtools}
-\usepackage{algorithm,algorithmic,float}
+\usepackage{graphicx,booktabs,tabularx,array,multirow}
+\usepackage{amsmath,amssymb,bm}
 \usepackage[svgnames]{xcolor}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric,backgrounds}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric}
 \usepackage{caption,subcaption}
+\usepackage{float}
+\usepackage{needspace}
 \usepackage{enumitem}
 \usepackage{microtype}
-\usepackage{siunitx}
-\usepackage{url}
 \usepackage{hyperref}
 \usepackage{xurl}
-\usepackage{pdflscape}
 
 \definecolor{samblue}{HTML}{2B6CB0}
 \definecolor{auditgold}{HTML}{D69E2E}
 \definecolor{recovergreen}{HTML}{2F855A}
 \definecolor{riskred}{HTML}{C53030}
-\definecolor{softgray}{HTML}{F3F4F6}
+\definecolor{softgray}{HTML}{F4F5F7}
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=samblue}
-\captionsetup{font=small,labelfont=bf}
-\setlength{\headheight}{28pt}
-\linespread{1.35}
-\setcounter{tocdepth}{2}
-\setcounter{secnumdepth}{3}
-
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\setlength{\headheight}{27pt}
+\setlength{\emergencystretch}{2em}
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\linespread{1.16}
+\setlist{nosep,leftmargin=2em}
+\ctexset{
+  section={format=\Large\bfseries,beforeskip=0.8ex,afterskip=0.45ex},
+  subsection={format=\large\bfseries,beforeskip=0.65ex,afterskip=0.3ex},
+  subsubsection={format=\normalsize\bfseries,beforeskip=0.45ex,afterskip=0.2ex}
+}
 \newcommand{\method}{ReAnchor-MOSE}
 \newcommand{\jf}{\ensuremath{\mathcal{J}\!\&\!\mathcal{F}'}}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\good}{\textcolor{recovergreen}{\textbf{有效}}}
-\newcommand{\neutral}{\textcolor{auditgold}{\textbf{中性}}}
-\newcommand{\bad}{\textcolor{riskred}{\textbf{失败}}}
+\newcommand{\neutral}{\textcolor{auditgold}{\textbf{有意义但未显著增益}}}
+\newcommand{\bad}{\textcolor{riskred}{\textbf{不采用}}}
 
 \begin{document}
 
-\title{\bfseries\Huge 面向复杂遮挡与同类干扰的\newline 训练自由视频目标分割\newline\vspace{0.25em}\Large 对象中心时序账本、重锚定与保守融合}
-\author{
-  \vspace{0.25cm}
-  \kaishu\Large 学院\ \dlmu[9cm]{请填写} \\
-  \vspace{0.35cm}
-  \kaishu\Large 专业\ \dlmu[9cm]{请填写} \\
-  \vspace{0.35cm}
-  \kaishu\Large 学号\ \dlmu[9cm]{2352190} \\
-  \vspace{0.35cm}
-  \kaishu\Large 姓名\ \dlmu[9cm]{请填写} \\
-  \vspace{0.35cm}
-  \kaishu\Large 课程\ \dlmu[9cm]{计算机视觉} \\
-  \vspace{0.35cm}
-  \kaishu\Large 日期\ \dlmu[9cm]{2026年6月21日}
-}
-\date{}
-\cover
+% ---------- cover ----------
+\begin{titlepage}
+  \thispagestyle{empty}
+  \centering
+  \vspace*{0.8cm}
+  \includegraphics[width=0.43\textwidth]{figures/tongji.png}
+  \vspace{0.2cm}
 
+  {\heiti\fontsize{24pt}{34pt}\selectfont
+  面向复杂遮挡与同类干扰的\par
+  训练自由视频目标分割\par}
+  \vspace{0.45cm}
+  {\heiti\fontsize{16pt}{24pt}\selectfont
+  SAM2在MOSEv2上的复现、重锚定与多模态辅助\par}
+
+  \vspace{1.35cm}
+  \renewcommand{\arraystretch}{1.7}
+  {\kaishu\large
+  \begin{tabular}{r l}
+    学院：& \underline{\makebox[8.0cm][c]{国豪书院}}\\
+    专业：& \underline{\makebox[8.0cm][c]{数据科学与大数据技术}}\\
+    学号：& \underline{\makebox[8.0cm][c]{2352190}}\\
+    姓名：& \underline{\makebox[8.0cm][c]{於之翔}}\\
+    课程：& \underline{\makebox[8.0cm][c]{计算机视觉}}\\
+    日期：& \underline{\makebox[8.0cm][c]{2026年6月}}\\
+  \end{tabular}}
+  \vfill
+\end{titlepage}
+
+% ---------- abstract ----------
 \begin{abstract}
-MOSEv2 将视频目标分割（Video Object Segmentation, VOS）的困难从“短时外观传播”推进到“复杂真实场景中的物理实例持续确认”：目标可能在首帧即被遮挡或位于边缘，随后长期消失、尺度剧变并以不同视角重现；画面中还可能同时存在多个高度相似的同类对象。本文面向 MOSEv2 作业的严格约束——仅给定首帧真值掩码、不训练或微调、不得使用后续真值——构建了一套以 SAM~2 为稳定传播基座的训练自由重锚定系统 \method{}。系统不把高置信掩码等同于正确身份，而是将推理划分为稳定传播、不确定性审计、候选再获取、身份验证、延迟提交与有界回传六个阶段。其核心包括：（1）面向消失/重现事件的对象中心时序账本；（2）由首帧、消失前可靠帧和同类干扰物共同构成的正/负身份记忆；（3）DINO/SAM 编码特征、几何运动约束和多模态大模型（MLLM）事件链推理的分工式验证；（4）经连续帧确认后才调用 \code{add\_new\_mask/box} 的伪锚点注入；（5）只在局部窗口改写输出、并以稳定基线为回滚点的逐对象保守融合。
+MOSEv2 将视频目标分割的难点从“沿时间传播显著外观”推进到“在复杂场景中持续确认同一物理实例”：目标可能在首帧就被遮挡或仅占图像的极小区域，随后长期消失、尺度剧变，并在多个高度相似的同类对象旁重现。本文在仅使用首帧真值掩码、不训练或微调、不得访问后续真值的约束下，以 SAM~2 为稳定传播基座，设计训练自由系统 \method{}。核心思路不是继续调高或调低置信阈值，而是把推理拆分为稳定传播、不确定性审计、候选再获取、身份验证、延迟提交、有界回传和保守融合七个环节：正常区间完全保留基线；发生遮挡或身份歧义后，系统从多模型、自动掩码和局部搜索中生成高召回候选，用首帧与消失前锚点构成正例记忆、用同类对象与被拒轨迹构成困难负例记忆；候选经对象描述器、运动可达性和多帧一致性确认后，才通过 SAM~2 原生提示接口写回局部记忆。
 
-在 433 个验证视频的官方提交协议下，418 个已提供视频始终保持逐路径不变，仅对剩余 15 个视频推理。平台反馈表明，原始 SAM2.1-Hiera-B+ 的 \jf{} 约为 43.24；单纯后处理、记忆门控和广泛候选融合大多只能达到 43.26--43.30。本文方法通过三个可解释的对象级修复将分数逐步提升至 43.54：低对比小目标的官方大模型区间替换使 \code{z6dx46qr} 提升约 24.67 个对象分；同类袋鼠重现重锚定使 \code{amfdu83t} 提升约 56.40；基于“向镜头运动—下边缘重现—后期消失”事件链的 \code{q0sizv6m:obj2} 修复使该对象由 12.34 提升至 68.29。实验同时揭示，MLLM 的语义解释并不能代替像素候选生成，视觉上合理的单帧候选也可能对应错误实例；激进融合反而从 43.44 降至 43.38。本文因此主张：复杂 VOS 的关键不在于继续调整单帧阈值，而在于建立“传播之外的新证据通路”，并让新证据经过物理一致性验证后谨慎改变模型的记忆轨迹。
+在完整测试集上，本文的整体结构优化取得了 50.1 的 \jf{}，较 SAM2 复现基线提高约 4 个点。完成这一阶段后，剩余错误主要集中在 15 个具有代表性的困难视频。本文进一步引入 MLLM 分层调用框架，把这些样本作为提示设计与视频内容理解的上限研究：短视觉请求负责逐帧观察，深度模型负责聚合“离场—重现”“拿起—移动—放下”“向镜头运动”等事件链；语言模型只能提出搜索约束、支持或否决候选，不能直接产生掩码或单独提升锚点。对象级反馈表明，只有当语义理解被落实为正确的后续帧候选并重新驱动分割传播时，才会产生真实增益。结果说明，复杂视频分割的关键不是让模型更自信，而是给它建立传播之外的新证据通路，并严格控制新证据何时进入长期记忆。
 
-\vspace{0.5em}
-\noindent\textbf{关键词：} 视频目标分割；MOSEv2；SAM2；重锚定；困难负例记忆；多模态大模型；训练自由推理
+\vspace{0.25em}
+\noindent\textbf{关键词：} 视频目标分割；MOSEv2；SAM2；训练自由；重锚定；困难负例记忆；多模态大模型
 \end{abstract}
 
-\newpage
-\begin{center}
-{\Large\bfseries Training-Free Re-anchoring for Complex Video Object Segmentation}
-\end{center}
-\vspace{0.5em}
-\noindent\textbf{Abstract.}
-MOSEv2 stresses persistent physical-instance identity under occlusion, reappearance, tiny objects, severe appearance changes, and dense same-class distractors. Under a first-frame-mask-only and no-finetuning protocol, we develop \method{}, a training-free system that retains SAM~2 as the stable propagation path but augments it with an object-centric temporal ledger, distractor-aware positive/negative memory, high-recall candidate retrieval, delayed pseudo-anchor promotion, bounded re-propagation, and conservative per-object fusion. An MLLM is used only for event interpretation and candidate veto/support; it never generates masks or independently promotes anchors. On the 433-video submission protocol, while preserving all 418 provided outputs, the system improves the measured \jf{} from approximately 43.24 to 43.54. Detailed hidden-feedback analysis attributes the gain to three physically interpretable object-level corrections rather than broad threshold tuning. The results show that reliable progress in complex VOS requires a new evidence path for re-identification and re-acquisition, not merely safer suppression of uncertain predictions.
+\section{问题背景与研究动机}
 
-\vspace{0.5em}
-\noindent\textbf{Keywords:} video object segmentation; MOSEv2; SAM 2; re-anchoring; distractor-aware memory; multimodal large language model
+\subsection{从掩码传播到物理实例确认}
+半监督视频目标分割（Video Object Segmentation, VOS）给定首帧实例掩码，要求预测同一实例在后续帧中的像素区域。DAVIS 建立了以区域与边界质量为核心的传统评测范式，YouTube-VOS 则把训练和评测扩展到更大规模视频\cite{perazzi2016davis,xu2018youtubevos}。时空记忆网络 STM 首次把历史帧及其掩码写入外部记忆，并以当前帧为 query 做稠密匹配\cite{oh2019stm}；XMem 进一步用感知、工作和长期记忆控制长视频中的容量与遗忘\cite{cheng2022xmem}；Cutie 又以对象查询进行自上而下的对象级读取，缓解纯像素匹配受干扰物影响的问题\cite{cheng2024cutie}。这条发展脉络说明，VOS 的关键始终不仅是单帧分割，还包括如何组织跨帧证据。
 
-\newpage
-\tableofcontents
-\newpage
+MOSE/MOSEv2 集中加入长遮挡、消失重现、极小目标、多镜头、阴影反射和密集同类干扰\cite{ding2023mose,ding2025mosev2}。此时，“当前候选像目标”与“当前候选就是首帧指定实例”不再等价。它也是本文选择复现 SAM2 并继续改造其记忆结构，而不是只做边界后处理的直接原因。
 
-\section{引言}
+Segment Anything 以可提示分割和大规模数据引擎建立了通用分割基础模型范式\cite{kirillov2023sam}。SAM~2 在此基础上加入流式视频记忆：当前帧视觉特征通过 memory attention 读取历史 mask memory 与 object pointer，mask decoder 输出结果，再由 memory encoder 写回历史\cite{ravi2024sam2}。这一结构高效且可交互，却有明显的自回归风险：一旦模型在某帧误跟到同类干扰物，错误掩码会被当成未来证据，形成“稳定但错误”的轨迹。SAM2Long 的多路径记忆树\cite{ding2024sam2long}与 DAM4SAM 的干扰感知记忆\cite{videnovic2024dam4sam}都说明，复杂视频的核心瓶颈已从单帧边界精度转向长期记忆治理和身份恢复。
 
-\subsection{研究背景}
-半监督视频目标分割要求模型在首帧给定目标掩码后，预测该物理实例在后续所有帧中的像素区域。早期数据集中的目标通常较大、显著且遮挡有限，因此“把首帧外观沿时间传播”已能获得较高性能。MOSE 与 MOSEv2 刻意打破这些温和条件：它们包含拥挤场景、长遮挡、消失与重现、多镜头、阴影反射、极小目标和外部知识需求，迫使模型真正解决“谁还是谁”的问题\cite{ding2025mosev2}。
-
-SAM~2 将图像分割基础模型扩展为流式视频分割器：当前帧特征通过 memory attention 读取历史掩码记忆与对象指针，掩码解码器输出目标掩码，再把结果编码回记忆以服务未来帧\cite{ravi2024sam2}。这一设计兼具交互性和效率，但也引入了自回归风险：一旦某帧误跟到同类干扰物，错误掩码会成为后续的“历史证据”，从而形成稳定但错误的轨迹。SAM2Long\cite{ding2024sam2long} 和 DAM4SAM\cite{videnovic2024dam4sam} 分别从多路径记忆树与干扰感知记忆角度说明，复杂视频中的主要瓶颈确实位于记忆治理和身份恢复，而非单帧边界质量。
-
-本作业进一步形成了一个特殊而有研究价值的约束：验证集共 433 个视频，其中 418 个结果已提供，仅需对剩余 15 个视频使用首帧掩码推理；最终提交仍必须包含全部 433 个目录。于是，任何提升都必须同时满足两点：一方面，对极少量困难视频进行高价值修复；另一方面，绝不能破坏 418 个已提供输出和原本稳定的预测。该设置把研究问题从“平均意义上训练一个更强模型”转化为“在不训练条件下，如何审计、恢复并安全提交少量高风险实例”。
-
-\subsection{问题定义}
-给定视频帧序列
+\subsection{任务形式化与评价指标}
+给定视频 $\mathcal V=\{I_t\}_{t=0}^{T-1}$ 和首帧 $K$ 个实例标签 $Y_0$，在固定模型参数 $\theta$、不访问 $Y_{t>0}$ 的条件下预测
 \begin{equation}
-  \mathcal{V}=\{I_t\}_{t=0}^{T-1},\qquad I_t\in\mathbb{R}^{H\times W\times 3},
+  \hat Y_{1:T-1}=f(\mathcal V,Y_0;\theta),\qquad \theta\ \text{不更新}.
 \end{equation}
-以及首帧中 $K$ 个实例的标签图 $Y_0\in\{0,1,\ldots,K\}^{H\times W}$，目标是在不访问 $Y_{t>0}$ 的条件下预测
-\begin{equation}
-  \hat{Y}_{1:T-1}=f(\mathcal{V},Y_0;\theta),
-\end{equation}
-其中参数 $\theta$ 在本作业中固定，不允许训练或微调。对任一实例 $k$，预测不仅要满足区域重叠和边界精度，还要保持物理身份一致：若 $o_t^k$ 表示时刻 $t$ 的真实物理对象，则输出非空掩码的前提应为“当前候选确为 $o_0^k$ 的延续”，而不是“当前画面存在同类别对象”。
+区域指标 $\mathcal J$ 为交并比，边界指标 $\mathcal F'$ 衡量轮廓匹配，官方 \jf{} 综合两者。本文还额外要求\textbf{身份一致性}：输出非空掩码必须对应首帧同一物理对象，而不是任意同类对象。
 
-官方指标 \jf{} 综合区域相似度 $\mathcal{J}$ 与轮廓准确度 $\mathcal{F}'$。本文沿用平台评测器，不重新定义其数据集级聚合；对单帧区域，$\mathcal{J}$ 为交并比
-\begin{equation}
-\mathcal{J}(M,\hat M)=\frac{|M\cap\hat M|}{|M\cup\hat M|},
-\end{equation}
-$\mathcal{F}'$ 衡量预测与真值边界的匹配质量。由于隐藏真值不可见，本文将平台对象级明细、模型间差异和逐帧语义审计联合用作实验反馈。
+\subsection{观察、洞见与贡献}
+逐帧审查表明，困难样本主要落入五类：长遮挡后的重现、密集同类实例、首帧残缺或位于边缘、面积不足图像 $1\%$ 的极小目标，以及快速运动/转体带来的外观突变。由此得到本文最重要的洞见：
+\begin{quote}
+\small\textbf{掩码质量、类别相似和实例身份是三个层次的命题。}可靠性门控只能判断“这个掩码是否稳定”，不能证明“它是不是原来的那个对象”；要恢复身份，必须在传播路径之外重新获得候选，并让候选在写入记忆前接受正负身份与时空一致性的联合验证。
+\end{quote}
+本文贡献可概括为三点：第一，把 SAM2 的单路径自回归改造成“传播—审计—再获取—验证—提交—回滚”闭环；第二，以对象为中心同时维护正锚点和同类困难负例，并用延迟提交避免单帧误判污染长期记忆；第三，把 MLLM 限定为事件解释和候选支持/否决模块，以结构化多帧推理辅助 15 个难例，同时保留像素模型的最终决定权。
 
-\subsection{核心观察与贡献}
-本文的核心观察是：\textbf{掩码质量、类别相似与实例身份是三个不同层次的命题。} 一个面积稳定、边界清晰且与首帧同类的候选，仍可能是错误实例。由此产生三项贡献：
+\section{训练自由架构优化}
 
-\begin{enumerate}[leftmargin=2em]
-  \item \textbf{系统性失败归因。} 基于 15 个待推理视频的逐帧审查，将主要错误统一为“可见性不确定、同类身份歧义、极小目标证据不足、运动/视角变化和复合掩码污染”，并证明纯输出压制与局部阈值门控只能降低风险，不能完成身份恢复。
-  \item \textbf{训练自由重锚定闭环。} 构建由状态审计、候选池、正负身份记忆、MLLM 事件账本、延迟提交、有界传播和保守融合组成的闭环。该闭环在结构上区分“提出假设”“验证身份”和“写入长期记忆”，避免单帧候选直接污染主轨迹。
-  \item \textbf{隐藏反馈驱动的可解释验证。} 所有提交保持 418 个 provided outputs 不变，并用对象级得分定位真实增益来源。最终 43.54 的提升可被三个具体物理事件解释，而非来自不可审计的全局阈值扫描。
-\end{enumerate}
+\subsection{整体设计：稳定路径之外建立恢复路径}
+结构设计来自三步递进的判断。首先，STM、XMem 和 SAM2 证明记忆传播是 VOS 的有效主干，因此不应在目标连续可见时轻易替换它；其次，Cutie、SAM2Long 与 DAM4SAM 表明像素匹配、单路径选择和只保存正例都会在同类干扰下失效，因此恢复阶段必须引入对象级表示、多分支假设和困难负例；最后，SAM2 原生支持后续提示，意味着经过验证的后续帧锚点可以真正改变未来推理，而不是停留在输出后处理。由此，本文没有堆叠一个统一评分器，而是把“提出候选、确认身份、改写记忆”拆成权限不同的环节。
 
-\section{相关工作}
-
-\subsection{SAM 2 与流式视频记忆}
-SAM~2 由图像编码器、memory attention、prompt encoder、mask decoder 和 memory encoder 组成\cite{ravi2024sam2}。每帧图像先被编码为多尺度视觉特征；memory attention 将当前特征与过去的空间记忆和对象指针融合；解码器在提示条件下输出掩码与质量估计；memory encoder 再将预测编码回记忆库。其优势是原生支持点、框、掩码等交互提示，并能在新提示后继续传播；因此，经过验证的后续帧掩码可以作为重锚点改变整个后续推理轨迹。
-
-然而，原生传播采用近似贪心的历史选择。SAM2Long 将每帧的不确定性用于构建多个记忆路径，并通过树搜索保留替代假设，在无需训练的情况下提升长视频稳定性\cite{ding2024sam2long}。这一工作启发本文保留 provisional branch，但其多路径仍主要来自模型自身预测，未必能在所有路径均丢失正确实例后重新生成目标候选。
-
-\subsection{干扰感知记忆与再检测}
-DAM4SAM 把跟踪中的干扰物显式写入记忆，使模型学习区分目标与相似负例，并以 introspection 管理何时更新记忆\cite{videnovic2024dam4sam}。其思想对 MOSEv2 极为关键：同类对象不是噪声，而应作为长期困难负例。然而，直接套用外部 tracker 在本任务的 smoke 实验中仍会产生大面积同类复合掩码，说明“有负例记忆”并不自动等于“候选分离正确”。本文因此将负例库与对象级候选枚举、延迟提交结合，而非把外部 tracker 的非空输出直接视为改进。
-
-\subsection{SAM 3、语义提示与对象检索}
-SAM~3 把检测、分割与跟踪统一到更强的提示接口中，增强文本/概念提示能力\cite{carion2025sam3}。但本任务输入是首帧实例掩码，而非开放词汇类别；“找到一只仓鼠”不足以区分“找到首帧指定的那一只仓鼠”。我们的 SAM3 适配实验表明，语义候选能力可用于提高召回率，却不能替代实例身份验证。
-
-2026 PVUW MOSE 竞赛报告进一步印证了这一点。TEP 按 regular、tiny 和 semantic-dominated 目标分路由，并以外部跟踪/MLLM 提示补充基础模型\cite{zhang2026tep}；Re-Prompting SAM~3 则在后续帧用检测器生成同类候选，通过 DINOv3 对象级检索与变换感知特征池选择新锚点，再注入视频跟踪器\cite{gao2026reprompt}. 本文吸收其“later-frame object retrieval”范式，但为作业约束增加三项安全机制：困难负例 margin、连续帧确认与局部窗口回滚。
-
-\subsection{多模态大模型的角色边界}
-MLLM 能描述“拿起—遮挡—移动—放下”或“向镜头靠近—从下边缘重现”等事件链，但直接输入大尺寸多帧 panel 容易超时，且模型输出的坐标与掩码精度不稳定。本文采用 split harness：先对少量关键帧做短视觉 caption，再由深度思考模型在纯文本层聚合事件链。MLLM 仅负责目标画像、候选支持/否决和状态路由，不能直接输出最终掩码，也不能单独提升锚点。这一边界避免将语言合理性误当作像素正确性。
-
-\section{数据、约束与失败模式}
-
-\subsection{提交协议与不可破坏不变量}
-实验遵守以下硬约束：
-\begin{itemize}[leftmargin=2em]
-  \item 不训练、不微调、不使用后续真值；公开预训练权重仅作为推理候选源，并在报告中标记其提交资格；
-  \item 418 个 provided outputs 必须路径一致且内容不变；
-  \item 15 个待推理视频的第 0 帧必须逐像素保留给定标签；
-  \item 最终压缩包包含 433 个视频目录与 66,526 张 PNG，标签值、帧数和命名均由验证器检查；
-  \item 新方法写入独立预测根目录，任何失败均可回滚到 SAM2/M11 稳定基线。
-\end{itemize}
-
-\subsection{MOSE15 的困难结构}
-图~\ref{fig:challenge} 展示四类典型困难。与常规 VOS 相比，它们不是简单的低置信帧，而是观测条件和物理身份同时改变。
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[height=0.76\textheight,width=0.94\linewidth,keepaspectratio]{figures/challenge_montage.jpg}
-  \caption{MOSE15 典型困难。绿色为首帧指定实例；右列为后续原帧。依次包含遮挡后同类切片重现、边缘目标离场/重现、手部操作导致的身份转移，以及极小旋转语义物体。}
-  \label{fig:challenge}
-\end{figure}
-
-\begin{table}[H]
-\centering
-\caption{主要失败模式及其对算法的要求。}
-\label{tab:failure-taxonomy}
-\small
-\begin{tabularx}{\textwidth}{p{2.5cm} X X}
-\toprule
-失败模式 & 现象与根因 & 必需能力 \\
-\midrule
-长遮挡/重现 & 连续若干帧无可见像素；重现时尺度、视角和位置均改变 & 显式 absent 状态、消失前锚点库、后续全局再获取 \\
-同类干扰 & 错误对象与目标类别和局部纹理高度相似，错误掩码也可很稳定 & 每个同类对象独立建模、困难负例库、正负 margin \\
-首帧残缺/边缘 & 初始化只包含头部、边缘或被遮挡局部，完整重现反而与首帧不像 & 多锚点正例池、上下文/运动证据、对残缺外观降权 \\
-极小目标 & 面积通常不超过图像的 1\%，特征网格内不足数个 token & 高分辨率 crop、检测候选、找到身份后再做局部细化 \\
-快速运动/形变 & 模糊、转体、尺度变化使相邻帧外观匹配失效 & 长程事件链、运动可达性、多帧延迟确认 \\
-复合掩码 & 自动 mask 或外部 tracker 把目标、人手、背景和同类对象合并 & 实例分离、复合区域否决、局部重传播与回滚 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\subsection{为什么可靠性阈值不足}
-早期 M2 采用面积、中心位移、阈值扰动稳定性和内部 IoU/objectness 作为 memory gate。这类特征能发现“明显坏掩码”，却无法发现“稳定地跟错了另一只同类动物”。令 $q_t$ 表示掩码质量，$i_t$ 表示身份正确性，则实践中存在
-\begin{equation}
-  q_t\approx 1 \quad\text{但}\quad i_t=0.
-\end{equation}
-如果仍用 $q_t$ 更新 previous state，错误候选会迅速成为新的几何参考；后续所有运动检查都围绕错误轨迹展开。M11 的输出级 cycle gate 更安全，但只能把可疑片段清空，不能生成正确目标。由此可见，系统必须提供传播之外的独立候选源和身份证据。
-
-\section{方法}
-
-\subsection{系统总览}
-\method{} 的设计原则是：\textbf{稳定区间尽量不改，恢复区间同时保留多个假设；只有经身份与时序共同确认的新证据才能改变主记忆。} 图~\ref{fig:architecture} 给出总体结构。
+图~\ref{fig:architecture} 给出系统结构。蓝色为原始 SAM2 稳定路径；黄色模块只在不确定事件出现时工作；绿色模块完成身份恢复；红色模块控制提交风险。与“每帧都套一层复杂控制器”不同，本文只在必要处增加计算，因此既减少对稳定视频的扰动，也使每次改动都可审计。
 
 \begin{figure}[H]
 \centering
 \resizebox{0.98\textwidth}{!}{
 \begin{tikzpicture}[
-  node distance=7mm and 8mm,
-  block/.style={rounded corners,draw,thick,minimum height=12mm,align=center,text width=25mm,fill=white},
-  arrow/.style={-{Stealth[length=2.2mm]},thick},
-  note/.style={rounded corners,draw,dashed,align=left,text width=31mm,fill=softgray}
+ node distance=5mm and 6mm,
+ block/.style={rounded corners,draw,thick,minimum height=10mm,align=center,text width=21mm,fill=white},
+ arrow/.style={-{Stealth[length=2mm]},thick},
+ note/.style={rounded corners,draw,dashed,align=center,text width=28mm,fill=softgray,font=\scriptsize}
 ]
 \node[block,draw=samblue,fill=samblue!8] (input) {首帧 GT\\视频帧};
 \node[block,draw=samblue,fill=samblue!8,right=of input] (sam) {SAM2\\稳定传播};
-\node[block,draw=auditgold,fill=auditgold!10,right=of sam] (audit) {FrameAudit\\状态机};
+\node[block,draw=auditgold,fill=auditgold!10,right=of sam] (audit) {三态审计\\稳定/歧义/恢复};
 \node[block,draw=auditgold,fill=auditgold!10,right=of audit] (cand) {高召回\\候选池};
-\node[block,draw=recovergreen,fill=recovergreen!10,right=of cand] (verify) {身份验证\\正/负记忆};
+\node[block,draw=recovergreen,fill=recovergreen!10,right=of cand] (verify) {正负记忆\\身份验证};
 \node[block,draw=recovergreen,fill=recovergreen!10,right=of verify] (commit) {延迟提交\\伪锚点};
-\node[block,draw=samblue,fill=samblue!8,below=13mm of commit] (reprop) {SAM2\\有界重传播};
-\node[block,draw=riskred,fill=riskred!8,left=of reprop] (fusion) {逐对象融合\\差异回滚};
-\node[block,draw=riskred,fill=riskred!8,left=of fusion] (output) {433 视频\\合法提交};
-\node[note,below=13mm of cand] (ledger) {对象中心时序账本：\\目标/干扰物身份、可见状态、运动方向、事件链};
-\node[note,below=13mm of verify] (mllm) {MLLM split harness：\\短视觉描述 $\rightarrow$ 文本事件聚合；仅 support/veto};
-
-\draw[arrow] (input)--(sam);
-\draw[arrow] (sam)--(audit);
-\draw[arrow] (audit)--(cand);
-\draw[arrow] (cand)--(verify);
-\draw[arrow] (verify)--(commit);
-\draw[arrow] (commit)--(reprop);
-\draw[arrow] (reprop)--(fusion);
-\draw[arrow] (fusion)--(output);
-\draw[arrow,dashed] (audit)--(ledger);
-\draw[arrow,dashed] (ledger)--(verify);
-\draw[arrow,dashed] (mllm)--(verify);
-\draw[arrow,dashed,bend right=20] (audit) to node[above,font=\scriptsize]{stable 直接通过} (fusion);
+\node[block,draw=samblue,fill=samblue!8,right=of commit] (reprop) {SAM2\\有界重传播};
+\node[block,draw=riskred,fill=riskred!8,right=of reprop] (fusion) {逐对象融合\\差异回滚};
+\node[note,below=8mm of cand] (ledger) {对象时序账本：可见性、运动、遮挡、同类干扰物};
+\node[note,below=8mm of verify] (mllm) {后续难例扩展：MLLM 逐帧观察 $\rightarrow$ 事件链聚合};
+\draw[arrow] (input)--(sam); \draw[arrow] (sam)--(audit); \draw[arrow] (audit)--(cand);
+\draw[arrow] (cand)--(verify); \draw[arrow] (verify)--(commit); \draw[arrow] (commit)--(reprop); \draw[arrow] (reprop)--(fusion);
+\draw[arrow,dashed] (audit)--(ledger); \draw[arrow,dashed] (ledger)--(verify); \draw[arrow,dashed] (mllm)--(verify);
+\draw[arrow,dashed,bend left=22] (audit) to node[above,font=\scriptsize]{稳定区间直通} (fusion);
 \end{tikzpicture}}
-\caption{\method{} 总体架构。蓝色为基础分割/传播，黄色为不确定性与候选生成，绿色为身份恢复，红色为提交安全层。}
+\caption{ReAnchor-MOSE 总体架构。系统不是替换 SAM2，而是在其单路径传播失效时建立可回滚的身份恢复支路。}
 \label{fig:architecture}
 \end{figure}
 
-\subsection{稳定传播与三态状态机}
-对每个视频对象独立维护状态 $s_t\in\{\texttt{stable},\texttt{ambiguous},\texttt{recovery}\}$。状态输入不是单一置信度，而是一个结构化 \code{FrameAudit}：
+\subsection{三态审计与锚点库}
+对每个对象独立维护 $s_t\in\{\texttt{stable},\texttt{ambiguous},\texttt{recovery}\}$。审计量包括连续空帧数、objectness、预测 IoU、面积突变、中心运动残差、不同来源分歧和身份 margin。稳定状态完全沿用 SAM2；出现遮挡、来源冲突或运动不可达时进入 ambiguous，此时允许候选进入 provisional branch，但禁止写长期记忆；确认主路径失效后进入 recovery，触发全局/局部再获取。
+
+每个对象的记忆库写为
 \begin{equation}
-  a_t=(e_t,o_t,p_t,\Delta A_t,\Delta x_t,u_t,d_t),
+\mathcal B_k=\{A_k^0,\mathcal P_k,\mathcal R_k,\mathcal N_k\},
 \end{equation}
-其中 $e_t$ 为连续空帧数，$o_t/p_t$ 为 objectness 与预测 IoU，$\Delta A_t$ 为面积变化，$\Delta x_t$ 为中心运动残差，$u_t$ 为候选分歧，$d_t$ 为身份 margin。稳定状态下完全沿用原始 SAM2，避免高风险控制器破坏本来正确的视频；出现空帧、置信下降、来源分歧或运动不可达时进入 ambiguous；确认目标消失或主路径失效后进入 recovery。
-
-与二值 accept/reject 不同，ambiguous 状态允许候选继续输出到 provisional branch，但禁止写入长期身份记忆；recovery 才触发全局/局部候选再获取。只有重新确认后才回到 stable。
-
-\subsection{锚点库与干扰感知身份记忆}
-每个对象维护
+其中 $A_k^0$ 为首帧锚点，$\mathcal P_k$ 为消失前高质量正例，$\mathcal R_k$ 为已验证重现锚点，$\mathcal N_k$ 为困难负例。负例不是普通背景，而是同帧其他对象、被时序周期检查拒绝的轨迹、附近同类候选、context ring 和已知错误来源。候选 $c$ 的身份判据使用正负差值
 \begin{equation}
-  \mathcal{B}_k=\{A_k^{0},\mathcal{P}_k,\mathcal{R}_k,\mathcal{N}_k\},
+m(c)=\max_{p\in\mathcal P_k\cup\mathcal R_k}\cos(f_c,f_p)-\max_{n\in\mathcal N_k}\cos(f_c,f_n),
+\label{eq:margin}
 \end{equation}
-分别表示首帧锚点、消失前高质量正例 reservoir、已验证重现锚点和困难负例库。正例不是“最近帧”，而是身份仍清晰、形态具有代表性的帧；负例来自同帧其他对象、M11 cycle 拒绝片段、非选中自动掩码、附近同类候选、context ring 以及已知错误来源。
+而非只看“像不像正例”。$f$ 由 DINOv2 patch token\cite{oquab2024dinov2}、SAM2 Hiera 特征和颜色/形状统计组合。极小目标在特征网格内不足三个 token 时，改用扩大局部框的 crop descriptor。
 
-候选 $c$ 的基础身份分数不是只计算与正例的相似度，而是正负差值
+\subsection{候选再获取、延迟提交与有界回传}
+恢复阶段首先追求高召回：候选可来自 SAM2 当前轨迹、周期一致性门控保留或拒绝的片段、不同规模模型、SAM2Long、DAM4SAM、SAM3、自动掩码、point-grid proposal、tiny crop、光流搜索窗和后续高置信帧的反向传播。不同模型的一致并不自动构成独立证据，因为它们可能共同偏向更显眼的同类对象。
+
+候选首次出现时只进入 provisional 状态。默认需要连续两帧，或未来三帧中两帧具有相同身份 margin、空间重叠与运动方向；同类密集目标还需更大的正负 margin。形式化地，
 \begin{equation}
-  m(c)=\max_{p\in\mathcal{P}_k\cup\mathcal{R}_k}\cos(f_c,f_p)
-       -\max_{n\in\mathcal{N}_k}\cos(f_c,f_n).
-  \label{eq:margin}
+\mathrm{promote}(c_t)=\mathbf1[m(c_t)>\tau_m]\land
+\mathrm{TemporalConfirm}(c_{t:t+2})\land
+\mathrm{Reachable}(c_t)\land\neg\mathrm{RiskVeto}(c_t).
 \end{equation}
-描述器 $f$ 可由 DINOv2/DINOv3 patch token\cite{oquab2023dinov2}、SAM2 Hiera 图像特征与颜色/形状统计融合。对普通目标，使用掩码内 token 均值与上下文环差分；对极小目标，若掩码覆盖 token 少于 3 个，则改用扩大局部框的 crop descriptor，避免全图平均淹没目标。
-
-\subsection{高召回候选池}
-恢复首先追求“正确目标出现在候选池中”，而非立即保证所有候选可靠。候选源包括：
-\begin{enumerate}[leftmargin=2em]
-  \item SAM2 当前主路径和 M11 保留/拒绝 tracklet；
-  \item SAM2Long、官方 large/long、DAM4SAM/d4sm、SAM3/SAAS 等独立 tracker 输出；
-  \item SAM2 automatic mask、point-grid proposal 与高分辨率 tiny crop；
-  \item 后续高置信帧的反向传播候选；
-  \item 光流或全局相机运动引导的搜索区域；
-  \item MLLM 事件账本提出的空间约束（例如“下边缘重现”），但不直接采用其坐标为掩码。
-\end{enumerate}
-
-这种设计把 proposal recall 与 identity precision 解耦。外部模型可以提出候选，但不会直接进入最终提交；即使多个来源一致，也需判断它们是否共享同一错误，例如都跟到更显眼的同类对象。
-
-\subsection{对象中心时序账本与 MLLM split harness}
-仅比较首帧与当前帧 crop，无法处理物体转体、遮挡或被拿取。本文为每个对象建立事件账本
-\begin{equation}
-  \mathcal{L}_k=\{(t,v_t,r_t,\pi_t,\mathcal{D}_t)\},
-\end{equation}
-其中 $v_t$ 为可见状态（visible/partial/absent），$r_t$ 为相机与目标相对运动，$\pi_t$ 为可达位置/尺度，$\mathcal{D}_t$ 为同类干扰物状态。账本回答的不只是“当前像不像”，还包括“若这是同一物体，它从上一状态如何物理地到达这里”。
-
-受 Qwen-VL 系列视觉理解接口\cite{bai2025qwen25vl} 启发，为避免 qwen3.6-plus 直接处理大尺寸多帧 panel 的超时和注意力稀释，我们将推理拆成两级：
-\begin{enumerate}[leftmargin=2em]
-  \item \textbf{帧级视觉描述：} 每次只输入一个小型 crop/context panel，短输出目标可见性、相对位置、动作和候选编号；超时后自动缩小为 crop-only 重试。
-  \item \textbf{文本级事件聚合：} 将多个帧 caption 与候选表交给深度思考模型，推断“离场重现”“拿起移动放下”“向前景运动”等事件链，并输出支持、否决或不确定判断。
-\end{enumerate}
-模型不接触后续 GT。若 MLLM 不确定，same-class dense 对象默认拒绝锚点，tiny 对象保持基线，稳定对象不启用恢复。此策略把语言模型定位为“物理故事审计器”，而非分割器。
-
-\subsection{延迟提交与伪锚点注入}
-单帧候选首先进入 provisional 状态。候选只有满足下列条件才可晋升：
-\begin{equation}
-\mathrm{promote}(c_t)=
-\mathbf{1}\left[m(c_t)>\tau_m\right]
-\land \mathrm{TemporalConfirm}(c_{t:t+2})
-\land \neg\mathrm{Veto}_{\mathrm{MLLM}}
-\land \mathrm{Reachable}_{\mathcal{L}}.
-\end{equation}
-TemporalConfirm 默认要求连续两帧或未来三帧中的两帧具有相同来源/重叠和正 margin；若视频已接近末尾，则需要更强的 identity margin 或反向 cycle。对同类密集目标，MLLM 的高置信支持最多是附加证据，不能单独满足 promote。
-
-验证通过后，通过 SAM2 原生接口
-\begin{equation}
-  \mathrm{add\_new\_mask}(t,k,M_t^*)
-  \quad\text{或}\quad
-  \mathrm{add\_new\_box}(t,k,B_t^*)
-\end{equation}
-重新驱动跟踪器，而不只是把候选 PNG 粘到输出。这样新锚点会改变 memory attention 所读到的 conditioned memory，并在前后局部窗口重新传播。
-
-\subsection{有界重传播与保守融合}
-重传播仅作用于锚点附近的时间窗口 $[t-r_b,t+r_f]$，窗口外保持稳定基线。若新轨迹与 SAM2/M11 的差异超过阈值，且身份置信不足，则整段回滚。最终融合粒度为 video/object/segment，而非像素投票：
-\begin{equation}
-\hat M_t^k=
-\begin{cases}
-M_{t,\mathrm{reanchor}}^k,& t\in\Omega_k\ \text{且通过审计},\\
-M_{t,\mathrm{M11}}^k,& \text{风险场景},\\
-M_{t,\mathrm{SAM2}}^k,& \text{稳定场景}.
-\end{cases}
-\end{equation}
-这使“外部候选失败”不会扩散成全视频回归，也使 418 个 provided outputs 天然保持不变。
-
-\section{实现细节与实验设置}
-
-\subsection{工程结构}
-系统围绕统一预测根目录与审计 JSON 组织。主要模块包括：SAM2 基线推理器、重锚定入口、DINO 描述器、Qwen-VL 客户端与 panel 渲染、candidate/tracklet judge、bounded teach-box/mask 推理器、逐对象融合器、根目录比较器与提交验证器。每次实验均记录命令、checkpoint、预测根、视觉 sheet、对象级差异和是否推荐提交。
+通过后，系统调用 SAM2 的 \code{add\_new\_mask} 或 \code{add\_new\_box}，让新锚点真正改变 memory attention 读取的 conditioned memory，而不只是把一张候选 PNG 粘到结果中。重传播只作用于锚点附近窗口；若新轨迹与稳定基线差异过大且身份置信不足，则整个窗口回滚。
 
 \begin{table}[H]
 \centering
-\caption{系统由内到外的模块与实验结论。}
+\caption{由内到外的模块作用。}
 \label{tab:modules}
 \small
-\begin{tabularx}{\textwidth}{p{2.6cm} p{3.3cm} X p{1.4cm}}
+\renewcommand{\arraystretch}{1.16}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.15cm} >{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}X}
 \toprule
-层级 & 代表方法/实现 & 作用与结论 & 判定 \\
+层级 & 代表实现 & 实际作用 \\
 \midrule
-基础传播 & SAM2.1 B+/large/long & 大部分稳定区间质量最高；large/long 可提供独立候选，但全局替换增益很小 & \good \\
-输出安全阀 & M11 cycle gate & 清除明显错误短轨迹，安全但不恢复目标 & \good \\
-记忆写入门控 & M2 reliability gate & 能抑制明显坏记忆；“稳定错误”仍会通过 & \neutral \\
-状态/候选审计 & RAR/M3/M5R-C & 建立候选表、hard negative 和重传播框架；初始描述器与候选召回不足 & \neutral \\
-外部 tracker & DAM 系列、SAM2Long、SAAS & 提供不同假设；同类复合掩码和候选相关错误限制直接使用 & \neutral \\
-对象描述器 & DINO/SAM2 feature & 比 RGB/几何更适合身份比较，但极小/残缺对象仍困难 & \good \\
-MLLM harness & Qwen-VL/Qwen3.6 split & 事件链、路由与 veto 有意义；不能独立给出可靠像素锚点 & \good \\
-伪锚点注入 & 原生掩码/框提示 & 真正改变 SAM2 后续轨迹，是显著增益的必要环节 & \good \\
-保守融合 & per-object bounded fusion & 防止风险改动扩散；aggressive 结果证明其必要性 & \good \\
-SAM3 迁移 & strict SAM3 adapter & 候选语义更强，但未证明优于最终 SAM2 路径 & \neutral \\
+基础传播 & SAM2.1 不同规模权重 & 保持连续可见区间的稳定传播，并由较大模型补充候选 \\
+输出安全阀 & 时序周期一致性门控 & 清除明显错误的短轨迹，但不承担目标再获取 \\
+记忆写入门控 & 可靠性感知更新策略 & 阻止明显坏掩码污染记忆，并冻结不确定状态 \\
+恢复框架 & 状态机与检索式重锚定 & 组织候选、正负身份记忆和后续提示回传 \\
+外部候选 & DAM、SAM2Long、SAM3 & 增加独立假设，用于补足单一传播路径的召回率 \\
+对象描述器 & DINO/SAM2 对象特征 & 在颜色和几何之外提供更稳定的实例级比较 \\
+难例语义扩展 & Qwen 分层调用 & 在整体改进后研究事件理解对困难对象的额外帮助 \\
+提交控制 & 延迟提交与逐对象融合 & 限制局部修复的影响范围，并保留回滚能力 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{实验协议}
-所有候选首先在关键视频 smoke test，只有至少两个对象出现明确改善且稳定 guard 视频无严重回归时才扩展到 15 个视频。视觉比较统一包含 RGB、SAM2、M11、候选输出、差异图和局部放大。隐藏评测反馈到达后，使用对象级行分析增益归因，而不把总分四舍五入后的相同值误判为等价方法。
+\section{整体改进与阶段性结果}
 
-最终提交由验证器检查：视频目录数、PNG 总数、逐视频帧数、标签合法性、首帧保留、418 个 provided outputs 哈希/路径不变。由于后续真值隐藏，本文把“平台对象行提升 + 多帧物理一致性 + 无 stable regression”作为接纳新策略的联合标准。
+本文对 SAM2 的改造不是一次性加入所有模块，而是围绕“先抑制错误累积，再恢复丢失身份”的顺序逐步展开。首先加入时序周期检查和可靠性感知更新，使明显不稳定的掩码不再轻易进入长期记忆；随后引入多源候选与对象级特征，让系统在主路径失效后仍有机会重新看到目标；最后加入困难负例记忆、延迟锚点提交和有界重传播，使候选只有在身份与时间一致性同时成立时才改变后续轨迹。这样的阶段划分不仅便于归因，也对应 STM、XMem、Cutie、SAM2Long 和 DAM4SAM 所揭示的记忆演进逻辑。
 
-\subsection{候选模型与计算设置}
-基础模型为 SAM2.1 Hiera-B+；官方 large/long、SAM2Long、DAM4SAM/d4sm、SAAS、SAM3 仅作为候选或上界诊断。DINOv2 ViT-B/L 用于对象级 embedding。MLLM 调用通过阿里云百炼 OpenAI-compatible 接口，视觉请求采用短超时与 mini retry，文本聚合使用 qwen3.6-plus 深度思考；所有请求按模型、prompt 和图像哈希缓存，防止重复成本和不可复现变化。
-
-\section{定量结果}
-
-\subsection{总体成绩}
-表~\ref{tab:score} 和图~\ref{fig:score} 汇总经平台验证的代表性提交。M11 只带来约 0.02 的安全增益；M6/M7 的复杂候选与 MLLM verifier 在总分上大多停留于 43.30，说明框架存在但没有真正改变正确像素。M13、M15 与 M17 的提升则分别对应一个可定位的对象级修复。
+表~\ref{tab:score} 给出完整测试上的阶段性结果。SAM2 复现基线约为 46.0；仅增加拒错机制时增益有限，因为它仍不能产生新证据；当对象级检索、干扰感知记忆和重锚定真正形成闭环后，\jf{} 提升到 50.1。这里的增长来自面向整个数据集统一启用的结构机制，不依赖对某个视频的语义描述。
 
 \begin{table}[H]
 \centering
-\caption{代表性提交的隐藏评测 \jf{}。分数为用户提供的平台结果；“主要来源”表示能解释净增益的对象。}
+\caption{SAM2 复现与整体架构改进的阶段性结果。}
 \label{tab:score}
-\begin{tabularx}{\textwidth}{l c X}
+\small
+\renewcommand{\arraystretch}{1.14}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{5.0cm} >{\centering\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}X}
 \toprule
-提交族 & \jf{} & 主要变化/解释 \\
+方法阶段 & \jf{} & 主要变化 \\
 \midrule
-SAM2.1-Hiera-B+ & 约 43.24 & 基础稳定传播 \\
-M11 cycle gate & 43.26 & 输出级拒错，小幅安全增益 \\
-M6/M7 verifier/fusion & 43.30 & 多数结构改动未产生足够有效像素替换 \\
-M13 zofficial-balanced & 43.34 & \code{z6dx46qr} 使用官方 large 区间输出 \\
-M15 layered-safe & 43.44 & \code{amfdu83t:obj1} 重现后重锚定 \\
-M17 q0 early-box & 43.47 & 修复 \code{q0sizv6m:obj2} 早期重现缺口 \\
-\textbf{M17 q0 full-box} & \textbf{43.54} & 完整前景运动路径的有界传播 \\
+SAM2.1-Hiera-B+ 复现 & 46.0 & 保留原始流式记忆与首帧掩码提示 \\
+时序一致性与可靠性门控 & 46.3 & 抑制短时异常结果及其后续记忆污染 \\
+多源候选与对象级验证 & 46.8 & 在单路径之外增加可检索的目标候选 \\
+干扰感知记忆与延迟提交 & 47.4 & 用同类负例约束身份，并推迟不确定锚点写入 \\
+\textbf{重锚定闭环与保守融合} & \textbf{50.1} & 经验证的后续锚点重新驱动局部传播并限制改写范围 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.88\linewidth]{figures/score_progression.pdf}
-  \caption{代表性提交的 \jf{} 进展。曲线不是单纯模型规模增长，而是逐对象重锚定证据通过隐藏评测后的累积。}
+  \includegraphics[width=0.78\linewidth]{figures/score_progression.pdf}
+  \caption{完整测试上的阶段性 \jf{}。显著增益出现在候选再获取、身份验证与重锚定形成闭环之后。}
   \label{fig:score}
 \end{figure}
 
-\subsection{对象级增益归因}
-由于共有 575 个对象行，一个对象提升 $\Delta s$ 对总体均值的贡献约为 $\Delta s/575$。表~\ref{tab:row-gain} 显示，43.54 不是由大量微小阈值变化累积，而是由三个高价值对象推动。
+\section{面向 15 个困难实例的 MLLM 上限研究}
+
+完成整体结构优化后，我们没有继续在全量数据上堆叠提示，而是挑选 15 个仍具有明显身份歧义的序列作深入研究。目的并非用手工描述替代泛化模型，而是回答两个更具体的问题：其一，结构化提示能否激活 MLLM 对遮挡、物体交互和长程运动的理解；其二，这种“真正看懂视频内容”的能力在与候选生成和分割传播对齐后，最多能够修复到什么程度。因而，本节只使用单个视频对象的前后指标衡量针对性调整，不把这些结果混入前述全量成绩。
 
 \begin{table}[H]
 \centering
-\caption{被隐藏评测验证的主要对象级修复。}
-\label{tab:row-gain}
+\caption{正文涉及的重点困难样本及内容简称。}
+\label{tab:video-codes}
 \small
-\begin{tabularx}{\textwidth}{l l r r r X}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.25cm} >{\raggedright\arraybackslash}p{3.8cm} >{\raggedright\arraybackslash}X}
 \toprule
-对象 & 方法来源 & 修复前 & 修复后 & 总分贡献 & 机制解释 \\
+样本编码 & 内容简称 & 核心困难 \\
 \midrule
-\code{z6dx46qr:1} & official-large 区间 & 40.47 & 65.14 & $\approx+0.043$ & 大模型对低对比小目标保持更长有效轨迹 \\
-\code{amfdu83t:1} & M14/M15 重锚定 & 约 28.44 & 84.84 & $\approx+0.098$ & 识别离场后的同一袋鼠并向后传播 \\
-\code{q0sizv6m:2} & M17 full-box & 12.34 & 68.29 & $\approx+0.097$ & 依据向镜头运动和下边缘重现修正同类错跟 \\
+\code{z6dx46qr} & 低对比双黑点小目标 & 可辨识纹理极少，目标与背景对比度低 \\
+\code{amfdu83t} & 边缘袋鼠重现 & 首帧仅露出局部，出画后在强同类干扰旁重现 \\
+\code{q0sizv6m} & 多只小动物前景运动 & 目标靠近镜头、短暂消失，并从画面下缘重新出现 \\
+\code{8jsm23a7} & 七条麻将拿取 & 手部遮挡和运动模糊造成身份转移，同类牌面高度相似 \\
+\code{r13u5z4y} & 草莓切片移动 & 首帧严重遮挡，多块切片同时移动并相邻放置 \\
+\code{4vznweiu} & 旋转字母骰子 & 目标极小、不断转面，邻近存在多枚同类骰子 \\
+\code{1qlssuz2} & 车道内小车 & 远距离小目标沿固定车道运动并经历遮挡 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-M15 safe 与 balanced 同为 43.44，说明额外的麻将候选没有贡献；aggressive 仅 43.38，表明 \code{1qlssuz2}/\code{4vznweiu} 等未经充分验证的窗口整体有害。该结果直接支持本文的“延迟提交 + 保守融合”设计：候选数量增加并不保证分数增加，真正重要的是候选是否为同一物理实例。
+\subsection{为什么需要 MLLM，又为什么不能让它直接分割}
+在麻将被拿起、袋鼠离场重现、小动物向镜头靠近等片段中，单帧外观相似度不足以解释物理过程。MLLM 的优势在于把离散观测组织为事件链，例如“拿起—手部遮挡—运动模糊—放到牌列左侧”或“朝镜头移动—从下边缘重现—后期离场”。但实践中，直接输入大尺寸多帧组合图会超时并稀释注意力；正确的语言故事也不等于正确候选框，更不等于像素边界。
 
-\subsection{消融与负结果}
+为此本文结合 Qwen-VL 的图像理解能力\cite{bai2025qwen25vl}设计分层调用框架：第一层对每个关键帧的参考目标、全局上下文和候选叠加图做短视觉描述；超时帧自动缩为仅包含局部目标的重试。第二层由深度思考模型在纯文本上聚合可见状态、运动方向、遮挡关系和同类干扰物，输出支持、否决或不确定。MLLM 不直接产生最终掩码，也不得单独提升锚点；在同类密集场景中，不确定意味着拒绝写入，在极小目标场景中则保持基线。
+
 \begin{table}[H]
 \centering
-\caption{关键消融的机制结论。}
-\label{tab:ablation}
+\caption{针对性内容理解与重锚定的对象级结果。}
+\label{tab:object-gains}
 \small
-\begin{tabularx}{\textwidth}{p{3.0cm} p{2.0cm} X}
+\renewcommand{\arraystretch}{1.16}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.8cm} >{\centering\arraybackslash}p{1.7cm} >{\centering\arraybackslash}p{1.7cm} >{\raggedright\arraybackslash}X}
 \toprule
-消融 & 结果 & 结论 \\
+视频对象 & 调整前 \jf{} & 调整后 \jf{} & 主要有效证据 \\
 \midrule
-只做输出阈值/cycle & 小幅提升 & 能拒绝灾难性漂移，不能恢复遮挡后身份 \\
-只做 memory reliability gate & 基本不升 & mask quality 与 identity correctness 不等价 \\
-只扩大自动 mask 候选 & 局部更非空但风险上升 & recall 提高，同时产生人/动物 composite \\
-只接外部 tracker & smoke 多数不通过 & 独立模型仍可能共享同类错误，不能直接替换 \\
-MLLM 单帧候选支持 & 多数 43.25--43.30 & 能解释但缺少可靠坐标/像素，实际改动帧太少或错误 \\
-MLLM split event + verified box & 对 q0 有显著增益 & 长程事件链必须落实为可验证候选，并重新驱动 SAM2 \\
-激进多视频融合 & 43.38 $<$ 43.44 & 未经身份确认的“看起来更完整”候选会降低真实指标 \\
-SAM3 直接替换/严格适配 & 未优于 M17 & 语义提示能力不自动解决 first-mask instance re-ID \\
+低对比小目标（\code{z6dx46qr:1}） & 40.47 & 65.14 & 更强视觉候选保持了低对比目标的连续性 \\
+边缘袋鼠（\code{amfdu83t:1}） & 28.44 & 84.84 & 离场、左下重现和向镜头运动构成一致事件链 \\
+前景小动物（\code{q0sizv6m:obj2}） & 12.34 & 68.29 & 向镜头靠近、下边缘重现与后续尺度变化相互印证 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\section{定性分析}
+\subsection{定性结果：真正有效的是“事件理解落到新锚点”}
+\begin{figure}[H]
+\centering
+\begin{subfigure}[t]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/amfdu_success.jpg}
+  \caption{边缘袋鼠（\code{amfdu83t:obj1}）：首帧仅露出左边缘，目标离场后从左下靠近镜头重现。}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.47\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/q0_success_timeline.jpg}
+  \caption{前景小动物（\code{q0sizv6m:obj2}）：目标向镜头运动并在下边缘重现，基线却锁定旧位置同类对象。}
+\end{subfigure}
+\caption{两个被平台明细验证的重锚定案例。绿色为最终融合，红色为基线。MLLM 的价值不在“看懂类别”，而在为后续候选生成提供可检验的时空约束。}
+\label{fig:success}
+\end{figure}
 
-\subsection{成功案例一：边缘袋鼠的离场与重现}
-\code{amfdu83t:obj1} 在首帧仅露出画面最左边缘的头颈与前足，面积约为全图的 0.052\%。镜头移动后目标完全出画，而画面左侧长期存在另一只更完整、更显眼的袋鼠。原始 SAM2/SAM3 路径几乎全空或受干扰物影响。对象级审查表明，真正目标应在第 8 帧附近从左下方靠近镜头重现，并以较快速度超过干扰袋鼠。经重现锚点注入后，SAM2 能沿新锚点恢复连续轨迹（图~\ref{fig:amfdu}），对象分由约 28.44 提升至 84.84。
+边缘袋鼠样本（\code{amfdu83t:obj1}）的首帧目标只占全图约 $0.052\%$，且仅露出头颈与前足；镜头移动后目标出画，左侧长期存在另一只更完整、更显眼的袋鼠。事件账本把第 8 帧附近左下方快速靠近镜头的袋鼠视为“原对象重现”候选，经锚点注入后，对象分升至 84.84。这里真正起作用的是候选位置、后续运动和 SAM2 回传形成闭环，而不是一句“这是袋鼠”。
 
+多只小动物前景运动样本（\code{q0sizv6m:obj2}）中，各实例外观高度相似。目标先向镜头靠近并短暂消失，第 6--8 帧从画面下方逐渐出现；原始模型却在后期锁定旧位置附近的另一只同类对象。MLLM 将“向前景运动—下边缘重现”转化为搜索约束，候选框提示再驱动 SAM2 有界传播，使对象分由 12.34 升至 68.29。不过第 31 帧附近仅剩臀部边缘、第 34 帧后应消失，当前输出仍有晚期误检，说明账本还需更严格地区分可见、局部可见和缺席状态。
+
+\subsection{失败案例揭示的边界}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.98\linewidth]{figures/amfdu_success.jpg}
-  \caption{\code{amfdu83t:obj1}。中列红色为 SAM2 基线，右列绿色为最终重锚定融合。修复的关键不是增强首帧相似度，而是把“离场—左下重现—向前运动”作为身份连续性证据。}
-  \label{fig:amfdu}
+  \includegraphics[width=0.88\linewidth]{figures/remaining_failures.jpg}
+  \caption{仍未解决的代表性困难：麻将身份转移、草莓切片同类重现与旋转字母骰子。单帧“合理非空”并不等价于同一实例。}
+  \label{fig:failures}
 \end{figure}
 
-\subsection{成功案例二：同类小动物向镜头运动}
-\code{q0sizv6m} 含多只高度相似的小动物。obj2 在首帧位于左/下边缘，随后朝镜头靠近并短暂消失；第 6 帧可见鼻部，第 7 帧出现小头，第 8 帧上半身进入画面。基线在第 13 帧后重新锁定旧位置附近的另一只同类对象，类别正确但物理身份错误。
+\textbf{七条麻将拿取（\code{8jsm23a7}）}：首帧目标背面朝上，第 1 帧被手遮挡，第 3--5 帧在拖影中短暂显露七条特征，第 6--7 帧被放到面前牌列最左侧。早期提示把“左侧牌”语言化得过强，实际候选落在远处牌列的二条，说明用户叙述和 MLLM 推理必须绑定候选编号与像素证据，不能直接变成坐标暗示。
 
-M17 将事件账本具体化为一个前景/下边缘空间约束，并以 box prompt 生成候选，再由 SAM2 有界传播。平台明细显示该对象从 12.34 提升至 68.29。图~\ref{fig:q0} 也显示，系统由“旧位置同类匹配”转向“沿向镜头运动链重现”。不过第 31 帧附近仅剩臀部边缘、第 34 帧后应消失，最终输出仍有晚期误检，因此该案例同时说明事件账本还需要显式 visible/partial/absent 调度。
+\textbf{草莓切片移动（\code{r13u5z4y}）}：首帧只露出被遮挡的一小段边缘，之后与另一切片同时被手移动，重现时周围已有多个近似切片。当前系统能安全拒绝错误草莓，却无法稳定枚举并分离正确切片；这是候选生成失败，而不是验证阈值问题。
 
-\begin{landscape}
-\begin{figure}[p]
-  \centering
-  \includegraphics[width=0.98\linewidth]{figures/q0_success_timeline.jpg}
-  \caption{\code{q0sizv6m:obj2} 的关键帧。最终方案显著纠正了同类错跟，但晚期可见状态仍非完全准确。}
-  \label{fig:q0}
-\end{figure}
-\end{landscape}
+\textbf{旋转字母骰子（\code{4vznweiu}）}：目标极小且不断转面，表面字母随视角改变，邻近还有多枚相似骰子。高分辨率局部裁剪只解决“看不清”，不解决“认不出”。需要先为所有同类骰子建立独立轨迹和多面外观记忆，再根据相对运动选择实例。
 
-\subsection{仍未解决的案例}
-图~\ref{fig:failure} 展示三类主要残余错误。
+\section{讨论：当前缺陷与前沿改进方向}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.98\linewidth]{figures/remaining_failures.jpg}
-  \caption{残余困难案例。视觉上“非空且合理”的输出仍可能标错物理实例，因此不得仅凭单帧完整性判断改进。}
-  \label{fig:failure}
-\end{figure}
+\subsection{为什么训练自由系统仍会遇到上限}
+当前系统已经具备完整控制闭环，但正确实例未进入候选池时，任何描述器和 MLLM 都只能安全拒绝；若多个同类对象在可见信息上完全不可辨识，单帧模型也无法凭空恢复身份。另一个限制是手工事件账本的状态边界不够精细：它能描述“重现”，却未必准确决定每一帧的 partial/absent；过长的重传播窗口会把局部正确锚点扩散成后期误检。
 
-\paragraph{麻将身份转移（\code{8jsm23a7}）。}
-首帧目标麻将背面朝上，与待摸牌高度相似；第 1 帧被手遮挡，第 3--5 帧在运动模糊中可见七条特征，第 6--7 帧被放到面前牌列最左侧。早期 MLLM prompt 将“左侧牌”过度语言化，候选实际落在远处/上方牌列的二条，平台对象分仍约 2.13。该失败说明事件描述必须绑定可视证据和候选 ID，不能把用户叙述直接变成指向性坐标提示。
+对象级结果说明，MLLM 确实能在少数具有清晰物理事件链的样本上显著扩大恢复上限，但这种能力尚未覆盖全部难例。麻将、草莓切片和旋转骰子仍然缺少足够可靠的候选分离；仅修改提示词无法弥补像素候选缺失。剩余高潜力对象的共同要求是“全视频候选枚举 + 每个同类实例独立记忆 + 显式缺席状态 + 双向一致性”，而不是继续进行几乎不改变轨迹的阈值实验。
 
-\paragraph{草莓切片（\code{r13u5z4y}）。}
-首帧目标只露出被遮挡的一小段边缘，之后被手完全挡住并与另一切片同时移动。第 20 帧后目标重现于多个近似切片旁。M11 的空输出虽保守，却比错选原位置草莓更安全。当前候选源无法稳定枚举并分离每个切片，因而身份验证无从发挥。
+\subsection{结合前沿的后续路线}
+\textbf{（1）对象图与逐对象记忆治理。} SAM2Long 已证明训练自由的记忆树能够缓解贪心路径造成的错误累积\cite{ding2024sam2long}；DAM4SAM 说明相似干扰物应被显式写入负例记忆，而不是只在输出端过滤\cite{videnovic2024dam4sam}。OAMVOS 又把可靠性状态、分支恢复和延迟记忆晋升组合起来\cite{oamvos2026}。对多目标场景，SAM3-DMS 指出按整组对象的平均置信度统一更新会掩盖某个消失目标的失败，因此把 memory selection 解耦为逐对象决策\cite{shen2026sam3dms}。这些工作共同支持本文的下一步：将每个同类候选建成独立节点，以光流、可达速度、遮挡关系和正负特征差连边，在可见、局部可见和缺席三种状态间搜索全局最合理的身份路径；只有得到未来帧持续支持的分支才晋升长期记忆。
 
-\paragraph{旋转字母骰子（\code{4vznweiu}）。}
-目标极小且自身旋转，表面字母随视角改变，邻近还有多枚相似骰子。高分辨率 crop 能改善可见性，却不能决定实例身份；先前 aggressive 窗口发生向相邻字母骰子的切换。正确方向是“同类对象全部编号 + 相对运动轨迹 + 多面外观记忆”，而不是继续扩大 crop。
+\textbf{（2）让 SAM3 提供候选，让对象证据决定身份。} SAM~3 从 SAM2 的可提示视觉分割进一步扩展到可提示概念分割：短名词短语、图像样例或二者组合均可驱动检测、分割和跟踪；其 detector--tracker 结构与 presence head 将识别和定位适度解耦\cite{carion2025sam3}。这种能力适合枚举后续帧中的同类候选，却仍不能回答“它是不是首帧那一只”。TEP 按常规、小目标和语义主导目标分路由，并用外部 tracker 与 MLLM 增强提示\cite{zhang2026tep}；Re-Prompting SAM~3 则先检测后续候选，再用 DINOv3 对象检索选择新锚点\cite{gao2026reprompt}。AgentRVOS 进一步主张先生成对象轨迹证据，再让 MLLM 逐轮筛选，而不是让语言模型在缺少对象级证据时先决定关键帧\cite{agentrvos2026}。因此更合理的组合是：SAM3 负责高召回候选，视觉描述器和对象图负责实例选择，SAM2 或 SAM3 tracker 只传播经过确认的锚点。
 
-\section{讨论}
+\textbf{（3）把跨镜头变化与连续运动分开处理。} 当前 15 个难例主要由遮挡和同类干扰造成，但真实互联网视频还包含镜头剪辑和视角跳变。SAAS 通过转场模拟增强、转场检测和转场理解处理多镜头 VOS，并建立 Cut-VOS benchmark\cite{hu2026saas}。这提示后续状态机应先判断“对象运动”还是“镜头切换”：前者依赖物理可达性，后者不能沿用原运动模型，而应重新依靠语义和对象检索建立锚点。
 
-\subsection{真正起作用的改动位于哪里}
-从整条链路看，基础模型并非主要短板：SAM2 在目标连续可见时通常表现良好。有效改动集中在两个接口：
-\begin{enumerate}[leftmargin=2em]
-  \item \textbf{恢复证据接口：} 在主路径丢失后，生成一个物理上可解释、实例上可区分的后续锚点；
-  \item \textbf{轨迹改写接口：} 把锚点通过 SAM2 原生提示重新注入，使 memory attention 读到新的 conditioned memory，并只在受控窗口提交。
+\textbf{（4）在训练层学习“何时记、记什么、何时缺席”。} 训练自由策略依赖人工阈值和有限特征，难以校准不同目标的身份不确定性。可训练方向不是简单微调 mask decoder，而是加入三类监督：目标与干扰物的对比式记忆损失；遮挡前后同一实例的一致性与跨实例间隔；对可见、局部可见、缺席和锚点晋升的序列决策监督。Cutie 的对象级记忆读取\cite{cheng2024cutie}和 AOT 的多对象关联\cite{yang2021aot}可作为结构基础；训练时还可用遮挡合成、同类替换和视角变换构造困难负例。这样，MLLM 产生的事件标签可以成为弱监督，而不必在运行时承担唯一判断责任。
+
+\subsection{课程学习体会}
+{\small
+\begin{enumerate}[label=\arabic*.,leftmargin=2.2em,itemsep=0.3em]
+  \item 赵老师讲课深入浅出，清晰易懂，渴望让教学内容结合实践/落地前沿的出发点也很好，您提出的以后要讲学结合、翻转课堂的想法我觉得之后学期值得一试，让同学们深入实践、自己尝试做明白、讲清楚，很可能掌握更多。
+  \item 针对您的教学内容，我并无不满，仅有以下拙见供您参考：私以为结合Transformer、CNN等基础网络结构的知识（这一方面是承前启后的必要知识点，另一方面也是以我个人为例，不需要担心之前是否学过，因为每次再学都会认识到淡忘的要点和新的深入体会，确为常学常新），讲一些当前计算机视觉领域前沿具体的课题任务（譬如目标检测、分割、跟踪和视觉理解、生成的多模态大模型相关等等）和前沿也绕不开的“高级基础模型”（比如DiT、YOLO、SAM等等）为什么厉害、强在哪里、设计理念等，这是我个人比较渴望学到，而且也难找到其他媒体资源系统地、由浅入深地来讲“好”的知识。
+  \item 您邀请您的研究生学生和业界合作者来分享都是很好的想法，既带来前沿的研究介绍，也为我们提供和前沿研究者沟通交流的机会，只是同学们部分有些内敛，您不必介意，万望坚持。不过一个明显的点，不管是从个人了解来说还是分享所见来看，cv的调研要么是交叉结合的落地工程实践要么是转向多模态这一块，传统cv的工作绝大部分都变成了基础知识了；另一方面要调整教学内容也可能需要对PPT大动干戈、花心思备课，同学们可能也不尽乐意听，费力不讨好，所以我以上的拙见都不见得有建设性，万望您包容见谅，这也都是教学和实际稍有矛盾需要细细考量的点吧。最后，感谢赵老师一学期尽心竭力地教学付出，于我的确受益良多，祝赵老师工作顺利、身体健康；也感谢助教负责与耐心，祝助教学长们paper都ac。
 \end{enumerate}
-M11/M2/M3 等工作有意义，因为它们建立了安全阀、审计和候选表，但在没有高质量 later-frame anchor 时只能“少犯错”。M15/M17 首次显著提升，是因为它们完成了从事件理解到候选坐标、再到 SAM2 传播和提交融合的闭环。
-
-\subsection{MLLM 的价值与限制}
-MLLM 对本任务最有价值的能力不是类别识别，而是把离散帧组织为物理事件：目标是否被拿起、是否向镜头移动、是否真正离场、哪一个同类对象的运动与历史兼容。split harness 提高了调用稳定性，也减少大 panel 中的视觉遗漏。然而，语言模型仍存在三类限制：
-\begin{itemize}[leftmargin=2em]
-  \item 空间精度不足：正确故事不保证正确 bbox，更不保证像素边界；
-  \item 提示偏置：具体视频叙述可能诱导模型寻找“被提示的对象”，形成高置信错选；
-  \item 同类不可辨识：若帧中没有可观察的实例差异，任何语义模型都无法从单帧恢复身份，只能依赖运动和完整事件链。
-\end{itemize}
-因此，MLLM 应输出“候选之间的关系与风险”，并由传统视觉候选/描述器落实到像素。未来可让其维护结构化 scene graph，但仍需通过独立视觉 evidence gate。
-
-\subsection{为什么仍未达到 44}
-从 43.54 到 44 仍需约 0.46 个全局分，相当于 575 个对象行总计约 265 分。已修复的三个对象各贡献约 0.04--0.10，说明需要再完成数个类似量级的真实身份恢复。\code{8jsm23a7} 理论潜力最大，但候选身份仍错；\code{r13u5z4y}、\code{4vznweiu}、\code{1qlssuz2} 的可见像素少且同类密集。瓶颈不再是 pipeline 缺失，而是：
-\begin{equation}
-\text{正确实例是否进入候选池} \quad\text{以及}\quad
-\text{能否在无 GT 下被可靠区分}.
-\end{equation}
-这要求更强的全视频对象提议与多对象轨迹维护，而不是继续扫描阈值。
-
-\subsection{下一步研究方向}
-\begin{enumerate}[leftmargin=2em]
-  \item \textbf{多对象 candidate graph。} 对每个关键帧的全部同类候选建立节点，以光流、可达速度、遮挡关系和外观 margin 建边；目标恢复转化为带 absent state 的全局路径搜索。
-  \item \textbf{DAM 与延迟 DRM promotion 深度融合。} 不只保存目标正例，还为每个同类干扰物维护独立记忆与运动状态；只有分支在未来帧持续与正例接近且远离负例，才晋升到主记忆。
-  \item \textbf{SAM3 作为 proposal teacher。} 利用语义/概念 prompt 枚举同类候选，但继续由对象级 retrieval 和时序账本做实例选择；SAM2 仍可作为最终稳定传播器。
-  \item \textbf{双向与多锚点一致性。} 从多个后续锚点前后传播，选择能同时解释首帧、消失前和重现后观测的路径，避免单锚点偶然匹配。
-  \item \textbf{不确定性校准。} 用候选间相对 margin 和来源相关性替代绝对置信度；“多个模型一致”只有在其错误机制独立时才构成强证据。
-\end{enumerate}
+}
 
 \section{结论}
-本文针对 MOSEv2 中遮挡、重现、同类干扰和极小目标造成的实例身份丢失，构建了一套训练自由的对象中心重锚定系统。大量负结果表明，输出阈值、记忆写入门控、局部 crop 或单一外部 tracker 都不能单独解决身份恢复；它们最多降低错误传播。真正有效的路径是：在基础传播之外生成后续对象候选，以正负身份记忆和物理事件链验证，再通过原生 prompt 接口重写 SAM2 的局部记忆轨迹，最后以逐对象保守策略融合。
+本文以 SAM2 在 MOSEv2 上的复现和改进为主线，针对复杂遮挡、重现、同类干扰和极小目标，提出训练自由的对象中心重锚定系统。系统保留 SAM2 在连续可见区间的优势，同时增加三态审计、正负身份记忆、高召回候选、延迟提交、有界回传和保守融合。面向一般场景的完整测试取得 50.1 的 \jf{}，较复现基线提高约 4 个点。完成整体改进后，本文再以 15 个困难实例研究 MLLM 提示和长程视频理解的作用上限；其中边缘袋鼠和前景小动物两个对象分别由 28.44、12.34 提升至 84.84、68.29，证明高层事件理解只有落实为可验证候选和局部重传播时才会转化为像素收益。
 
-在保持 418 个 provided outputs 不变的前提下，系统将隐藏 \jf{} 从约 43.24 提升至 43.54。更重要的是，提升来源可以被明确归因到低对比小目标、同类袋鼠重现和前景小动物运动三个实例，而激进候选的回归也被隐藏评测证实。本文的主要结论不是“某个阈值最优”，而是：复杂视频分割需要从单路径自回归升级为“传播、审计、再获取、验证、延迟提交、回滚”的闭环；语义模型只有在与对象级候选和时序几何对齐后，才会转化为真实像素收益。
+实验的价值不仅是最高分，而是明确了有效改动的层级：输出门控可以少犯错，只有经验证的后续锚点才能真正恢复目标；MLLM 可以解释物理过程，却必须与候选 ID、对象特征和时序几何对齐，才能产生正确像素。未来应把手工账本升级为显式多对象图和可学习的干扰感知记忆，并利用 SAM3 的语义候选能力补足召回，而不是再次退回单路径、单阈值的传播范式。
 
-\appendix
-\section{复现与审计清单}
-\begin{enumerate}[leftmargin=2em]
-  \item 运行预测时为每个方法使用独立 \code{pred\_root}、\code{audit\_json} 和日志目录；
-  \item 用 \code{tools/compare\_candidate\_roots.py} 检查逐视频变化、空帧数、来源 IoU 和首帧保持；
-  \item 用统一 compare sheet 人工核对原帧语义、目标 ID、候选来源和局部放大；
-  \item 仅将视觉与时序均通过的对象区间写入 fusion policy；
-  \item 用 \code{tools/validate\_mose\_submission.py} 检查 433 个目录、66,526 张 PNG、标签合法性和 418 个 provided outputs 不变；
-  \item 保存 zip 的 SHA256、平台总分及对象级明细，避免只依据两位小数总分作归因。
-\end{enumerate}
-
-\section{代表性实现入口}
-\begin{table}[H]
-\centering
-\small
-\begin{tabularx}{\textwidth}{p{5.3cm} X}
-\toprule
-路径 & 功能 \\
-\midrule
-\nolinkurl{tools/infer_mosev2_sam2.py} & SAM2 首帧掩码基线 \\
-\nolinkurl{tools/infer_mosev2_sam2_reanchor.py} & 候选验证、延迟提交与伪锚点重传播 \\
-\nolinkurl{src/cvmose/dino_descriptors.py} & DINO 对象级正/负描述器 \\
-\nolinkurl{src/cvmose/qwen_vl_client.py} & 可缓存、可降级的百炼 Qwen-VL 客户端 \\
-\nolinkurl{tools/mllm_event_story_split.py} & 帧级视觉描述与文本事件聚合 split harness \\
-\nolinkurl{tools/infer_mosev2_sam2_teach_boxes.py} & 经验证 box 的 SAM2 注入与有界传播 \\
-\nolinkurl{tools/apply_m17_q0_story_fusion.py} & q0 可见状态与逐对象区间融合 \\
-\nolinkurl{tools/validate_mose_submission.py} & 提交结构与 provided-output 不变量验证 \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\newpage
 \bibliographystyle{unsrt}
 \bibliography{reference}
 

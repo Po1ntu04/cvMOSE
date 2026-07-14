@@ -11,8 +11,9 @@ latexmk -xelatex -interaction=nonstopmode main.tex
 ```
 
 The submission-ready PDF is `MOSEv2_training_free_reanchor_report.pdf`.
+The current release is 10 portrait A4 pages (cover included), has no English-abstract or contents page, and uses 21 cited references.
 
-Before final submission, replace the explicit `请填写` fields on the cover with the student's college, major, and name.
+Cover metadata is already finalized for 国豪书院 / 数据科学与大数据技术 / 於之翔.
 
 ## Evidence boundaries
 
